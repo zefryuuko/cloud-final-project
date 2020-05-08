@@ -1,0 +1,39 @@
+.view img {
+    width: 300px;
+}
+
+.view .name {
+    font-size: 34px;
+    font-weight: bold;
+    overflow:hidden; 
+    white-space:nowrap; 
+    text-overflow: ellipsis;
+}
+
+.view .description {
+    
+}
+
+.view {
+    width: 25%;
+    text-align: center;
+}
+
+.create img {
+    width: 300px;
+}
+
+.create p {
+    font-size: 34px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+.create {
+    width: 50%;
+    text-align: center;
+}
+
+.create button {
+    margin-top: 40px;
+}

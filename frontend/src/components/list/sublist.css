@@ -1,0 +1,104 @@
+.selected {
+    background-color: rgb(220, 220, 220) !important
+}
+
+.profileStyle {
+    background-color: rgb(255, 255, 255)
+}
+
+.profileStyle:hover {
+    filter: brightness(0.95);
+    cursor: pointer;
+}
+
+.profileStyle p {
+    font-size: 24px;
+    padding: 20px 40px;
+    margin: 0 !important;
+    font-weight: 500;
+}
+
+.communityStyle {
+    padding: 10px 0px 0px;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+}
+
+.communityStyle img {
+    width: 100px;
+}
+
+.communityStyle .name {
+    font-size: 20px;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 300px;
+}
+
+.communityStyle:hover {
+    filter: brightness(0.95);
+    cursor: pointer;
+}
+
+.communityStyle .date {
+    color: darkgray;
+    text-align: right;
+    position: absolute;
+    right: 0;
+    margin-right: 10px;
+}
+
+.communityStyle .preview {
+    color: grey;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 360px;
+    height: 50px;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
+}
+
+.searchStyle {
+    padding: 15px;
+    background-color: rgb(255, 255, 255);
+}
+
+.searchStyle img {
+    width: 100px;
+}
+
+.searchStyle p {
+    display: inline;
+    margin-left: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.searchStyle:hover {
+    filter: brightness(0.95);
+    cursor: pointer;
+}
+
+.searchStyle .arrow {
+    float: right;
+    padding-top: 22px;
+    padding-right: 15px;
+    font-size: 30px;
+}
+
+.searchStyle .create {
+    display: inline-block;
+    padding-top: 27px;
+}
+
+.mobile {
+    border-bottom: 1px solid gray;
+}

@@ -1,0 +1,39 @@
+.profile input {
+    margin-left: 30px
+}
+
+.profile input:hover {
+    cursor: pointer;
+}
+
+.profile p {
+    font-size: 24px;
+    margin: 0;
+    margin-top: 12px
+}
+
+.profile div {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.profile .edit {
+    margin-left: 80px;
+}
+
+.profile .edit .name:hover {
+    cursor: pointer;
+}
+
+.profile .edit img {
+    padding-bottom: 2px;
+    padding-left: 5px;
+}
+
+/* .profile .edit .name {
+    width: max-content;
+} */
+
+.account input {
+    margin-left: 10px;
+}

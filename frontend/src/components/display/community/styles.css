@@ -1,0 +1,98 @@
+.chatbox input {
+    width: 100%;
+    bottom: 0;
+    position: fixed;
+    height: 50px;
+    border-top: 1px solid lightgray;
+    border-left: 0px;
+    padding-left: 10px;
+}
+
+.chatboxMobile input {
+    width: 100%;
+    bottom: 0;
+    margin-bottom: 80px;
+    position: fixed;
+    height: 60px;
+    border-top: 1px solid lightgray;
+    border-left: 0px;
+    padding-left: 10px;
+}
+
+.me {
+    margin-right: 5px;
+    margin-bottom: 10px;
+    background-color: rgb(255, 255, 255);
+    text-align: right;
+    float: right;
+}
+
+.other {
+    margin-left: 5px;
+    margin-bottom: 10px;
+    background-color: rgb(255, 255, 255);
+    float: left;
+}
+
+img {
+    width: 50px;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.time {
+    font-size: 14px;
+    color: gray;
+    margin-top: 4px;
+}
+
+.message {
+    font-size: 18px;
+    font-weight: normal;
+    text-align: left;
+    display: inline-block;
+}
+
+.me table {
+    width: 80%;
+    float: right;
+}
+
+.other table {
+    width: 80%;
+    float: left;
+}
+
+.me td {
+    padding-right: 12px;
+    vertical-align: top;
+}
+
+.other td {
+    padding-left: 12px;
+    vertical-align: top;
+}
+
+p {
+    margin: 0;
+}
+
+.me tr td:first-child {
+    width:99%;
+}
+
+.me tr td:last-child {
+    width:1%;
+}
+
+.other tr td:first-child {
+    width:1%;
+}
+
+.other tr td:last-child {
+    width:99%;
+}
