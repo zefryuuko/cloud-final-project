@@ -68,9 +68,15 @@ export default class Community extends React.Component{
                 rawChats: undefined,
                 chats: []
             })
-            const token = JSON.parse(localStorage.getItem("JSONWebToken"))
-            this.setState({
-                user: token._id
+            const token = localStorage.getItem("token")
+            const obj = {
+                token: token
+            }
+            axios.post(window.API_URL+'/user/token', obj)
+            .then(res => {
+                this.setState({
+                    user: res.data._id
+                })
             })
             await axios.get(window.API_URL+'/community/'+this.props.selected)
             .then(res => {

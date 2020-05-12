@@ -57,7 +57,7 @@ export default function Chat(args){
                     <td rowSpan='2'>
                         <img src={args.user.name === '' 
                         ? 'https://res.cloudinary.com/erizky/image/upload/v1588574095/profile_s89x7z.png' 
-                        : args.user.picture} 
+                        : args.user.picture} className="profilePic"
                         />
                     </td>
                     <td>

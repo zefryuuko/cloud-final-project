@@ -20,7 +20,7 @@ export default class Login extends Component {
   }
 
   componentDidMount() {
-    const token = localStorage.getItem("JSONWebToken")
+    const token = localStorage.getItem("token")
     if (token) window.location.href='/'
   }
 
@@ -59,13 +59,12 @@ export default class Login extends Component {
                     console.log(res.data.message)
                 }
                 else {
-                    const currentUser = {
-                        "_id": res.data._id,
-                        "password": res.data.password
+                    localStorage.setItem('token', res.data.token)
+                    const client = {
+                        "mode": 'search',
+                        "index": 1
                     }
-                    localStorage.setItem("JSONWebToken", JSON.stringify(currentUser))
-                    localStorage.setItem('mode', 'search')
-                    localStorage.setItem('index', 1)
+                    localStorage.setItem("client", JSON.stringify(client))
                     window.location.href='/'
                 }
             }
@@ -102,16 +101,12 @@ export default class Login extends Component {
                     console.log(res.data.message)
                 }
                 else {
-                    const currentUser = {
-                        "_id": res.data._id,
-                        "password": res.data.password
+                    localStorage.setItem('token', res.data.token)
+                    const client = {
+                        "mode": res.data.new ? 'search' : 'community',
+                        "index": 1
                     }
-                    localStorage.setItem("JSONWebToken", JSON.stringify(currentUser))
-                    if (res.data.new)
-                    localStorage.setItem('mode', 'search')
-                    else
-                    localStorage.setItem('mode', 'community')
-                    localStorage.setItem('index', 1)
+                    localStorage.setItem("client", JSON.stringify(client))
                     window.location.href='/'
                 }
             }
@@ -152,7 +147,7 @@ export default class Login extends Component {
                 <div style={{display: this.state.mode === 'register' ? "block" : "none"}}>
                     <label>Display name</label>
                     <br />
-                    <input type='text' required={this.state.mode === 'register' ? true : false} name='name' onChange={this.onChange} maxlength="20"/>
+                    <input type='text' required={this.state.mode === 'register' ? true : false} name='name' onChange={this.onChange} maxLength="20"/>
                     <br />
                 </div>
 

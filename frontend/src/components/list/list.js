@@ -22,7 +22,7 @@ export default class List extends React.Component{
     // Change selected column on load
     componentWillReceiveProps(nextProps) {
         this.setState({
-            selected: localStorage.getItem('index'),
+            selected: JSON.parse(localStorage.getItem('client')).index,
             viewMode: false
         });
         const searchQuery = nextProps.search
@@ -70,7 +70,11 @@ export default class List extends React.Component{
             viewMode: true,
             title: name
         })
-        localStorage.setItem('index', childData)
+        const client = {
+            "mode": this.props.mode,
+            "index": childData
+        }
+        localStorage.setItem("client", JSON.stringify(client))
     }
 
     back = () => {
@@ -101,8 +105,11 @@ export default class List extends React.Component{
 
     loadCommunity() {
         if (this.props.mode === 'community') {
-            const token = localStorage.getItem("JSONWebToken")
-            axios.post(window.API_URL+'/user/token', JSON.parse(token))
+            const token = localStorage.getItem("token")
+            const obj = {
+                token: token
+            }
+            axios.post(window.API_URL+'/user/token', obj)
             .then(user => {
                 const promises = user.data.communities.map(id => {
                     return axios.get(window.API_URL+'/community/'+id)

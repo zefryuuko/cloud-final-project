@@ -30,8 +30,11 @@ export default class Profile extends React.Component{
         this.setState({
             communities: []
         })
-        const token = localStorage.getItem("JSONWebToken")
-        axios.post(window.API_URL+'/user/token', JSON.parse(token))
+        const token = localStorage.getItem("token")
+        const obj = {
+            token: token
+        }
+        axios.post(window.API_URL+'/user/token', obj)
         .then(res => {
             // if (res.data !== this.state.user) {
                 this.setState({

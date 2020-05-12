@@ -17,7 +17,7 @@ export default class Home extends Component {
     componentDidMount() {
         this.setState({
             // Change selected mode on load
-            mode: localStorage.getItem('mode')
+            mode: JSON.parse(localStorage.getItem('client')).mode
         })
         // Detect mobile phone screen
         window.addEventListener("resize", this.isMobile.bind(this));
@@ -43,8 +43,11 @@ export default class Home extends Component {
                 search: ''
             })
             // Save selected mode and reset index to 1
-            localStorage.setItem('mode', childData)
-            localStorage.setItem('index', 1)
+            const client = {
+                "mode": childData,
+                "index": 1
+            }
+            localStorage.setItem("client", JSON.stringify(client))
         }
     }
 

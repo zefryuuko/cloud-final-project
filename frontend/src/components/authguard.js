@@ -13,15 +13,19 @@ export default class AuthGuard extends React.Component {
 
     async OAuth2_0() {
         // Validate token
-        const token = localStorage.getItem("JSONWebToken")
+        const token = localStorage.getItem("token")
+        const obj = {
+            token: token
+        }
         if (token)
-        axios.post(window.API_URL+'/user/token', JSON.parse(token))
+        axios.post(window.API_URL+'/user/token', obj)
         .then(res => {
             if (res.data === false) {
                 localStorage.clear()
                 this.setState({
                     // Authorize user
-                    authorized: false
+                    authorized: false,
+                    loading: false
                 })
             }
             else this.setState({
@@ -40,11 +44,13 @@ export default class AuthGuard extends React.Component {
     
     componentDidMount() {
         this.OAuth2_0()
-        this.interval = setInterval(() => this.OAuth2_0(), 120000);
+        // this.interval = setInterval(() => this.OAuth2_0(), 120000);
+        window.addEventListener('unhandledrejection', this.OAuth2_0.bind(this));
     }
     
     componentWillUnmount() {
-        clearInterval(this.interval);
+        // clearInterval(this.interval);
+        window.removeEventListener('unhandledrejection', this.OAuth2_0)
     }
     
     render() {

@@ -20,8 +20,11 @@ export default class Search extends React.Component{
     }
 
     componentDidMount() {
-        const token = localStorage.getItem("JSONWebToken")
-        axios.post(window.API_URL+'/user/token', JSON.parse(token))
+        const token = localStorage.getItem("token")
+        const obj = {
+            token: token
+        }
+        axios.post(window.API_URL+'/user/token', obj)
         .then(res => {
             this.setState({
                 user: res.data,
@@ -42,8 +45,11 @@ export default class Search extends React.Component{
 
     componentWillReceiveProps(nextProps) {
         if (this.props.selected !== nextProps.selected) {
-            const token = localStorage.getItem("JSONWebToken")
-            axios.post(window.API_URL+'/user/token', JSON.parse(token))
+            const token = localStorage.getItem("token")
+            const obj = {
+                token: token
+            }
+            axios.post(window.API_URL+'/user/token', obj)
             .then(res => {
                 this.setState({
                     user: res.data,
@@ -83,11 +89,11 @@ export default class Search extends React.Component{
                         isLoading: false,
                         hasJoin: true
                     })
-                    setTimeout(() => {
-                        localStorage.setItem('mode','community')
-                        localStorage.setItem('index','1')
-                        window.location.reload()
-                    }, 1500)
+                    // setTimeout(() => {
+                    //     localStorage.setItem('mode','community')
+                    //     localStorage.setItem('index','1')
+                    //     window.location.reload()
+                    // }, 1500)
                 }
             })
         }
@@ -143,11 +149,16 @@ export default class Search extends React.Component{
                             timestamp: new Date().toLocaleString()
                         }
                         axios.post(window.API_URL+'/community/chat', obj)
-                        setTimeout(() => {
-                            localStorage.setItem('mode','community')
-                            localStorage.setItem('index','1')
-                            window.location.reload()
-                        }, 1500)
+                        const client = {
+                            "mode": 'community',
+                            "index": 1
+                        }
+                        localStorage.setItem("client", JSON.stringify(client))
+                        // setTimeout(() => {
+                        //     localStorage.setItem('mode','community')
+                        //     localStorage.setItem('index','1')
+                        //     window.location.reload()
+                        // }, 1500)
                     }
                 })
             }
