@@ -25,7 +25,7 @@ export default class Display extends React.Component{
         }
 
         const styleMobile = {
-            padding: this.props.mode !== 'community' ? '40px 50px' : '',
+            // padding: this.props.mode !== 'community' ? '40px 50px' : '',
             position: 'fixed'
         }
         
@@ -33,13 +33,13 @@ export default class Display extends React.Component{
             this.props.mobile ? 
             <div style={styleMobile}>
                 {this.props.mode === 'profile' && <Profile selected={this.props.selected} mobile={true}/>}
-                {this.props.mode === 'community' && <Community selected={this.props.selected} mobile={true}/>}
+                {this.props.mode === 'community' && <Community selected={this.props.selected} mobile={true} community={this.props.community}/>}
                 {this.props.mode === 'search' && <Search selected={this.props.selected} mobile={true}/>}
             </div>
             :
             <div style={style}>
                 {this.props.mode === 'profile' && <Profile selected={this.props.selected} mobile={false}/>}
-                {this.props.mode === 'community' && <Community selected={this.props.selected} mobile={false}/>}
+                {this.props.mode === 'community' && <Community selected={this.props.selected} mobile={false} community={this.props.community}/>}
                 {this.props.mode === 'search' && <Search selected={this.props.selected} mobile={false}/>}
             </div>
         )

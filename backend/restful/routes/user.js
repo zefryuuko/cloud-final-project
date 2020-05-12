@@ -13,18 +13,43 @@ router.route('/login').post((req, res) => {
         // test a matching password
         bcrypt.compare(password, user.password, function(err, result) {
             if (result) {
+                user.lockedSince = ''
+                user.loginAttempts = 0
+                user.save()
                 const obj = {
                     _id: user._id,
-                    password: user.password
+                    password: user.password,
+                    new: user.communities.length !== 0 ? false : true
                 }
                 res.send(obj);
                 // res.json('true') sends 'true'
                 // res.send('true') sends true
             }
-            else res.send('invalidPass')
+            else {
+                if (user.loginAttempts + 1 == 3) {
+                    user.lockedSince = new Date().toString()
+                    user.loginAttempts++
+                    user.save()
+                    res.send('maxAttempt')
+                }
+                else if (user.loginAttempts + 1 > 3) {
+                    if (((new Date() - new Date(user.lockedSince))/1000)/60 >= 1) {
+                        user.lockedSince = ''
+                        user.loginAttempts = 1
+                        user.save()
+                    }
+                    res.send('maxAttempt')
+                }
+                else {
+                    user.loginAttempts++
+                    user.save()
+                    res.send('invalidPass')
+                }
+            }
         });
         else res.send('invalidEmail')
     })
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/register').post((req, res) => {
@@ -54,7 +79,7 @@ router.route('/register').post((req, res) => {
             })
         }
     })
-    
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/token').post((req, res) => {
@@ -69,6 +94,7 @@ router.route('/token').post((req, res) => {
             else res.send(false)
         else res.send(false)
     })
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/update').post((req, res) => {
@@ -89,11 +115,21 @@ router.route('/update').post((req, res) => {
                     });
                 })
             }
+            if (req.body.update === 'picture') {
+                user.picture = req.body.picture;
+                user.pictureName = req.body.pictureName
+                user.save()
+            }
             if (req.body.update === 'community') {
                 user.communities.push(req.body.community)
                 user.save()
             }
+            if (req.body.update === 'community leave') {
+                user.communities.splice(user.communities.indexOf(req.body.community), 1)
+                user.save()
+            }
         })
+        .catch(err => res.status(400).json('Error: ' + err))
     res.send(true)
 });
 
@@ -102,6 +138,7 @@ router.route('/:_id').delete((req, res) => {
 
     User.findByIdAndDelete({ _id })
         .then(() => res.send(true))
+        .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/:_id').get((req, res) => {
@@ -123,6 +160,7 @@ router.route('/:_id').get((req, res) => {
             res.send(obj);
         }
     })
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 module.exports = router;

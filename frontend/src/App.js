@@ -1,18 +1,23 @@
 import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter as Router, Route, Redirect, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import socketIOClient from "socket.io-client";
 
 import Login from "./components/login"
-import Home from "./components//home"
+import Home from "./components/home"
+import AuthGuard from './components/authguard'
+
+window.API_URL = 'http://mbp:3000';
+// window.SOCKET_URL = 'http://mbp:4001';
+window.SOCKET = socketIOClient('http://mbp:4001')
 
 function App() {
   return (
     <Router>
-      { localStorage.getItem('userSession') ? <Redirect push to="/"/> : <Redirect push to="/login"/> }
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/" component={Home} />
-      </Switch>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <AuthGuard path="/" component={Home} />
+        </Switch>
     </Router>
   );
 }

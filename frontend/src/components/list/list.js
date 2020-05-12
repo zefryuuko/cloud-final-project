@@ -1,9 +1,8 @@
 import React from 'react'
+import axios from 'axios'
 
 import SubList from './sublist'
 import Display from '../display/display'
-import axios from 'axios';
-
 import Back from '../display/back'
 
 export default class List extends React.Component{
@@ -12,10 +11,11 @@ export default class List extends React.Component{
         
         this.state = {
             selected: '',
-            communitiesList: [],
+            communities: [],
             searchResult: [],
             viewMode: false,
-            title: undefined
+            title: undefined,
+            socket: window.SOCKET,
         }
     }
 
@@ -26,26 +26,42 @@ export default class List extends React.Component{
             viewMode: false
         });
         const searchQuery = nextProps.search
-        if (searchQuery !== '')
-        axios.get(process.env.REACT_APP_API_URL+'/community/search/'+searchQuery)
-        .then(res => {
+        if (searchQuery !== '') {
+            if (nextProps.mode === 'search') {
+                axios.get(window.API_URL+'/community/search/'+searchQuery)
+                .then(res => {
+                    this.setState({
+                        searchResult: res.data
+                    });
+                })
+                .catch(err => console.log(err))
+            }
+            if (nextProps.mode === 'community') {
+                let communities = [];
+                let regexp = undefined
+                for (let i = 0; i < this.state.communities.length; i++) 
+                {
+                    regexp = new RegExp('.*' + searchQuery + '.*','i');
+                    if (regexp.test(this.state.communities[i].name)) communities.push(this.state.communities[i])
+                }
+                this.setState({searchResult: communities})
+            }
+        }
+        else {
+            this.loadCommunity()
             this.setState({
-                searchResult: res.data
+                searchResult: []
             });
-        })
-        .catch(err => console.log(err))
-        else this.setState({
-            searchResult: []
-        });
+        }
     }
     
-    componentDidMount() {
-        this.interval = setInterval(() => this.fetchCommunity(), 1000);
-    }
+    // componentDidMount() {
+    //     this.interval = setInterval(() => this.fetchCommunity(), 1000);
+    // }
 
-    componentWillUnmount() {
-        clearInterval(this.interval);
-    }
+    // componentWillUnmount() {
+    //     clearInterval(this.interval);
+    // }
     
     // Change display when clicking column
     callback = (childData, name) => {
@@ -68,15 +84,11 @@ export default class List extends React.Component{
         const profileData = [
             {
                 id: 1,
-                name: 'Profile'
+                name: 'View Profile'
             },
             {
                 id: 2,
-                name: 'Account'
-            },
-            {
-                id: 3,
-                name: 'Setting'
+                name: 'My Community'
             }
         ]
         const profileList = profileData.map(x => {
@@ -87,39 +99,120 @@ export default class List extends React.Component{
         return profileList
     }
 
-    fetchCommunity() {
+    loadCommunity() {
         if (this.props.mode === 'community') {
-            const currentUser = localStorage.getItem("userSession")
-            if (currentUser)
-            axios.post(process.env.REACT_APP_API_URL+'/user/token', JSON.parse(currentUser))
+            const token = localStorage.getItem("JSONWebToken")
+            axios.post(window.API_URL+'/user/token', JSON.parse(token))
             .then(user => {
-                user.data.communities.map((id, index) => {
-                    axios.get(process.env.REACT_APP_API_URL+'/community/'+id)
+                const promises = user.data.communities.map(id => {
+                    return axios.get(window.API_URL+'/community/'+id)
                     .then(community => {
-                        if (this.state.communitiesList[index] === undefined)
-                        this.setState({
-                            communitiesList: [...this.state.communitiesList, community]
-                        })
-                        else if (this.state.communitiesList[index].data !== community.data) {
-                            let temp = this.state.communitiesList
-                            temp[index] = community
+                        if (!this.state.communities.map( c => {return c._id}).includes(id)) {// Optimize this
+                            const data = {
+                                _id: community.data._id,
+                                name: community.data.name,
+                                picture: community.data.picture,
+                                preview: community.data.chat.length === 1 ? '' : community.data.chat[community.data.chat.length - 1].message,
+                                timestamp: community.data.chat[community.data.chat.length - 1].timestamp
+                            }
+                            const socket = this.state.socket;
+                            socket.emit('join', data._id)
                             this.setState({
-                                communitiesList: temp
+                                communities: [...this.state.communities, data]
                             })
                         }
                     })
                     .catch(err => console.log(err))
                 })
+                Promise.all(promises)
+                .then(() => {
+                    const sortedCommunities = this.state.communities.sort((a, b) => {
+                        return new Date(b.timestamp) - new Date(a.timestamp);
+                    })
+                    this.setState({
+                        communities: sortedCommunities
+                    })
+                    this.fetchCommunity()
+                })
             })
         }
     }
 
+    fetchCommunity() {
+        const socket = this.state.socket;
+        socket.on('list', data => {
+        const index = this.state.communities.map( c => {return c._id}).indexOf(data._id)
+        // 1. Make a shallow copy of the items
+        let communities = [...this.state.communities];
+        // 2. Make a shallow copy of the item you want to mutate
+        let community = {...communities[index]};
+        // 3. Replace the property you're intested in
+        community.timestamp = data.timestamp
+        community.preview = data.message
+        // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+        // communities[index] = community;
+        communities.splice(index, 1)
+        communities.splice(0, 0, community)
+        // 5. Set the state to our new copy
+        this.setState({communities});
+    });
+        // if (this.props.mode === 'community') {
+        //     const currentUser = localStorage.getItem("userSession")
+        //     if (currentUser)
+        //     axios.post(window.API_URL+'/user/token', JSON.parse(currentUser))
+        //     .then(user => {
+        //         user.data.communities.map((id, index) => {
+        //             axios.get(window.API_URL+'/community/'+id)
+        //             .then(community => {
+        //                 // console.log(community.data.chat[community.data.chat.length - 1])
+        //                 if (this.state.communitiesList[index] === undefined)
+        //                 this.setState({
+        //                     communitiesList: [...this.state.communitiesList, community]
+        //                 })
+        //                 else if (this.state.communitiesList[index].data !== community.data) {
+        //                     let temp = this.state.communitiesList
+        //                     temp[index] = community
+        //                     this.setState({
+        //                         communitiesList: temp
+        //                     })
+        //                 }
+        //             })
+        //             .catch(err => console.log(err))
+        //         })
+        //     })
+        // }
+    }
+
     community() {
-        return this.state.communitiesList.sort((a, b) => {
-            return new Date(b.data.chat[b.data.chat.length - 1].timestamp) - new Date(a.data.chat[a.data.chat.length - 1].timestamp);
-        }).map(community => {
-            return <SubList mode='community' community={community.data} selected={this.state.selected === community.data._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
+        if (this.state.communities.length === 0) this.loadCommunity()
+        const onChange = (e) => {
+            this.props.searchCallback(e.target.value)
+        }
+        // setTimeout(() => {
+        //     const socket = this.state.socket;
+        //     if (!socket.connected) {
+        //         throw new Error('some error')
+        //     }
+        // }, 5000)
+        let communities = undefined
+        if (this.props.search === '')
+        communities = this.state.communities.map(community => {
+            return <SubList mode='community' community={community} selected={this.state.selected === community._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
         })
+        else communities = this.state.searchResult.map(community => {
+            return <SubList mode='community' community={community} selected={this.state.selected === community._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
+        })
+        // return this.state.communitiesList.sort((a, b) => {
+        //     return new Date(b.data.chat[b.data.chat.length - 1].timestamp) - new Date(a.data.chat[a.data.chat.length - 1].timestamp);
+        // }).map(community => {
+        //     return <SubList mode='community' community={community.data} selected={this.state.selected === community.data._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
+        // })
+        return (
+            <div>
+                <input className="form-control" type="text" placeholder=" &#128269; Find my community" onChange={onChange.bind(this)}/>
+                {communities}
+            </div>
+        ) 
     }
     
     search() {

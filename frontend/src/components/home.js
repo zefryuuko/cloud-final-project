@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 
 import Sidebar from './sidebar/sidebar'
 import List from './list/list'
@@ -16,21 +15,9 @@ export default class Home extends Component {
     }
 
     componentDidMount() {
-        // Validate API token
-        const currentUser = localStorage.getItem("userSession")
-        if (currentUser)
-        axios.post(process.env.REACT_APP_API_URL+'/user/token', JSON.parse(currentUser))
-        .then(res => {
-            if (res.data === false) {
-                localStorage.clear()
-                window.location.reload()
-            }
-            else this.setState({
-                // Change selected mode on load
-                mode: localStorage.getItem('mode'),
-            })
-            // Cache user data received from API
-            // localStorage.setItem("userCache", JSON.stringify(res.data))
+        this.setState({
+            // Change selected mode on load
+            mode: localStorage.getItem('mode')
         })
         // Detect mobile phone screen
         window.addEventListener("resize", this.isMobile.bind(this));
@@ -70,8 +57,8 @@ export default class Home extends Component {
     render() {
         return (
             <div>
+                <Sidebar modeCallback={this.modeCallback} mobile={this.state.mobile} mode={this.state.mode}/>
                 <List mode={this.state.mode} search={this.state.search} searchCallback={this.searchCallback} mobile={this.state.mobile}/>
-                <Sidebar modeCallback={this.modeCallback} mobile={this.state.mobile}/>
             </div>
         )
     }

@@ -1,4 +1,4 @@
-.profile input {
+/* .profile input {
     margin-left: 30px
 }
 
@@ -30,10 +30,19 @@
     padding-left: 5px;
 }
 
-/* .profile .edit .name {
+.profile .edit .name {
     width: max-content;
+}
+
+.profile input {
+    margin-left: 10px;
 } */
 
-.account input {
-    margin-left: 10px;
+.profile img {
+    border-radius: 50%;
+}
+
+.community button {
+    float: right;
+    margin-top: 35px;
 }

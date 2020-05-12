@@ -7,7 +7,7 @@ export default function Back(args){
 
     const navStyle = {
         backgroundColor: 'rgb(40, 40, 40)',
-        height: 40
+        height: 60
     }
     
     const buttonStyle = {

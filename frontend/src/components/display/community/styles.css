@@ -1,10 +1,13 @@
-.chatbox input {
-    width: 100%;
-    bottom: 0;
-    position: fixed;
-    height: 50px;
+.chatbox {
     border-top: 1px solid lightgray;
-    border-left: 0px;
+}
+
+.chatbox input {
+    width: calc(100% - 200px);
+    /* bottom: 0; */
+    /* position: fixed; */
+    height: 50px;
+    border: 0px;
     padding-left: 10px;
 }
 
@@ -14,28 +17,39 @@
     margin-bottom: 80px;
     position: fixed;
     height: 60px;
-    border-top: 1px solid lightgray;
+    /* border-top: 1px solid lightgray; */
     border-left: 0px;
     padding-left: 10px;
 }
 
-.me {
-    margin-right: 5px;
-    margin-bottom: 10px;
-    background-color: rgb(255, 255, 255);
-    text-align: right;
-    float: right;
+input:focus {
+    outline: 0;
 }
 
-.other {
-    margin-left: 5px;
-    margin-bottom: 10px;
-    background-color: rgb(255, 255, 255);
-    float: left;
+.typing {
+    position: absolute;
+    margin-top: -44px;
 }
 
-img {
+.typing p {
+    background: linear-gradient(0deg, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
+    padding: 10px;
+    display: table-cell;
+}
+
+.scroll {
+    position: absolute;
+    margin-top: -36px;
+    right: 12px;
+}
+
+p {
+    margin: 0;
+}
+
+.profilePic {
     width: 50px;
+    border-radius: 50%;
 }
 
 .name {
@@ -57,28 +71,28 @@ img {
     display: inline-block;
 }
 
+.me {
+    margin-right: 5px;
+    margin-bottom: 10px;
+    background-color: rgb(255, 255, 255);
+    text-align: right;
+    float: right;
+}
+
+.me .message img {
+    width: 50%;
+    float: right;
+    max-width: 1200px;
+}
+
 .me table {
     width: 80%;
     float: right;
 }
 
-.other table {
-    width: 80%;
-    float: left;
-}
-
 .me td {
     padding-right: 12px;
     vertical-align: top;
-}
-
-.other td {
-    padding-left: 12px;
-    vertical-align: top;
-}
-
-p {
-    margin: 0;
 }
 
 .me tr td:first-child {
@@ -89,10 +103,69 @@ p {
     width:1%;
 }
 
+.me .time {
+    visibility: hidden;
+}
+
+.me:hover .time:not(:hover) {
+    visibility: visible;
+}
+
+.other {
+    margin-left: 5px;
+    margin-bottom: 10px;
+    background-color: rgb(255, 255, 255);
+    float: left;
+}
+
+.other .message img {
+    width: 50%;
+    max-width: 1200px;
+}
+
+.other table {
+    width: 80%;
+    float: left;
+}
+
+.other td {
+    padding-left: 12px;
+    vertical-align: top;
+}
+
 .other tr td:first-child {
     width:1%;
 }
 
 .other tr td:last-child {
     width:99%;
+}
+
+.other .time {
+    visibility: hidden;
+}
+
+.other:hover .time:not(:hover) {
+    visibility: visible;
+}
+
+.recent {
+    margin-top: -30px;
+    margin-bottom: -10px;
+    background-color: transparent;
+}
+
+.recent img {
+    visibility: hidden;
+    /* display: none; */
+}
+
+.recent .name {
+    /* visibility: hidden; */
+    display: none;
+}
+
+.recent .time {
+    /* visibility: hidden; */
+    display: none;
 }

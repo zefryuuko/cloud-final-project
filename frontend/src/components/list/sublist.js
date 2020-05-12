@@ -25,14 +25,14 @@ export default function SubList(args){
                             <div className='row'>
                                 <div className='column'>
                                     <p className='name'>{args.community.name}</p>
-                                    <p className='preview'>{args.community.chat.length !== 0 ? args.community.chat[args.community.chat.length - 1].message : null}</p>
+                                    <p className='preview'>{args.community.preview}</p>
                                 </div>
                                 <p className='date'>
-                                    {new Date().toLocaleString().split(',')[0] === args.community.chat[args.community.chat.length - 1].timestamp.split(',')[0]
-                                    ? args.community.chat[args.community.chat.length - 1].timestamp.split(',')[1].split(':')[0] + ':' + 
-                                      args.community.chat[args.community.chat.length - 1].timestamp.split(',')[1].split(':')[1] + ' ' +
-                                      args.community.chat[args.community.chat.length - 1].timestamp.split(',')[1].split(':')[2].split(' ')[1]
-                                    : args.community.chat[args.community.chat.length - 1].timestamp.split(',')[0]}
+                                    {new Date().toLocaleString().split(',')[0] === args.community.timestamp.split(',')[0]
+                                    ? args.community.timestamp.split(',')[1].split(':')[0] + ':' + 
+                                      args.community.timestamp.split(',')[1].split(':')[1] + ' ' +
+                                      args.community.timestamp.split(',')[1].split(':')[2].split(' ')[1]
+                                    : args.community.timestamp.split(',')[0]}
                                 </p>
                             </div>
                         </div>

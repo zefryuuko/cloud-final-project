@@ -52,21 +52,21 @@ export default class Sidebar extends React.Component{
             <div>
                 <nav style={sidebarStyleMobile}>
                     <div style={iconStyleMobile}>
-                        <a href='#' title='Profile' onClick={() => this.changeMode('profile')}><img src={require('./contacts-64.png')} style={{width: '70%'}}/></a>
+                        <a href='#' title='Profile' onClick={() => this.changeMode('profile')} style={{filter: this.props.mode === 'profile' && 'brightness(2.0)'}}><img src={require('./contacts-64.png')} style={{width: '70%'}}/></a>
                     </div>
                     <div style={iconStyleMobile}>
-                        <a href='#' title='Community' onClick={() => this.changeMode('community')}><img src={require('./conference-64.png')} style={{width: '80%'}}/></a>
+                        <a href='#' title='Community' onClick={() => this.changeMode('community')} style={{filter: this.props.mode === 'community' && 'brightness(2.0)'}}><img src={require('./conference-64.png')} style={{width: '80%'}}/></a>
                     </div>
                     <div style={iconStyleMobile}>
-                        <a href='#' title='Search community' onClick={() => this.changeMode('search')}><img src={require('./search-13-64.png')} style={{width: '70%'}}/></a>
+                        <a href='#' title='Search community' onClick={() => this.changeMode('search')} style={{filter: this.props.mode === 'search' && 'brightness(2.0)'}}><img src={require('./search-13-64.png')} style={{width: '70%'}}/></a>
                     </div>
                 </nav>
             </div>
             :
             <div style={sidebarStyle}>
-                <a href='#' title='Profile' onClick={() => this.changeMode('profile')}><img src={require('./contacts-64.png')} style={iconStyle}/></a>
-                <a href='#' title='Community' onClick={() => this.changeMode('community')}><img src={require('./conference-64.png')} style={iconStyle}/></a>
-                <a href='#' title='Search community' onClick={() => this.changeMode('search')}><img src={require('./search-13-64.png')} style={iconStyle}/></a>
+                <a href='#' title='Profile' onClick={() => this.changeMode('profile')} style={{filter: this.props.mode === 'profile' && 'brightness(2.0)'}}><img src={require('./contacts-64.png')} style={iconStyle}/></a>
+                <a href='#' title='Community' onClick={() => this.changeMode('community')} style={{filter: this.props.mode === 'community' && 'brightness(2.0)'}}><img src={require('./conference-64.png')} style={iconStyle}/></a>
+                <a href='#' title='Search community' onClick={() => this.changeMode('search')} style={{filter: this.props.mode === 'search' && 'brightness(2.0)'}}><img src={require('./search-13-64.png')} style={iconStyle}/></a>
                 <footer style={{bottom: 50, position:"absolute"}}>
                     <a href='/'  title='Log out' onClick={() => localStorage.clear()}><img src={require('./logout-64.png')} style={iconStyle}/></a>
                 </footer>

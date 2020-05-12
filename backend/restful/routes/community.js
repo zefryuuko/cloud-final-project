@@ -13,6 +13,7 @@ router.route('/create').post((req, res) => {
         if (err) return res.send(err);
         return res.send(result);
     })
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/update').post((req, res) => {
@@ -33,23 +34,24 @@ router.route('/update').post((req, res) => {
                 c.save()
             }
         })
-        .catch(err => res.send(err))
+        .catch(err => res.status(400).json('Error: ' + err))
     res.send(true)
 });
 
-router.route('/:_id').delete((req, res) => {
-    const _id = req.params._id;
-
-    Community.findByIdAndDelete({ _id })
-        .then(() => res.send(true))
-});
-
-router.route('/:_id').get((req, res) => {
+router.route('/:_id')
+.get((req, res) => {
     const _id = req.params._id;
 
     Community.findById(_id)
     .then(c => res.send(c))
-    .catch(err => res.send(err))
+    .catch(err => res.status(400).json('Error: ' + err))
+})
+.delete((req, res) => {
+    const _id = req.params._id;
+
+    Community.findByIdAndDelete({ _id })
+    .then(() => res.send(true))
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/chat').post((req, res) => {
@@ -67,29 +69,29 @@ router.route('/chat').post((req, res) => {
         })
         c.save()
     })
-    .catch(err => res.send(err))
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
-router.route('/chat/:_id').post((req, res) => {
-    const _id = req.params._id;
-    const timestamp = req.body.timestamp
+// router.route('/chat/:_id').post((req, res) => {
+//     const _id = req.params._id;
+//     const timestamp = req.body.timestamp
 
-    Community.findById(_id)
-    .slice('chat', -1)
-    .then(c => {
-        if (timestamp !== c.chat[0].timestamp || timestamp === '')
-        res.send(c.chat[0])
-        else res.send(false)
-    })
-    .catch(err => res.send(err))
-});
+//     Community.findById(_id)
+//     .slice('chat', -1)
+//     .then(c => {
+//         if (timestamp !== c.chat[0].timestamp || timestamp === '')
+//         res.send(c.chat[0])
+//         else res.send(false)
+//     })
+//     .catch(err => res.send(err))
+// });
 
 router.route('/search/:name').get((req, res) => {
     const name = req.params.name;
 
     Community.find({name: {$regex: name, $options: 'i'}})
     .then(c => res.send(c))
-    .catch(err => res.send(err))
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 module.exports = router;

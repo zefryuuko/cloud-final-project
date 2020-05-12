@@ -20,9 +20,8 @@ export default class Search extends React.Component{
     }
 
     componentDidMount() {
-        const currentUser = localStorage.getItem("userSession")
-        if (currentUser)
-        axios.post(process.env.REACT_APP_API_URL+'/user/token', JSON.parse(currentUser))
+        const token = localStorage.getItem("JSONWebToken")
+        axios.post(window.API_URL+'/user/token', JSON.parse(token))
         .then(res => {
             this.setState({
                 user: res.data,
@@ -32,7 +31,7 @@ export default class Search extends React.Component{
         .catch(err => console.log(err))
 
         if (parseInt(this.props.selected) > 3)
-        axios.get(process.env.REACT_APP_API_URL+'/community/'+this.props.selected)
+        axios.get(window.API_URL+'/community/'+this.props.selected)
         .then(res => {
             this.setState({
                 community: res.data
@@ -43,9 +42,8 @@ export default class Search extends React.Component{
 
     componentWillReceiveProps(nextProps) {
         if (this.props.selected !== nextProps.selected) {
-            const currentUser = localStorage.getItem("userSession")
-            if (currentUser)
-            axios.post(process.env.REACT_APP_API_URL+'/user/token', JSON.parse(currentUser))
+            const token = localStorage.getItem("JSONWebToken")
+            axios.post(window.API_URL+'/user/token', JSON.parse(token))
             .then(res => {
                 this.setState({
                     user: res.data,
@@ -56,7 +54,7 @@ export default class Search extends React.Component{
             .catch(err => console.log(err))
     
             if (parseInt(nextProps.selected) > 3)
-            axios.get(process.env.REACT_APP_API_URL+'/community/'+nextProps.selected)
+            axios.get(window.API_URL+'/community/'+nextProps.selected)
             .then(res => {
                 this.setState({
                     community: res.data
@@ -78,7 +76,7 @@ export default class Search extends React.Component{
                 _id: this.state.user._id,
                 community: this.state.community._id,
             }
-            axios.post(process.env.REACT_APP_API_URL+'/user/update', req)
+            axios.post(window.API_URL+'/user/update', req)
             .then(res => {
                 if (res.data) {
                     this.setState({
@@ -120,7 +118,7 @@ export default class Search extends React.Component{
             description: this.state.description,
             picture: this.state.picture,
         }
-        axios.post(process.env.REACT_APP_API_URL+'/community/create', req)
+        axios.post(window.API_URL+'/community/create', req)
         .then(res => {
             if (res.data) {
                 this.setState({
@@ -135,7 +133,7 @@ export default class Search extends React.Component{
                 this.setState({
                     newCommunityID: res.data._id
                 })
-                axios.post(process.env.REACT_APP_API_URL+'/user/update', req)
+                axios.post(window.API_URL+'/user/update', req)
                 .then(res => {
                     if (res.data) {
                         const obj = {
@@ -144,7 +142,7 @@ export default class Search extends React.Component{
                             message: this.state.user.name+'['+this.state.user._id+']'+' joined the game.',
                             timestamp: new Date().toLocaleString()
                         }
-                        axios.post(process.env.REACT_APP_API_URL+'/community/chat', obj)
+                        axios.post(window.API_URL+'/community/chat', obj)
                         setTimeout(() => {
                             localStorage.setItem('mode','community')
                             localStorage.setItem('index','1')

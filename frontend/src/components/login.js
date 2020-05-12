@@ -19,6 +19,11 @@ export default class Login extends Component {
     }
   }
 
+  componentDidMount() {
+    const token = localStorage.getItem("JSONWebToken")
+    if (token) window.location.href='/'
+  }
+
   onChange(e) {
     this.setState({
         [e.target.name]: e.target.value
@@ -38,7 +43,7 @@ export default class Login extends Component {
           password: this.state.password,
           name: this.state.name
         }
-        axios.post(process.env.REACT_APP_API_URL+'/user/register', user)
+        axios.post(window.API_URL+'/user/register', user)
           .then(res => {
             //   this.setState({
             //       isLoading: false
@@ -58,10 +63,10 @@ export default class Login extends Component {
                         "_id": res.data._id,
                         "password": res.data.password
                     }
-                    localStorage.setItem("userSession", JSON.stringify(currentUser))
+                    localStorage.setItem("JSONWebToken", JSON.stringify(currentUser))
                     localStorage.setItem('mode', 'search')
                     localStorage.setItem('index', 1)
-                    window.location.reload();
+                    window.location.href='/'
                 }
             }
             else {
@@ -74,7 +79,7 @@ export default class Login extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        axios.post(process.env.REACT_APP_API_URL+'/user/login', user)
+        axios.post(window.API_URL+'/user/login', user)
         .then(res => {
             if (res.data) {
                 if (res.data === 'invalidEmail') {
@@ -87,6 +92,11 @@ export default class Login extends Component {
                         invalid: 'password'
                     })
                 }
+                else if (res.data === 'maxAttempt') {
+                    this.setState({
+                        invalid: 'max'
+                    })
+                }
                 else if (res.data.errors) {
                     // Handle unique error
                     console.log(res.data.message)
@@ -96,10 +106,13 @@ export default class Login extends Component {
                         "_id": res.data._id,
                         "password": res.data.password
                     }
-                    localStorage.setItem("userSession", JSON.stringify(currentUser))
+                    localStorage.setItem("JSONWebToken", JSON.stringify(currentUser))
+                    if (res.data.new)
                     localStorage.setItem('mode', 'search')
+                    else
+                    localStorage.setItem('mode', 'community')
                     localStorage.setItem('index', 1)
-                    window.location.reload();
+                    window.location.href='/'
                 }
             }
             else {
@@ -143,9 +156,9 @@ export default class Login extends Component {
                     <br />
                 </div>
 
-                <label style={{color: this.state.invalid === 'password' ? 'red' : ''}}>Password<i>{this.state.invalid === 'password' ? ' - Password does not match.' : ''}</i></label>
+                <label style={{color: this.state.invalid === 'password' || this.state.invalid === 'max' ? 'red' : ''}}>Password<i>{this.state.invalid === 'password' ? ' - Password does not match.' : this.state.invalid === 'max' ? ' - Max login attempts exceeded. Please try again later.' : ''}</i></label>
                 <br />
-                <input type='password' required name='password' onChange={this.onChange} style={{borderColor: this.state.invalid === 'password' ? 'red' : ''}}/>
+                <input type='password' required name='password' onChange={this.onChange} style={{borderColor: this.state.invalid === 'password' || this.state.invalid === 'max' ? 'red' : ''}}/>
                 <br />
                 {/* <a>Forgot your password?</a> */}
 

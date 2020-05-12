@@ -1,8 +1,8 @@
 {
-  "name": "backend",
+  "name": "websocket",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,11 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^4.0.1",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
+    "axios": "^0.19.2",
     "express": "^4.17.1",
-    "mongoose": "^5.9.10",
     "socket.io": "^2.3.0"
   }
 }

@@ -25,8 +25,29 @@ const userSchema = new Schema({
         type: String,
         default: 'https://res.cloudinary.com/erizky/image/upload/v1588574095/profile_s89x7z.png'
     },
+    pictureName: {
+        type: String
+    },
     communities: {
         type: Array
+    },
+    loginAttempts: {
+        type: Number,
+        default: 0
+    },
+    lockedSince: {
+        type: String
+    },
+    admin: {
+        type: Boolean,
+        default: false
+    },
+    verified: {
+        type: Boolean,
+        default: false
+    },
+    token: {
+        type: String
     }
 },
 {
