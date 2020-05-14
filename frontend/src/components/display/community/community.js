@@ -67,6 +67,32 @@ export default class Community extends React.Component{
         }
     }
 
+    dragImage() {
+        window.addEventListener("drop", (e) => {
+            e.preventDefault();
+            this.uploadImage(e.dataTransfer.files[0])
+        }, false);
+    }
+
+    uploadImage(selectedFile) {
+        const uploadTask = storage.ref(`/images/`+this.props.selected+`/${selectedFile.name}`).put(selectedFile)
+        uploadTask.on('state_changed', 
+        (snapShot) => {
+            //takes a snap shot of the process as it is happening
+            // console.log(snapShot)
+        }, (err) => {
+            //catches the errors
+            console.log(err)
+        }, () => {
+            // gets the functions from storage refences the image storage in firebase by the children
+            // gets the download url then sets the image from firebase as the value for the imgUrl key:
+            storage.ref('images/'+this.props.selected).child(selectedFile.name).getDownloadURL()
+            .then(fireBaseUrl => {
+                this.sendChat(fireBaseUrl)
+            })
+        })
+    }
+
     async loadRawChat(firstTime = false) {
         await axios.get(window.API_URL+'/community/'+this.props.selected)
         .then(res => {
@@ -105,9 +131,8 @@ export default class Community extends React.Component{
                 this.fetchChat()
                 this.typingChat()
                 this.fetchUser()
-                const stop = () => { clearInterval(stayAtBottom) }
-                const stayAtBottom = setInterval(this.scrollChat, 10)
-                setTimeout(stop, 400);
+                this.dragImage()
+                this.scrollChat(500)
             }
         })
     }
@@ -185,12 +210,15 @@ export default class Community extends React.Component{
             chats: newChat ? [...prevState.chats, chats] : [chats, ...prevState.chats]
         }))
         if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
-        if (newChat) this.scrollChat()
+        if (newChat) this.scrollChat(500)
     }
 
-    scrollChat() {
-        const bottom = document.getElementById('chat')
-        bottom.scrollTop = bottom.scrollHeight
+    scrollChat(interval = 0) {
+        const scrollToBottom = () => {const bottom = document.getElementById('chat')
+        bottom.scrollTop = bottom.scrollHeight}
+        const stop = () => { clearInterval(stayAtBottom) }
+        const stayAtBottom = setInterval(scrollToBottom, 10)
+        setTimeout(stop, interval);
     }
     
     sendChat(text) {
@@ -279,26 +307,10 @@ export default class Community extends React.Component{
                 })
             }
         }
-        
         const uploadHandler = e => {
             e.preventDefault()
             const selectedFile = e.target.files[0]
-            const uploadTask = storage.ref(`/images/`+this.props.selected+`/${selectedFile.name}`).put(selectedFile)
-            uploadTask.on('state_changed', 
-            (snapShot) => {
-                //takes a snap shot of the process as it is happening
-                console.log(snapShot)
-            }, (err) => {
-                //catches the errors
-                console.log(err)
-            }, () => {
-                // gets the functions from storage refences the image storage in firebase by the children
-                // gets the download url then sets the image from firebase as the value for the imgUrl key:
-                storage.ref('images/'+this.props.selected).child(selectedFile.name).getDownloadURL()
-                .then(fireBaseUrl => {
-                    this.sendChat(fireBaseUrl)
-                })
-            })
+            this.uploadImage(selectedFile)
         }
 
         const switchToAudio = () => {
@@ -325,6 +337,9 @@ export default class Community extends React.Component{
             </div>
             :
             <div>
+                <div id='dragZone'>
+                    Drag and drop image here
+                </div>
                 <div id='chat' style={{height: 'calc(100vh - 50px)', overflowY: 'scroll'}} onScroll={onScroll.bind(this)}>
                     {this.state.chats}
                 </div>
@@ -334,7 +349,7 @@ export default class Community extends React.Component{
                     })}
                 </div>
                 <div className='scroll'>
-                    {!this.state.bottom && <button onClick={this.scrollChat.bind(this)}>&#8595;</button>}
+                    {!this.state.bottom && <button onClick={this.scrollChat.bind(this, 10)}>&#8595;</button>}
                 </div>
                 <div className='chatbox'>
                     <label class="fileContainer">

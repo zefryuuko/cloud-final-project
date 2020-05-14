@@ -163,31 +163,6 @@ export default class List extends React.Component{
         // 5. Set the state to our new copy
         this.setState({communities});
     });
-        // if (this.props.mode === 'community') {
-        //     const currentUser = localStorage.getItem("userSession")
-        //     if (currentUser)
-        //     axios.post(window.API_URL+'/user/token', JSON.parse(currentUser))
-        //     .then(user => {
-        //         user.data.communities.map((id, index) => {
-        //             axios.get(window.API_URL+'/community/'+id)
-        //             .then(community => {
-        //                 // console.log(community.data.chat[community.data.chat.length - 1])
-        //                 if (this.state.communitiesList[index] === undefined)
-        //                 this.setState({
-        //                     communitiesList: [...this.state.communitiesList, community]
-        //                 })
-        //                 else if (this.state.communitiesList[index].data !== community.data) {
-        //                     let temp = this.state.communitiesList
-        //                     temp[index] = community
-        //                     this.setState({
-        //                         communitiesList: temp
-        //                     })
-        //                 }
-        //             })
-        //             .catch(err => console.log(err))
-        //         })
-        //     })
-        // }
     }
 
     community() {
@@ -209,11 +184,6 @@ export default class List extends React.Component{
         else communities = this.state.searchResult.map(community => {
             return <SubList mode='community' community={community} selected={this.state.selected === community._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
         })
-        // return this.state.communitiesList.sort((a, b) => {
-        //     return new Date(b.data.chat[b.data.chat.length - 1].timestamp) - new Date(a.data.chat[a.data.chat.length - 1].timestamp);
-        // }).map(community => {
-        //     return <SubList mode='community' community={community.data} selected={this.state.selected === community.data._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
-        // })
         return (
             <div>
                 <input className="form-control" type="text" placeholder=" &#128269; Find my community" onChange={onChange.bind(this)}/>

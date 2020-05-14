@@ -1,6 +1,9 @@
 import React from 'react'
 import { BrowserRouter as Redirect } from "react-router-dom";
 import axios from 'axios';
+
+var dragging = 0
+var dragZone;
  
 export default class AuthGuard extends React.Component {
     constructor(props) {
@@ -44,12 +47,49 @@ export default class AuthGuard extends React.Component {
     
     componentDidMount() {
         this.OAuth2_0()
-        // this.interval = setInterval(() => this.OAuth2_0(), 120000);
         window.addEventListener('unhandledrejection', this.OAuth2_0.bind(this));
+
+        window.addEventListener("dragenter", function(e) {
+            dragZone = document.getElementById('dragZone')
+            dragging++;
+            if (dragZone) dragZone.style.display = 'block'
+            if (e.target.id != 'dragZone') {
+              e.preventDefault();
+              e.dataTransfer.effectAllowed = "none";
+              e.dataTransfer.dropEffect = "none";
+            }
+        }, false);
+        
+        window.addEventListener("dragover", function(e) {
+            e.preventDefault();
+            if (e.target.id != 'dragZone') {
+                e.dataTransfer.effectAllowed = "none";
+                e.dataTransfer.dropEffect = "none";
+            }
+        }, false);
+        
+        window.addEventListener("dragleave", function(e) {
+            dragging--;
+            if (dragging === 0) if (dragZone) dragZone.style.display = 'none'
+            if (e.target.id != 'dragZone') {
+                e.preventDefault();
+                e.dataTransfer.effectAllowed = "none";
+                e.dataTransfer.dropEffect = "none";
+            }
+        }, false);
+
+        window.addEventListener("drop", (e) => {
+            dragging--;
+            if (dragging === 0) if (dragZone) dragZone.style.display = 'none'
+            if (e.target.id != 'dragZone') {
+                e.preventDefault();
+                e.dataTransfer.effectAllowed = "none";
+                e.dataTransfer.dropEffect = "none";
+            }
+        }, false);
     }
     
     componentWillUnmount() {
-        // clearInterval(this.interval);
         window.SOCKET.disconnect()
         window.removeEventListener('unhandledrejection', this.OAuth2_0)
     }
