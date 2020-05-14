@@ -22,7 +22,7 @@ export default function Chat(args){
             if (!url.includes('http://') && !url.includes('https://')) realurl = 'http://' + url
             if (url.match(/\.(jpeg|jpg|gif|png)/) != null) {
                 isImage = true
-                return '<img src=' + realurl + ' loading="lazy">';
+                return '<img src=' + realurl + ' onerror="this.onerror=null; this.src=\'https://res.cloudinary.com/erizky/image/upload/c_scale,w_113/v1589474238/unknown_ivqfpo.png\'" alt="" loading="lazy">';
             }
             else return '<a href="' + realurl + '" target="_blank">' + url + '</a>';
         })

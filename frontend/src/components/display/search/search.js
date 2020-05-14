@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios';
+import {storage} from "../../../firebase/firebase"
 import './styles.css'
 
 export default class Search extends React.Component{
@@ -13,9 +14,8 @@ export default class Search extends React.Component{
             hasJoin: false,
             name: undefined,
             description: undefined,
-            picture: undefined,
+            picture: 'https://res.cloudinary.com/erizky/image/upload/v1588573978/community_mgshrs.png',
             newCommunityID: undefined
-
         }
     }
 
@@ -55,7 +55,6 @@ export default class Search extends React.Component{
                     user: res.data,
                     hasJoin: false
                 })
-                // console.log(res)
             })
             .catch(err => console.log(err))
     
@@ -65,7 +64,6 @@ export default class Search extends React.Component{
                 this.setState({
                     community: res.data
                 })
-                // console.log(res)
             })
             .catch(err => console.log(err))
         }
@@ -171,12 +169,33 @@ export default class Search extends React.Component{
         })
     }
 
+    uploadImage(e) {
+        e.preventDefault()
+        const selectedFile = e.target.files[0]
+        const uploadTask = storage.ref(`/images/groups/${selectedFile.name}`).put(selectedFile)
+        uploadTask.on('state_changed', 
+        (snapShot) => {
+            //takes a snap shot of the process as it is happening
+            // console.log(snapShot)
+        }, (err) => {
+            //catches the errors
+            console.log(err)
+        }, () => {
+            // gets the functions from storage refences the image storage in firebase by the children
+            // gets the download url then sets the image from firebase as the value for the imgUrl key:
+            storage.ref('images/groups').child(selectedFile.name).getDownloadURL()
+            .then(fireBaseUrl => {
+                this.setState({ picture: fireBaseUrl })
+            })
+        })
+    }
+
     formCommunity() {
         return (
             <div className='create'>
-                <img src='https://res.cloudinary.com/erizky/image/upload/v1588573978/community_mgshrs.png'/>
+                <img src={this.state.picture}/>
                 <br/>
-                <input name="file" type="file" accept="image/x-png,image/gif,image/jpeg" />
+                <input name="file" type="file" accept="image/png,image/gif,image/jpeg" onChange={this.uploadImage.bind(this)}/>
                 <br/>
                 <p>Community name</p>
                 <input type='text' name='name' onChange={this.onChange.bind(this)} maxLength='50'/>

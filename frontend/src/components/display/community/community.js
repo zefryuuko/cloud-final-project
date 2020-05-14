@@ -75,7 +75,7 @@ export default class Community extends React.Component{
     }
 
     uploadImage(selectedFile) {
-        const uploadTask = storage.ref(`/images/`+this.props.selected+`/${selectedFile.name}`).put(selectedFile)
+        const uploadTask = storage.ref(`/images/groups/`+this.props.selected+`/${selectedFile.name}`).put(selectedFile)
         uploadTask.on('state_changed', 
         (snapShot) => {
             //takes a snap shot of the process as it is happening
@@ -86,7 +86,7 @@ export default class Community extends React.Component{
         }, () => {
             // gets the functions from storage refences the image storage in firebase by the children
             // gets the download url then sets the image from firebase as the value for the imgUrl key:
-            storage.ref('images/'+this.props.selected).child(selectedFile.name).getDownloadURL()
+            storage.ref('images/groups/'+this.props.selected).child(selectedFile.name).getDownloadURL()
             .then(fireBaseUrl => {
                 this.sendChat(fireBaseUrl)
             })
