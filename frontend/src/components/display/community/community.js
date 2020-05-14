@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import {storage} from "../../../firebase/firebase"
 import './styles.css'
 
 import Chat from './chat'
@@ -58,7 +59,7 @@ export default class Community extends React.Component{
         if (this.state.chats !== prevState.chats) {
             if (this.state.chats.length > 1) {
                 const top = document.getElementById('newTop')
-                top.scrollIntoView()
+                if (top) top.scrollIntoView()
             }
             else if (this.state.chats.length === 1) {
                 document.getElementById('newTop').id = 'top'
@@ -104,7 +105,9 @@ export default class Community extends React.Component{
                 this.fetchChat()
                 this.typingChat()
                 this.fetchUser()
-                setTimeout(this.scrollChat, 100)
+                const stop = () => { clearInterval(stayAtBottom) }
+                const stayAtBottom = setInterval(this.scrollChat, 10)
+                setTimeout(stop, 400);
             }
         })
     }
@@ -139,9 +142,9 @@ export default class Community extends React.Component{
                 body: data.message,
             })
             this.setState({
-                rawChats: [...this.state.rawChats, data]
+                rawChats: [data]
             })
-            this.processChat()
+            this.processChat(true)
         });
     }
 
@@ -167,21 +170,22 @@ export default class Community extends React.Component{
         })
     }
     
-    async processChat() {
+    async processChat(newChat = false) {
         let chats = []
         await this.state.rawChats.map((chat, index, array) => {
             const user = this.state.users[this.state.users.map( u => {return u._id}).indexOf(chat.user)]
             if (index !== 0 && new Date(array[index - 1].timestamp).getMinutes() === new Date(chat.timestamp).getMinutes() && array[index - 1].user === chat.user) {
-                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true} top={index === 0 ? true : false}/>)
+                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true} top={index === 0 && !newChat ? true : false}/>)
             }
             else {
-                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false} top={index === 0 ? true : false}/>)
+                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false} top={index === 0 && !newChat ? true : false}/>)
             }
         })
         this.setState(prevState => ({
-            chats: [chats, ...prevState.chats]
+            chats: newChat ? [...prevState.chats, chats] : [chats, ...prevState.chats]
         }))
         if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
+        if (newChat) this.scrollChat()
     }
 
     scrollChat() {
@@ -275,6 +279,27 @@ export default class Community extends React.Component{
                 })
             }
         }
+        
+        const uploadHandler = e => {
+            e.preventDefault()
+            const selectedFile = e.target.files[0]
+            const uploadTask = storage.ref(`/images/`+this.props.selected+`/${selectedFile.name}`).put(selectedFile)
+            uploadTask.on('state_changed', 
+            (snapShot) => {
+                //takes a snap shot of the process as it is happening
+                console.log(snapShot)
+            }, (err) => {
+                //catches the errors
+                console.log(err)
+            }, () => {
+                // gets the functions from storage refences the image storage in firebase by the children
+                // gets the download url then sets the image from firebase as the value for the imgUrl key:
+                storage.ref('images/'+this.props.selected).child(selectedFile.name).getDownloadURL()
+                .then(fireBaseUrl => {
+                    this.sendChat(fireBaseUrl)
+                })
+            })
+        }
 
         const switchToAudio = () => {
             this.setState({chat: 'audio'})
@@ -312,9 +337,13 @@ export default class Community extends React.Component{
                     {!this.state.bottom && <button onClick={this.scrollChat.bind(this)}>&#8595;</button>}
                 </div>
                 <div className='chatbox'>
-                    <input type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
-                    <button onClick={switchToAudio.bind(this)}>Audio chat</button>
-                    <button onClick={switchToVideo.bind(this)}>Video chat</button>
+                    <label class="fileContainer">
+                        &#x2295;
+                        <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
+                    </label>
+                    <input type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}  class="inputBox"/>
+                    {/* <button onClick={switchToAudio.bind(this)}>Audio chat</button>
+                    <button onClick={switchToVideo.bind(this)}>Video chat</button> */}
                 </div>
             </div>
         )
