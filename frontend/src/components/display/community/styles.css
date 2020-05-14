@@ -67,8 +67,12 @@ p {
 .message {
     font-size: 18px;
     font-weight: normal;
-    text-align: left;
-    display: inline-block;
+    /* text-align: left;
+    display: inline-block; */
+}
+
+.message img {
+    max-width: 400px;
 }
 
 .me {
@@ -77,12 +81,6 @@ p {
     background-color: rgb(255, 255, 255);
     text-align: right;
     float: right;
-}
-
-.me .message img {
-    width: 50%;
-    float: right;
-    max-width: 1200px;
 }
 
 .me table {
@@ -116,11 +114,6 @@ p {
     margin-bottom: 10px;
     background-color: rgb(255, 255, 255);
     float: left;
-}
-
-.other .message img {
-    width: 50%;
-    max-width: 1200px;
 }
 
 .other table {

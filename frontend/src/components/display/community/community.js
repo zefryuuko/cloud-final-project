@@ -11,8 +11,6 @@ export default class Community extends React.Component{
     
         this.state = {
             user: undefined,
-            // unsortedChats: [],
-            // sortedChats : undefined,
             socket: window.SOCKET,
             rawChats: undefined,
             users: [],
@@ -22,13 +20,14 @@ export default class Community extends React.Component{
             isTyping: false,
             whosTyping: [],
             bottom: true,
-            communityName: undefined
+            top: false,
+            communityName: undefined,
+            chatLoaded: 0
         }
     }
     
     componentDidMount() {
         this.loadChat()
-        // this.interval = setInterval(() => this.fetchChat(), 1000);
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -56,11 +55,59 @@ export default class Community extends React.Component{
                 socket.emit('typing', false, data)
             }
         }
+        if (this.state.chats !== prevState.chats) {
+            if (this.state.chats.length > 1) {
+                const top = document.getElementById('newTop')
+                top.scrollIntoView()
+            }
+            else if (this.state.chats.length === 1) {
+                document.getElementById('newTop').id = 'top'
+            }
+        }
     }
 
-    // componentWillUnmount() {
-    //     clearInterval(this.interval);
-    // }
+    async loadRawChat(firstTime = false) {
+        await axios.get(window.API_URL+'/community/'+this.props.selected)
+        .then(res => {
+            if (firstTime) this.setState({
+                communityName: res.data.name,
+                chatLoaded: 0
+            })
+            const increment = 30
+            const index = this.state.chatLoaded + increment
+            this.setState({
+                rawChats: res.data.chat.length > this.state.chatLoaded + increment ? res.data.chat.slice(res.data.chat.length - index, res.data.chat.length - this.state.chatLoaded) : res.data.chat.slice(0, res.data.chat.length - this.state.chatLoaded),
+                chatLoaded: res.data.chat.length > this.state.chatLoaded + increment ? index : undefined
+            })
+        })
+        const promises = this.state.rawChats.map(chat => {
+            if (chat.user !==  '')
+            // if (this.state.users.length !== 0)
+            return axios.get(window.API_URL+'/user/'+chat.user) // Optimize this
+            .then(user => {
+                if (!this.state.users.map( u => {return u._id}).includes(chat.user)) {
+                    const data = {
+                        _id: chat.user,
+                        name: user.data.name,
+                        picture: user.data.picture
+                    }
+                    this.setState({
+                        users: [...this.state.users, data]
+                    })
+                }
+            })
+        })
+        Promise.all(promises)
+        .then(() => {
+            this.processChat()
+            if (firstTime) {
+                this.fetchChat()
+                this.typingChat()
+                this.fetchUser()
+                setTimeout(this.scrollChat, 100)
+            }
+        })
+    }
 
     async loadChat() {
         if (parseInt(this.props.selected) > 3) {
@@ -72,84 +119,14 @@ export default class Community extends React.Component{
             const obj = {
                 token: token
             }
-            axios.post(window.API_URL+'/user/token', obj)
+            await axios.post(window.API_URL+'/user/token', obj)
             .then(res => {
                 this.setState({
                     user: res.data._id
                 })
             })
-            await axios.get(window.API_URL+'/community/'+this.props.selected)
-            .then(res => {
-                this.setState({
-                    rawChats: res.data.chat,
-                    communityName: res.data.name
-                })
-            })
-            const promises = this.state.rawChats.map(chat => {
-                if (chat.user !==  '')
-                return axios.get(window.API_URL+'/user/'+chat.user) // Optimize this
-                .then(user => {
-                    if (!this.state.users.map( u => {return u._id}).includes(chat.user)) {
-                        const data = {
-                            _id: chat.user,
-                            name: user.data.name,
-                            picture: user.data.picture
-                        }
-                        this.setState({
-                            users: [...this.state.users, data]
-                        })
-                    }
-                })
-            })
-            Promise.all(promises)
-            .then(() => {
-                this.processChat()
-                this.fetchChat()
-                this.typingChat()
-                this.fetchUser()
-            })
+            this.loadRawChat(true)
         }
-        // console.log(this.state.rawChats)
-        // if (parseInt(this.props.selected) > 3) {
-        //     this.setState({
-        //         unsortedChats: [],
-        //         sortedChats : undefined
-        //     })
-        //     const currentUser = localStorage.getItem("userSession")
-        //     if (currentUser)
-        //     axios.post(window.API_URL+'/user/token', JSON.parse(currentUser))
-        //     .then(res => {
-        //         this.setState({
-        //             user: res.data
-        //         })
-        //         axios.get(window.API_URL+'/community/'+this.props.selected)
-        //         .then(res => {
-        //             res.data.chat.map((x, index) => {
-        //                 if (x.user !== '' && this.state.unsortedChats !== [])
-        //                 axios.get(window.API_URL+'/user/'+x.user)
-        //                 .then(user => {
-        //                     this.setState({
-        //                         unsortedChats: [...this.state.unsortedChats, <Chat key={index} sender={x.user === this.state.user._id ? 'me' : 'other'} user={user.data} message={x.message} time={x.timestamp}/>]
-        //                     })
-        //                     this.setState({
-        //                         sortedChats: this.state.unsortedChats.sort((a, b) => {
-        //                             var x = parseInt(a.key); var y = parseInt(b.key);
-        //                             return ((x > y) ? 1 : ((x < y) ? -1 : 0))
-        //                         })
-        //                     })
-        //                     const bottom = document.getElementById('chat')
-        //                     bottom.scrollTop = bottom.scrollHeight
-        //                 })
-        //                 else this.setState({
-        //                     unsortedChats: [<Chat key={index} sender='' time={x.timestamp}/>],
-        //                     sortedChats: [<Chat key={index} sender='' time={x.timestamp}/>]
-        //                 })
-        //             })
-        //         })
-        //         .catch(err => console.log(err))
-        //     })
-        //     .catch(err => console.log(err))
-        //     }
     }
         
     fetchChat() {
@@ -166,27 +143,6 @@ export default class Community extends React.Component{
             })
             this.processChat()
         });
-        // if (parseInt(this.props.selected) > 3) {
-        //     if (this.state.sortedChats !== undefined) {
-        //         const lastChat = this.state.sortedChats[this.state.sortedChats.length -1]
-        //         const obj = {
-        //             timestamp: lastChat.props.time
-        //         }
-        //         axios.post(window.API_URL+'/community/chat/'+this.props.selected, obj)
-        //         .then(res => {
-        //             if (res.data)
-        //             axios.get(window.API_URL+'/user/'+res.data.user)
-        //             .then(user => {
-        //                 this.setState({
-        //                     sortedChats: [...this.state.sortedChats, <Chat key={parseInt(lastChat.key)+1} sender={res.data.user === this.state.user._id ? 'me' : 'other'} user={user.data} message={res.data.message} time={res.data.timestamp}/>]
-        //                 })
-        //                 const bottom = document.getElementById('chat')
-        //                 bottom.scrollTop = bottom.scrollHeight
-        //             })
-        //         })
-        //         .catch(err => console.log(err))
-        //     }
-        // }
     }
 
     fetchUser() {
@@ -211,24 +167,21 @@ export default class Community extends React.Component{
         })
     }
     
-    processChat() {
-        this.state.rawChats.slice(this.state.chats.length, this.state.rawChats.length).map((chat, index, array) => {
+    async processChat() {
+        let chats = []
+        await this.state.rawChats.map((chat, index, array) => {
             const user = this.state.users[this.state.users.map( u => {return u._id}).indexOf(chat.user)]
-            if (index !== 0)
-            if (new Date(array[index - 1].timestamp).getMinutes() === new Date(chat.timestamp).getMinutes() && array[index - 1].user === chat.user) {
-                // let chats = [...this.state.chats];
-                // let prevChat = {...chats[chats.length - 1]};
-                // // prevChat.props.message+='lol'
-                // console.log(prevChat)
-                this.setState({
-                    chats: [...this.state.chats, <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true}/>]
-                })
+            if (index !== 0 && new Date(array[index - 1].timestamp).getMinutes() === new Date(chat.timestamp).getMinutes() && array[index - 1].user === chat.user) {
+                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true} top={index === 0 ? true : false}/>)
             }
-            else this.setState({
-                chats: [...this.state.chats, <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false}/>]
-            })
+            else {
+                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false} top={index === 0 ? true : false}/>)
+            }
         })
-        this.scrollChat()
+        this.setState(prevState => ({
+            chats: [chats, ...prevState.chats]
+        }))
+        if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
     }
 
     scrollChat() {
@@ -247,8 +200,6 @@ export default class Community extends React.Component{
         }
         const socket = this.state.socket;
         socket.emit('chat', data);
-        // axios.post(window.API_URL+'/community/chat', obj)
-        // .then(() => this.fetchChat())
     }
 
     notificationChat = (title, option) => {
@@ -311,6 +262,12 @@ export default class Community extends React.Component{
             if (element.target.scrollHeight - element.target.scrollTop <= element.target.clientHeight) this.setState({
                 bottom: true
             })
+            else if (element.target.scrollTop <= 0 && !this.state.top) {
+                this.loadRawChat()
+                 this.setState({
+                    top: true
+                })
+            }
             else {
                 if (this.state.bottom)
                 this.setState({
@@ -330,7 +287,6 @@ export default class Community extends React.Component{
             this.props.mobile 
             ? <div>
                 <div id='chat' style={{height: 'calc(100vh - 200px)', overflowY: 'scroll'}}>
-                    {/* {this.state.sortedChats} */}
                     {this.state.chats}
                 </div>
                 <div className='typing'>
@@ -345,7 +301,6 @@ export default class Community extends React.Component{
             :
             <div>
                 <div id='chat' style={{height: 'calc(100vh - 50px)', overflowY: 'scroll'}} onScroll={onScroll.bind(this)}>
-                    {/* {this.state.sortedChats} */}
                     {this.state.chats}
                 </div>
                 <div className='typing'>
@@ -415,7 +370,6 @@ export default class Community extends React.Component{
     }
 
     render() {
-        // if (this.state.user !== undefined && this.state.unsortedChats !== []) {
         if (this.state.user !== undefined && this.state.rawChats !== undefined) {
             return this.state.chat === 'text'
             ? this.chat()

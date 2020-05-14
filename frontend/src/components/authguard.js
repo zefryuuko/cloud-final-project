@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Redirect } from "react-router-dom";
 import axios from 'axios';
  
 export default class AuthGuard extends React.Component {
@@ -50,6 +50,7 @@ export default class AuthGuard extends React.Component {
     
     componentWillUnmount() {
         // clearInterval(this.interval);
+        window.SOCKET.disconnect()
         window.removeEventListener('unhandledrejection', this.OAuth2_0)
     }
     
