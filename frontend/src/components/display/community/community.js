@@ -11,19 +11,18 @@ export default class Community extends React.Component{
         super(props);
     
         this.state = {
-            user: undefined,
             socket: window.SOCKET,
-            rawChats: undefined,
+            rawChats: [],
+            chatLoaded: 0,
+            user: undefined,
             users: [],
-            chats: [],
-            chat: 'text',
-            audio: null,
+            communityName: undefined,
             isTyping: false,
             whosTyping: [],
             bottom: true,
             top: false,
-            communityName: undefined,
-            chatLoaded: 0
+            chat: 'text',
+            audio: null,
         }
     }
     
@@ -32,12 +31,14 @@ export default class Community extends React.Component{
     }
 
     async componentDidUpdate(prevProps, prevState) {
+        // Detect if column has changed
         if (this.props.selected !== prevProps.selected) {
+            // Load chat
             await this.loadChat()
             if (parseInt(prevProps.selected) > 3) {
                 const data = {
                     _id: prevProps.selected,
-                    user: this.state.users[this.state.users.map( u => {return u._id}).indexOf(this.state.user)].name
+                    user: this.state.user.name
                 }
                 const socket = this.state.socket;
                 socket.emit('typing', false, data)
@@ -46,7 +47,7 @@ export default class Community extends React.Component{
         if (this.state.isTyping !== prevState.isTyping) {
             const data = {
                 _id: this.props.selected,
-                user: this.state.users[this.state.users.map( u => {return u._id}).indexOf(this.state.user)].name
+                user: this.state.user.name
             }
             const socket = this.state.socket;
             if (this.state.isTyping) {
@@ -56,22 +57,150 @@ export default class Community extends React.Component{
                 socket.emit('typing', false, data)
             }
         }
-        if (this.state.chats !== prevState.chats) {
-            if (this.state.chats.length > 1) {
-                const top = document.getElementById('newTop')
+        if (this.state.rawChats !== prevState.rawChats) {
+            if (this.state.rawChats.length > 30) {
+                const top = document.getElementById((30).toString())
                 if (top) top.scrollIntoView()
-            }
-            else if (this.state.chats.length === 1) {
-                document.getElementById('newTop').id = 'top'
             }
         }
     }
+    
+    async loadChat() {
+        if (parseInt(this.props.selected) > 3) {
+            // Flush saved raw chat if any from previous column
+            this.setState({
+                rawChats: [],
+                chatLoaded: 0
+            })
+            const token = localStorage.getItem("token")
+            const obj = {
+                token: token
+            }
+            await axios.post(window.API_URL+'/user/token', obj)
+            .then(res => {
+                this.setState({
+                    user: res.data
+                })
+            })
+            this.getRawChat(true)
+        }
+    }
 
-    dragImage() {
-        window.addEventListener("drop", (e) => {
-            e.preventDefault();
-            this.uploadImage(e.dataTransfer.files[0])
-        }, false);
+    async getRawChat(firstTime = false) {
+        // Get raw chat
+        await axios.get(window.API_URL+'/community/'+this.props.selected)
+        .then(res => {
+            if (firstTime) this.setState({ communityName: res.data.name })
+            const increment = 30
+            const index = this.state.chatLoaded + increment
+
+            let rawChatsDump = [...this.state.rawChats]
+            const rawChats = res.data.chat.length > this.state.chatLoaded + increment ? res.data.chat.slice(res.data.chat.length - index, res.data.chat.length - this.state.chatLoaded) : res.data.chat.slice(0, res.data.chat.length - this.state.chatLoaded)
+            for (let i = rawChats.length - 1; i > - 1; i--) rawChatsDump = [rawChats[i], ...rawChatsDump]
+            
+            this.setState({
+                rawChats: rawChatsDump,
+                chatLoaded: res.data.chat.length > this.state.chatLoaded + increment ? index : undefined
+            })
+        })
+
+        // Get sender information
+        let senders = this.state.users.map(u => { return u._id })
+        this.state.rawChats.map(chat => {
+            if (chat.user !==  '')
+            if (!senders.includes(chat.user)) senders.push(chat.user)
+        })
+        let promises = []
+        if (this.state.users.length !== senders.length) 
+        promises = senders.map(userID => {
+            return axios.get(window.API_URL+'/user/'+userID)
+            .then(userData => {
+                const data = {
+                    _id: userID,
+                    name: userData.data.name,
+                    picture: userData.data.picture
+                }
+                this.setState(prevState => ({
+                    users: [...prevState.users, data]
+                }))
+            })
+        })
+        Promise.all(promises)
+        .then(() => {
+            if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
+            if (firstTime) {
+                this.fetchChat()
+                this.fetchUser()
+                this.fetchUserTyping()
+                this.scrollChat(500)
+                this.dragImage()
+            }
+        })
+    }
+        
+    fetchChat() {
+        const socket = this.state.socket;
+        socket.off('chat');
+        socket.on('chat', data => {
+            if (data.user !== this.state.user._id)
+            this.notificationChat(data.name + ' (' + data.community + ')',{
+                icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
+                body: data.message,
+            })
+            this.setState(prevState => ({ rawChats: [...prevState.rawChats, data]}))
+            if (this.state.bottom) this.scrollChat(500)
+        });
+    }
+
+    fetchUser() {
+        const socket = this.state.socket;
+        socket.off('update');
+        socket.on('update', data => {
+            // 1. Make a shallow copy of the items
+            let users = [...this.state.users];
+            // 2. Make a shallow copy of the item you want to mutate
+            let index = this.state.users.map( u => {return u._id}).indexOf(data._id)
+            let user = {...users[index]};
+            // 3. Replace the property you're intested in
+            if (data.update === 'name')
+            user.name = data.name
+            if (data.update === 'picture')
+            user.picture = data.picture
+            // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+            users[index] = user;
+            // 5. Set the state to our new copy
+            this.setState({users});
+        })
+    }
+    
+    fetchUserTyping() {
+        const socket = this.state.socket;
+        socket.off('typing');
+        socket.on('typing', (isTyping, data) => {
+            if (isTyping) {
+                if (data !== this.state.user.name)
+                this.setState({
+                    whosTyping: [...this.state.whosTyping, data]
+                })
+            }
+            else {
+                let newWhosTyping = [...this.state.whosTyping]
+                newWhosTyping.splice(newWhosTyping.indexOf(data), 1)
+                this.setState({
+                    whosTyping: newWhosTyping
+                })
+            }
+        });
+    }
+
+    scrollChat(interval = 0) {
+        const scrollToBottom = () => {
+            const bottom = document.getElementById('chat')
+            if (bottom) bottom.scrollTop = bottom.scrollHeight
+        }
+        const stayAtBottom = setInterval(scrollToBottom, 10)
+        const stop = () => { clearInterval(stayAtBottom) }
+        setTimeout(stop, interval);
     }
 
     uploadImage(selectedFile) {
@@ -92,143 +221,23 @@ export default class Community extends React.Component{
             })
         })
     }
-
-    async loadRawChat(firstTime = false) {
-        await axios.get(window.API_URL+'/community/'+this.props.selected)
-        .then(res => {
-            if (firstTime) this.setState({
-                communityName: res.data.name,
-                chatLoaded: 0
-            })
-            const increment = 30
-            const index = this.state.chatLoaded + increment
-            this.setState({
-                rawChats: res.data.chat.length > this.state.chatLoaded + increment ? res.data.chat.slice(res.data.chat.length - index, res.data.chat.length - this.state.chatLoaded) : res.data.chat.slice(0, res.data.chat.length - this.state.chatLoaded),
-                chatLoaded: res.data.chat.length > this.state.chatLoaded + increment ? index : undefined
-            })
-        })
-        const promises = this.state.rawChats.map(chat => {
-            if (chat.user !==  '')
-            // if (this.state.users.length !== 0)
-            return axios.get(window.API_URL+'/user/'+chat.user) // Optimize this
-            .then(user => {
-                if (!this.state.users.map( u => {return u._id}).includes(chat.user)) {
-                    const data = {
-                        _id: chat.user,
-                        name: user.data.name,
-                        picture: user.data.picture
-                    }
-                    this.setState({
-                        users: [...this.state.users, data]
-                    })
-                }
-            })
-        })
-        Promise.all(promises)
-        .then(() => {
-            this.processChat()
-            if (firstTime) {
-                this.fetchChat()
-                this.typingChat()
-                this.fetchUser()
-                this.dragImage()
-                this.scrollChat(500)
-            }
-        })
-    }
-
-    async loadChat() {
-        if (parseInt(this.props.selected) > 3) {
-            this.setState({
-                rawChats: undefined,
-                chats: []
-            })
-            const token = localStorage.getItem("token")
-            const obj = {
-                token: token
-            }
-            await axios.post(window.API_URL+'/user/token', obj)
-            .then(res => {
-                this.setState({
-                    user: res.data._id
-                })
-            })
-            this.loadRawChat(true)
-        }
-    }
-        
-    fetchChat() {
-        const socket = this.state.socket;
-        socket.off('chat');
-        socket.on('chat', data => {
-            if (data.user !== this.state.user)
-            this.notificationChat(data.name + ' (' + data.community + ')',{
-                icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
-                body: data.message,
-            })
-            this.setState({
-                rawChats: [data]
-            })
-            this.processChat(true)
-        });
-    }
-
-    fetchUser() {
-        const socket = this.state.socket;
-        socket.off('update');
-        socket.on('update', data => {
-            // 1. Make a shallow copy of the items
-            let users = [...this.state.users];
-            // 2. Make a shallow copy of the item you want to mutate
-            let index = this.state.users.map( u => {return u._id}).indexOf(data._id)
-            let user = {...users[index]};
-            // 3. Replace the property you're intested in
-            user.name = data.name
-            // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
-            users[index] = user;
-            // 5. Set the state to our new copy
-            this.setState({users});
-            this.setState({
-                chats: []
-            })
-            this.processChat()
-        })
-    }
     
-    async processChat(newChat = false) {
-        let chats = []
-        await this.state.rawChats.map((chat, index, array) => {
-            const user = this.state.users[this.state.users.map( u => {return u._id}).indexOf(chat.user)]
-            if (index !== 0 && new Date(array[index - 1].timestamp).getMinutes() === new Date(chat.timestamp).getMinutes() && array[index - 1].user === chat.user) {
-                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true} top={index === 0 && !newChat ? true : false}/>)
-            }
-            else {
-                chats.push(<Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false} top={index === 0 && !newChat ? true : false}/>)
-            }
-        })
-        this.setState(prevState => ({
-            chats: newChat ? [...prevState.chats, chats] : [chats, ...prevState.chats]
-        }))
-        if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
-        if (newChat) this.scrollChat(500)
+    dragImage() {
+            window.addEventListener("drop", (e) => {
+            e.preventDefault();
+            this.uploadImage(e.dataTransfer.files[0])
+        }, false);
     }
-
-    scrollChat(interval = 0) {
-        const scrollToBottom = () => {const bottom = document.getElementById('chat')
-        bottom.scrollTop = bottom.scrollHeight}
-        const stop = () => { clearInterval(stayAtBottom) }
-        const stayAtBottom = setInterval(scrollToBottom, 10)
-        setTimeout(stop, interval);
-    }
-    
+ 
     sendChat(text) {
         const data = {
             _id: this.props.selected,
-            user: this.state.user,
+            user: this.state.user._id,
             message: text,
             timestamp: new Date().toLocaleString(),
-            name: this.state.users[this.state.users.map( u => {return u._id}).indexOf(this.state.user)].name,
-            community: this.state.communityName
+            name: this.state.user.name,
+            community: this.state.communityName,
+            token: localStorage.getItem('token')
         }
         const socket = this.state.socket;
         socket.emit('chat', data);
@@ -255,24 +264,16 @@ export default class Community extends React.Component{
         // want to be respectful there is no need to bother them any more.
       }
 
-    typingChat() {
-        const socket = this.state.socket;
-        socket.off('typing');
-        socket.on('typing', (isTyping, data) => {
-            if (isTyping) {
-                // if (data !== this.state.user)
-                this.setState({
-                    whosTyping: [...this.state.whosTyping, data]
-                })
+    chatList() {
+        return this.state.rawChats.map((chat, index, array) => {
+            const user = this.state.users[this.state.users.map( u => {return u._id}).indexOf(chat.user)]
+            if (index !== 0 && new Date(array[index - 1].timestamp).getMinutes() === new Date(chat.timestamp).getMinutes() && array[index - 1].user === chat.user) {
+                return <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user._id ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true} id={index}/>
             }
             else {
-                let newWhosTyping = [...this.state.whosTyping]
-                newWhosTyping.splice(newWhosTyping.indexOf(data), 1)
-                this.setState({
-                    whosTyping: newWhosTyping
-                })
+                return <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user._id ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false} id={index}/>
             }
-        });
+        })
     }
     
     chat() {
@@ -295,8 +296,8 @@ export default class Community extends React.Component{
                 bottom: true
             })
             else if (element.target.scrollTop <= 0 && !this.state.top) {
-                this.loadRawChat()
-                 this.setState({
+                this.getRawChat()
+                this.setState({
                     top: true
                 })
             }
@@ -341,7 +342,7 @@ export default class Community extends React.Component{
                     Drag and drop image here
                 </div>
                 <div id='chat' style={{height: 'calc(100vh - 50px)', overflowY: 'scroll'}} onScroll={onScroll.bind(this)}>
-                    {this.state.chats}
+                    {this.chatList()}
                 </div>
                 <div className='typing'>
                     {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
@@ -352,11 +353,11 @@ export default class Community extends React.Component{
                     {!this.state.bottom && <button onClick={this.scrollChat.bind(this, 10)}>&#8595;</button>}
                 </div>
                 <div className='chatbox'>
-                    <label class="fileContainer">
+                    <label className="fileContainer">
                         &#x2295;
                         <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
                     </label>
-                    <input type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}  class="inputBox"/>
+                    <input type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}  className="inputBox"/>
                     {/* <button onClick={switchToAudio.bind(this)}>Audio chat</button>
                     <button onClick={switchToVideo.bind(this)}>Video chat</button> */}
                 </div>

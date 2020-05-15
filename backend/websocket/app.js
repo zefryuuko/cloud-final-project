@@ -26,10 +26,14 @@ io.on("connection", (socket) => {
   // interval = setInterval(() => fetchChat(c._id), 1000);
 
   socket.on('chat', data => {
-    console.log(socket.rooms)
-    axios.post(API_URL+'/community/chat', data)
-    io.to(data._id).emit('chat', data)
-    io.to(data._id).emit('list', data)
+    // console.log(socket.rooms)
+    axios.post(API_URL+'/chat', data)
+    // .then(res => {
+    //   if (res) {
+        io.to(data._id).emit('chat', data)
+        io.to(data._id).emit('list', data)
+    //   }
+    // })
   })
 
   socket.on('join', community => {

@@ -35,12 +35,12 @@ export default class list extends Component {
     }
 
     user() {
-        const token = localStorage.getItem("token")
-        const obj = {
-            token: token
-        }
         const drop = (id) => {
-            axios.delete(window.API_URL+'/user/'+id,  {headers: obj})
+            const token = localStorage.getItem("token")
+            const obj = {
+                token: token
+            }
+            axios.delete(window.API_URL+'/admin/user/'+id,  {headers: obj})
             .then(() => {
                 window.location.reload()
             })
@@ -56,12 +56,12 @@ export default class list extends Component {
     }
 
     community() {
-        const token = localStorage.getItem("token")
-        const obj = {
-            token: token
-        }
         const drop = (id) => {
-            axios.delete(window.API_URL+'/community/'+id,  {headers: obj})
+            const token = localStorage.getItem("token")
+            const obj = {
+                token: token
+            }
+            axios.delete(window.API_URL+'/admin/community/'+id,  {headers: obj})
             .then(() => {
                 window.location.reload()
             })

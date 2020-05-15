@@ -31,7 +31,7 @@ export default function Chat(args){
     }
     const message = formatify(args.message)
     return args.sender === 'me' ? 
-    <div className={args.recent ? isImage ? 'me' : 'me recent' : 'me'} id={args.top && 'newTop'}>
+    <div className={args.recent ? isImage ? 'me' : 'me recent' : 'me'} id={args.id}>
         <table style={{marginTop: 15, marginLeft: 15}}>
             <tbody>
                 <tr>
@@ -54,7 +54,7 @@ export default function Chat(args){
         </table>
     </div>
     : args.sender === 'other' ? 
-    <div className={args.recent ? isImage ? 'other' : 'other recent' : 'other'} id={args.top && 'newTop'}>
+    <div className={args.recent ? isImage ? 'other' : 'other recent' : 'other'} id={args.id}>
         <table style={{marginTop: 15, marginRight: 15}}>
             <tbody>
                 <tr>

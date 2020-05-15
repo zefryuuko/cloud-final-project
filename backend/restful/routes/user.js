@@ -104,7 +104,7 @@ router.route('/token').post((req, res) => {
     if (decoded !== undefined)
     User.findById(decoded._id, function(err, user) {
         if (user !== null)
-            if (user.password === decoded.password && user.key && decoded.key)
+            if (user.password === decoded.password && user.key === decoded.key)
                 res.send(user)
             else res.send(false)
         else res.send(false)
@@ -113,46 +113,69 @@ router.route('/token').post((req, res) => {
 });
 
 router.route('/update').post((req, res) => {
-    const _id = req.body._id;
+    const token = req.body.token;
+    let decoded = undefined;
+    try {
+        decoded = jwt.verify(token, 'secret');
+    } catch(err) {
+        res.send(false)
+    }
 
-    User.findById({ _id })
+    if (decoded !== undefined)
+    User.findById(decoded._id)
         .then(user => {
-            if (req.body.update === 'name') {
-                user.name = req.body.name;
-                user.save()
-            }
-            if (req.body.update === 'password') {
-                bcrypt.genSalt(10, function(err, salt) {
-                    bcrypt.hash(req.body.password, salt, function(err, hash) {
-                        user.password = hash
-                        user.save()
-                    });
-                })
-            }
-            if (req.body.update === 'picture') {
-                user.picture = req.body.picture;
-                user.pictureName = req.body.pictureName
-                user.save()
-            }
-            if (req.body.update === 'community') {
-                user.communities.push(req.body.community)
-                user.save()
-            }
-            if (req.body.update === 'community leave') {
-                user.communities.splice(user.communities.indexOf(req.body.community), 1)
-                user.save()
+            if (user.password === decoded.password && user.key === decoded.key) {
+                if (req.body.update === 'name') {
+                    user.name = req.body.name;
+                    user.save()
+                }
+                if (req.body.update === 'password') {
+                    bcrypt.genSalt(10, function(err, salt) {
+                        bcrypt.hash(req.body.password, salt, function(err, hash) {
+                            user.password = hash
+                            user.save()
+                        });
+                    })
+                }
+                if (req.body.update === 'picture') {
+                    user.picture = req.body.picture;
+                    user.pictureName = req.body.pictureName
+                    user.save()
+                }
+                if (req.body.update === 'community') {
+                    user.communities.push(req.body.community)
+                    user.save()
+                }
+                if (req.body.update === 'community leave') {
+                    user.communities.splice(user.communities.indexOf(req.body.community), 1)
+                    user.save()
+                }
             }
         })
         .catch(err => res.status(400).json('Error: ' + err))
     res.send(true)
 });
 
-router.route('/:_id').delete((req, res) => {
-    const _id = req.params._id;
+router.route('/').delete((req, res) => {
+    const token = req.headers.token;
+    let decoded = undefined;
+    try {
+        decoded = jwt.verify(token, 'secret');
+    } catch(err) {
+        res.status(401).send(false)
+    }
 
-    User.findByIdAndDelete({ _id })
-        .then(() => res.send(true))
-        .catch(err => res.status(400).json('Error: ' + err))
+    if (decoded !== undefined)
+    User.findById(decoded._id, function(err, user) {
+        if (user !== null)
+            if (user.password === decoded.password && user.key === decoded.key)
+            User.findByIdAndDelete( decoded._id )
+                .then(() => res.send(true))
+                .catch(err => res.status(400).json('Error: ' + err))
+            else res.send(false)
+        else res.send(false)
+    })
+    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/:_id').get((req, res) => {

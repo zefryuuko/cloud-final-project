@@ -21,7 +21,7 @@ export default class Home extends Component {
             // Change selected mode on load
             mode: JSON.parse(localStorage.getItem('client')).mode,
             // Change admin mode on load
-            adminMode: localStorage.getItem('admin')
+            adminMode: JSON.parse(localStorage.getItem('admin'))
         })
         // Detect mobile phone screen
         window.addEventListener("resize", this.isMobile.bind(this));
@@ -66,6 +66,11 @@ export default class Home extends Component {
             adminMode: childData,
             mode: prevState.mode === 'search' ? 'profile' : prevState.mode
         }))
+        const client = {
+            "mode": this.state.mode === 'search' ? 'profile' : this.state.mode,
+            "index": 1
+        }
+        localStorage.setItem("client", JSON.stringify(client))
         localStorage.setItem("admin", childData)
     }
 

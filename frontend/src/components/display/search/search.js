@@ -146,9 +146,10 @@ export default class Search extends React.Component{
                             _id: this.state.newCommunityID,
                             user: '',
                             message: this.state.user.name+'['+this.state.user._id+']'+' joined the game.',
-                            timestamp: new Date().toLocaleString()
+                            timestamp: new Date().toLocaleString(),
+                            token: localStorage.getItem('token')
                         }
-                        axios.post(window.API_URL+'/community/chat', obj)
+                        axios.post(window.API_URL+'/chat', obj)
                         const client = {
                             "mode": 'community',
                             "index": 1

@@ -14,7 +14,8 @@ export default class Profile extends React.Component{
             success: false,
             socket: window.SOCKET,
             communities: [],
-            selectedFile: null
+            selectedFile: null,
+            picture: undefined
         }
     }
 
@@ -39,6 +40,9 @@ export default class Profile extends React.Component{
             // if (res.data !== this.state.user) {
                 this.setState({
                     user: res.data
+                })
+                this.setState({
+                    picture: this.state.user.picture
                 })
                 const promises = this.state.user.communities.map(id => {
                     return axios.get(window.API_URL+'/community/'+id)
@@ -78,7 +82,7 @@ export default class Profile extends React.Component{
                 })            
                 let req = {
                     update: 'name',
-                    _id: this.state.user._id,
+                    token: localStorage.getItem('token'),
                     name: e.target.textContent
                 }
                 axios.post(window.API_URL+'/user/update', req)
@@ -113,7 +117,7 @@ export default class Profile extends React.Component{
             e.preventDefault();
             const req = {
                 update: 'password',
-                _id: this.state.user._id,
+                token: localStorage.getItem('token'),
                 password: this.state.password
             }
             axios.post(window.API_URL+'/user/update', req)
@@ -125,7 +129,11 @@ export default class Profile extends React.Component{
         }
     
         const deleteAccount = () => {
-            axios.delete(window.API_URL+'/user/'+this.state.user._id)
+            const token = localStorage.getItem("token")
+            const obj = {
+                token: token
+            }
+            axios.delete(window.API_URL+'/user/'+this.state.user._id, {headers: obj})
             .then(res => {
                 if (res.data) {
                     localStorage.clear()
@@ -140,8 +148,17 @@ export default class Profile extends React.Component{
             })
         }
 
-        const fileChangedHandler = e => {
-            this.setState({ selectedFile: e.target.files[0] })
+        const fileChangedHandler = (e) => {
+            e.preventDefault()
+            const selectedFile = e.target.files[0];
+            this.setState({ selectedFile: selectedFile })
+            const reader = new FileReader();
+    
+            reader.onload = function(event) {
+                this.setState({ picture: event.target.result })
+            }.bind(this);
+    
+            reader.readAsDataURL(selectedFile);
         }
         
         const uploadHandler = e => {
@@ -161,38 +178,34 @@ export default class Profile extends React.Component{
                     // gets the download url then sets the image from firebase as the value for the imgUrl key:
                     storage.ref('images/users').child(this.state.selectedFile.name).getDownloadURL()
                     .then(fireBaseUrl => {
-                        const req = {
+                        let req = {
                             update: 'picture',
-                            _id: this.state.user._id,
+                            token: localStorage.getItem('token'),
                             picture: fireBaseUrl,
                             pictureName: this.state.selectedFile.name
                         }
                         axios.post(window.API_URL+'/user/update', req)
                         .then(res => {
+                            req = {
+                                update: 'picture',
+                                _id: this.state.user._id,
+                                picture: fireBaseUrl,
+                                communities: this.state.user.communities
+                            }
+                            const socket = this.state.socket;
+                            socket.emit('update', req);
                             window.location.reload()
                         })
                     })
                 })
             })
-            
-            // const formData = new FormData()
-            // formData.append(
-            //     'image',
-            //     this.state.selectedFile,
-            //     this.state.selectedFile.name
-            // )
-            // axios.post('my-domain.com/file-upload', formData, {
-            //     onUploadProgress: progressEvent => {
-            //       console.log(progressEvent.loaded / progressEvent.total)
-            //     }
-            // })
         }
 
         return (
             <div className='profile'>
-                <img src={this.state.user.picture} />
+                <img src={this.state.picture} />
                 <input type="file" onChange={fileChangedHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
-                <button onClick={uploadHandler.bind(this)}>Upload!</button>
+                <button onClick={uploadHandler.bind(this)}>Save</button>
                 <hr/>
                 <div>
                     <p>Display name</p>

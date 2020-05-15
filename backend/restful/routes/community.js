@@ -15,27 +15,27 @@ router.route('/create').post((req, res) => {
     })
 });
 
-router.route('/update').post((req, res) => {
-    const _id = req.body._id;
+// router.route('/update').post((req, res) => {
+//     const _id = req.body._id;
 
-    Community.findById({ _id })
-        .then(c => {
-            if (req.body.update === 'name') {
-                c.name = req.body.name;
-                c.save()
-            }
-            if (req.body.update === 'description') {
-                c.description = req.body.description;
-                c.save()
-            }
-            if (req.body.update === 'picture') {
-                c.picture = req.body.picture;
-                c.save()
-            }
-        })
-        .catch(err => res.status(400).json('Error: ' + err))
-    res.send(true)
-});
+//     Community.findById({ _id })
+//         .then(c => {
+//             if (req.body.update === 'name') {
+//                 c.name = req.body.name;
+//                 c.save()
+//             }
+//             if (req.body.update === 'description') {
+//                 c.description = req.body.description;
+//                 c.save()
+//             }
+//             if (req.body.update === 'picture') {
+//                 c.picture = req.body.picture;
+//                 c.save()
+//             }
+//         })
+//         .catch(err => res.status(400).json('Error: ' + err))
+//     res.send(true)
+// });
 
 router.route('/:_id')
 .get((req, res) => {
@@ -45,31 +45,31 @@ router.route('/:_id')
     .then(c => res.send(c))
     .catch(err => res.status(400).json('Error: ' + err))
 })
-.delete((req, res) => {
-    const _id = req.params._id;
+// .delete((req, res) => {
+//     const _id = req.params._id;
 
-    Community.findByIdAndDelete({ _id })
-    .then(() => res.send(true))
-    .catch(err => res.status(400).json('Error: ' + err))
-});
+//     Community.findByIdAndDelete({ _id })
+//     .then(() => res.send(true))
+//     .catch(err => res.status(400).json('Error: ' + err))
+// });
 
-router.route('/chat').post((req, res) => {
-    const _id = req.body._id;
-    const user = req.body.user
-    const message = req.body.message
-    const timestamp = req.body.timestamp
+// router.route('/chat').post((req, res) => {
+//     const _id = req.body._id;
+//     const user = req.body.user
+//     const message = req.body.message
+//     const timestamp = req.body.timestamp
 
-    Community.findById(_id)
-    .then(c => {
-        c.chat.push({
-            'timestamp': timestamp,
-            'user': user,
-            'message': message
-        })
-        c.save()
-    })
-    .catch(err => res.status(400).json('Error: ' + err))
-});
+//     Community.findById(_id)
+//     .then(c => {
+//         c.chat.push({
+//             'timestamp': timestamp,
+//             'user': user,
+//             'message': message
+//         })
+//         c.save()
+//     })
+//     .catch(err => res.status(400).json('Error: ' + err))
+// });
 
 // router.route('/chat/:_id').post((req, res) => {
 //     const _id = req.params._id;
