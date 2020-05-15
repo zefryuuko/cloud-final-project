@@ -6,6 +6,11 @@ export default class Sidebar extends React.Component{
         this.props.modeCallback(mode);
     }
 
+    changeAdminMode() {
+        if (this.props.adminMode) this.props.adminCallback(false);
+        else this.props.adminCallback(true);
+    }
+
     render() {
         const sidebarStyle = {
             height: '100%',
@@ -46,6 +51,18 @@ export default class Sidebar extends React.Component{
             overflow: 'hidden',
             whiteSpace: 'nowrap'
         }
+
+        const adminStyle = {
+            backgroundColor: this.props.adminMode ? '#ffbf00' : 'transparent',
+            borderRadius: 2,
+            border: '1px solid #ffbf00',
+            color: this.props.adminMode ? 'black' : '#ffbf00',
+            fontFamily: 'Verdana',
+            fontSize: 8,
+            textDecoration: 'none',
+            marginLeft: 8,
+            marginTop: 10
+        }
     
         return (
             this.props.mobile ? 
@@ -64,9 +81,10 @@ export default class Sidebar extends React.Component{
             </div>
             :
             <div style={sidebarStyle}>
+                {this.props.admin && <button style={adminStyle} onClick={this.changeAdminMode.bind(this)}>Admin mode</button>}
                 <a href='#' title='Profile' onClick={() => this.changeMode('profile')} style={{filter: this.props.mode === 'profile' && 'brightness(2.0)'}}><img src={require('./contacts-64.png')} style={iconStyle}/></a>
                 <a href='#' title='Community' onClick={() => this.changeMode('community')} style={{filter: this.props.mode === 'community' && 'brightness(2.0)'}}><img src={require('./conference-64.png')} style={iconStyle}/></a>
-                <a href='#' title='Search community' onClick={() => this.changeMode('search')} style={{filter: this.props.mode === 'search' && 'brightness(2.0)'}}><img src={require('./search-13-64.png')} style={iconStyle}/></a>
+                {!this.props.adminMode && <a href='#' title='Search community' onClick={() => this.changeMode('search')} style={{filter: this.props.mode === 'search' && 'brightness(2.0)'}}><img src={require('./search-13-64.png')} style={iconStyle}/></a>}
                 <footer style={{bottom: 50, position:"absolute"}}>
                     <a href='/'  title='Log out' onClick={() => localStorage.clear()}><img src={require('./logout-64.png')} style={iconStyle}/></a>
                 </footer>

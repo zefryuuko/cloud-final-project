@@ -30,6 +30,8 @@ const userRouter = require('./routes/user')
 app.use('/user', userRouter)
 const communityRouter = require('./routes/community')
 app.use('/community', communityRouter)
+const adminRouter = require('./routes/admin')
+app.use('/admin', adminRouter)
 
 // Start backend
 app.listen(port, () => {

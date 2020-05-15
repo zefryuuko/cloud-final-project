@@ -15,7 +15,8 @@ export default class Search extends React.Component{
             name: undefined,
             description: undefined,
             picture: 'https://res.cloudinary.com/erizky/image/upload/v1588573978/community_mgshrs.png',
-            newCommunityID: undefined
+            newCommunityID: undefined,
+            pictureFile: undefined
         }
     }
 
@@ -112,11 +113,12 @@ export default class Search extends React.Component{
         )
     }
 
-    createCommunity(e) {
+    async createCommunity(e) {
         e.preventDefault()
         this.setState({
             isLoading: true
         })
+        await this.uploadImage()
         const req = {
             name: this.state.name,
             description: this.state.description,
@@ -169,9 +171,21 @@ export default class Search extends React.Component{
         })
     }
 
-    uploadImage(e) {
+    changeImage(e) {
         e.preventDefault()
-        const selectedFile = e.target.files[0]
+        const selectedFile = e.target.files[0];
+        this.setState({ pictureFile: selectedFile })
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            this.setState({ picture: event.target.result })
+        }.bind(this);
+
+        reader.readAsDataURL(selectedFile);
+    }
+
+    uploadImage() {
+        const selectedFile = this.state.pictureFile
         const uploadTask = storage.ref(`/images/groups/${selectedFile.name}`).put(selectedFile)
         uploadTask.on('state_changed', 
         (snapShot) => {
@@ -195,13 +209,13 @@ export default class Search extends React.Component{
             <div className='create'>
                 <img src={this.state.picture}/>
                 <br/>
-                <input name="file" type="file" accept="image/png,image/gif,image/jpeg" onChange={this.uploadImage.bind(this)}/>
+                <input name="file" type="file" accept="image/png,image/gif,image/jpeg" onChange={this.changeImage.bind(this)}/>
                 <br/>
                 <p>Community name</p>
                 <input type='text' name='name' onChange={this.onChange.bind(this)} maxLength='50'/>
                 <br/>
                 <p>Description</p>
-                <textarea type='text' name='description' onChange={this.onChange.bind(this)} />
+                <textarea type='text' name='description' onChange={this.onChange.bind(this)} maxLength='500'/>
                 <br/>
                 { this.state.isLoading ? '' : (
                     <button type="button" className="btn btn-success" onClick={this.createCommunity.bind(this)} disabled={this.state.hasJoin ? true : false}>

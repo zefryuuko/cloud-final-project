@@ -13,7 +13,6 @@ router.route('/create').post((req, res) => {
         if (err) return res.send(err);
         return res.send(result);
     })
-    .catch(err => res.status(400).json('Error: ' + err))
 });
 
 router.route('/update').post((req, res) => {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Sidebar from './sidebar/sidebar'
 import List from './list/list'
+import AdminList from './admin/list'
 
 export default class Home extends Component {
     constructor(props) {
@@ -10,14 +11,17 @@ export default class Home extends Component {
         this.state = {
             mode: '',
             search: '',
-            mobile: false
+            mobile: false,
+            adminMode: false
         }
     }
 
     componentDidMount() {
         this.setState({
             // Change selected mode on load
-            mode: JSON.parse(localStorage.getItem('client')).mode
+            mode: JSON.parse(localStorage.getItem('client')).mode,
+            // Change admin mode on load
+            adminMode: localStorage.getItem('admin')
         })
         // Detect mobile phone screen
         window.addEventListener("resize", this.isMobile.bind(this));
@@ -57,11 +61,19 @@ export default class Home extends Component {
         })
     }
 
+    adminCallback = (childData) => {
+        this.setState(prevState => ({
+            adminMode: childData,
+            mode: prevState.mode === 'search' ? 'profile' : prevState.mode
+        }))
+        localStorage.setItem("admin", childData)
+    }
+
     render() {
         return (
             <div>
-                <Sidebar modeCallback={this.modeCallback} mobile={this.state.mobile} mode={this.state.mode}/>
-                <List mode={this.state.mode} search={this.state.search} searchCallback={this.searchCallback} mobile={this.state.mobile}/>
+                <Sidebar modeCallback={this.modeCallback} mobile={this.state.mobile} mode={this.state.mode} admin={this.props.admin} adminCallback={this.adminCallback} adminMode={this.state.adminMode}/>
+                {this.state.adminMode ? <AdminList mode={this.state.mode}/> : <List mode={this.state.mode} search={this.state.search} searchCallback={this.searchCallback} mobile={this.state.mobile}/>}
             </div>
         )
     }

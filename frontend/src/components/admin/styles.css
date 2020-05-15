@@ -1,0 +1,44 @@
+/* admin div */
+.admin {
+    height: 100%;
+    width: calc(100% - 80px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin-left: 80px;
+    overflow-y: scroll;
+}
+.admin img {
+    border-radius: 50%;
+    width: 100px;
+}
+.admin button {
+    float: right;
+    margin-top: 35px;
+}
+.admin p {
+    display: inline;
+    margin-left: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* user div */
+.user {
+    padding: 15px;
+    background-color: rgb(255, 255, 255);
+}
+.user:hover {
+    filter: brightness(0.95);
+    cursor: pointer;
+}
+
+/* community div */
+.community {
+    padding: 15px;
+    background-color: rgb(255, 255, 255);
+}
+.community:hover {
+    filter: brightness(0.95);
+    cursor: pointer;
+}

@@ -1,6 +1,9 @@
 import React from 'react'
-import { BrowserRouter as Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
+
+import Login from "./login"
+import Home from "./home"
 
 var dragging = 0
 var dragZone;
@@ -10,7 +13,8 @@ export default class AuthGuard extends React.Component {
         super(props);
         this.state = { 
             authorized: false,
-            loading: true
+            loading: true,
+            admin: false
         };
     }
 
@@ -34,7 +38,8 @@ export default class AuthGuard extends React.Component {
             else this.setState({
                 // Authorize user
                 authorized: true,
-                loading: false
+                loading: false,
+                admin: res.data.admin ? true : false
             })
             // Cache user data received from OAuth2.0 server
             // localStorage.setItem("userCache", JSON.stringify(res.data))
@@ -95,8 +100,16 @@ export default class AuthGuard extends React.Component {
     }
     
     render() {
-        return this.state.loading
-        ? null : this.state.authorized
-        ? <this.props.component /> : <Redirect push to='/login'/>
+        return (
+            <Router>
+                <Switch>
+                    <Route path="/login" component={Login} />
+                    {this.state.loading
+                    ? null : this.state.authorized
+                    ? <Route path="/" render={(props) => <Home admin={this.state.admin} {...props} /> }/>
+                    : <Redirect push to='/login' />}
+                </Switch>
+            </Router>
+        )
     }
 }
