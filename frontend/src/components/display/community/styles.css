@@ -2,7 +2,7 @@
     border-top: 1px solid lightgray;
 }
 
-.chatbox .inputBox {
+.chatbox #chatbox {
     width: calc(100% - 50px);
     /* bottom: 0; */
     /* position: fixed; */

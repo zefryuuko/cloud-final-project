@@ -26,8 +26,25 @@ export default class Community extends React.Component{
         }
     }
     
-    componentDidMount() {
-        this.loadChat()
+    async componentDidMount() {
+        await this.loadChat()
+        this.dragImage()
+        this.fetchChat()
+        this.fetchUser()
+        this.fetchUserTyping()
+        this.retrieveUserTyping()
+        const socket = this.state.socket;
+        socket.on('reconnect', () => {
+            this.fetchChat()
+            this.fetchUser()
+            this.fetchUserTyping()
+            this.retrieveUserTyping()
+        })
+        // const data = {
+        //     _id: this.props.selected,
+        //     user: this.state.user._id
+        // }
+        // socket.emit('login', data)
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -41,7 +58,11 @@ export default class Community extends React.Component{
                     user: this.state.user.name
                 }
                 const socket = this.state.socket;
+                socket.off('typing_'+prevProps.selected)
+                this.fetchUserTyping()
                 socket.emit('typing', false, data)
+                document.getElementById('chatbox').value = ''
+                socket.emit('retrieve', this.props.selected)
             }
         }
         if (this.state.isTyping !== prevState.isTyping) {
@@ -70,7 +91,9 @@ export default class Community extends React.Component{
             // Flush saved raw chat if any from previous column
             this.setState({
                 rawChats: [],
-                chatLoaded: 0
+                chatLoaded: 0,
+                isTyping: false,
+                whosTyping: []
             })
             const token = localStorage.getItem("token")
             const obj = {
@@ -128,19 +151,12 @@ export default class Community extends React.Component{
         Promise.all(promises)
         .then(() => {
             if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
-            if (firstTime) {
-                this.fetchChat()
-                this.fetchUser()
-                this.fetchUserTyping()
-                this.scrollChat(500)
-                this.dragImage()
-            }
+            if (firstTime) this.scrollChat(500)
         })
     }
         
     fetchChat() {
         const socket = this.state.socket;
-        socket.off('chat');
         socket.on('chat', data => {
             if (data.user !== this.state.user._id)
             this.notificationChat(data.name + ' (' + data.community + ')',{
@@ -154,7 +170,6 @@ export default class Community extends React.Component{
 
     fetchUser() {
         const socket = this.state.socket;
-        socket.off('update');
         socket.on('update', data => {
             // 1. Make a shallow copy of the items
             let users = [...this.state.users];
@@ -175,8 +190,7 @@ export default class Community extends React.Component{
     
     fetchUserTyping() {
         const socket = this.state.socket;
-        socket.off('typing');
-        socket.on('typing', (isTyping, data) => {
+        socket.on('typing_'+this.props.selected, (isTyping, data) => {
             if (isTyping) {
                 if (data !== this.state.user.name)
                 this.setState({
@@ -190,6 +204,15 @@ export default class Community extends React.Component{
                     whosTyping: newWhosTyping
                 })
             }
+        });
+    }
+
+    retrieveUserTyping() {
+        const socket = this.state.socket;
+        socket.on('retrieve', data => {
+            this.setState({
+                whosTyping: data
+            })
         });
     }
 
@@ -324,16 +347,19 @@ export default class Community extends React.Component{
         return (
             this.props.mobile 
             ? <div>
-                <div id='chat' style={{height: 'calc(100vh - 200px)', overflowY: 'scroll'}}>
-                    {this.state.chats}
+                <div id='chat' style={{height: 'calc(100vh - 200px)', overflowY: 'scroll'}} onScroll={onScroll.bind(this)}>
+                    {this.chatList()}
                 </div>
                 <div className='typing'>
                     {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
                         return <p key={i}><b>{user}</b> is typing...</p>
                     })}
                 </div>
+                <div className='scroll'>
+                    {!this.state.bottom && <button onClick={this.scrollChat.bind(this, 10)}>&#8595;</button>}
+                </div>
                 <div className='chatboxMobile'>
-                <input type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
+                    <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
                 </div>
             </div>
             :
@@ -357,7 +383,7 @@ export default class Community extends React.Component{
                         &#x2295;
                         <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
                     </label>
-                    <input type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}  className="inputBox"/>
+                    <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
                     {/* <button onClick={switchToAudio.bind(this)}>Audio chat</button>
                     <button onClick={switchToVideo.bind(this)}>Video chat</button> */}
                 </div>

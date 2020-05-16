@@ -15,7 +15,9 @@ const io = socketIo(server);
 const axios = require('axios');
 const API_URL = 'http://mbp:3000'
 
-let interval;
+// let interval;
+let typingUsers = {}
+let onlineUsers = {}
 
 io.on("connection", (socket) => {
   // if (interval) {
@@ -24,6 +26,15 @@ io.on("connection", (socket) => {
   console.log("New client connected");
   
   // interval = setInterval(() => fetchChat(c._id), 1000);
+
+  socket.on('login', data => {
+    const community = onlineUsers[data._id]
+    if (community !== undefined) community[socket.id] = data.user
+    else {
+      onlineUsers[data._id] = {}
+      onlineUsers[data._id][socket.id] = data.user
+    }
+  })
 
   socket.on('chat', data => {
     // console.log(socket.rooms)
@@ -45,8 +56,32 @@ io.on("connection", (socket) => {
   });
 
   socket.on('typing', (isTyping, data) => {
-    io.to(data._id).emit('typing', isTyping, data.user)
+    const community = typingUsers[data._id]
+    if (isTyping) {
+      if (community !== undefined) community.push(data.user)
+      else typingUsers[data._id] = [data.user]
+    }
+    else {
+      if (community !== undefined) {
+        const index = community.indexOf(data.user)
+        if (index !== -1)
+        community.splice(index, 1)
+      }
+    }
+    io.emit('typing_'+data._id, isTyping, data.user)
   });
+
+  socket.on('retrieve', id => {
+    const communityTypingUsers = typingUsers[id]
+    // const communityOnlineUsers = Object.values(onlineUsers[id])
+
+    // console.log(id)
+    // console.log(typingUsers)
+    // console.log(communityTypingUsers)
+    
+    if (communityTypingUsers !== undefined)
+    socket.emit('retrieve', communityTypingUsers)
+  })
 
   socket.on('update', data => {
     for (let i = 0; i < data.communities.length; i++) {
@@ -57,6 +92,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("Client disconnected");
     // clearInterval(interval);
+    // delete onlineUsers[][socket.id]
   });
 });
 
