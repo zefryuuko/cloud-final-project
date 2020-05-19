@@ -62,9 +62,11 @@ export default class Login extends Component {
                     localStorage.setItem('token', res.data.token)
                     const client = {
                         "mode": 'search',
-                        "index": 1
+                        "index": 1,
+                        'view': false
                     }
                     localStorage.setItem("client", JSON.stringify(client))
+                    localStorage.setItem('server', 'ID')
                     window.location.href='/'
                 }
             }
@@ -104,9 +106,11 @@ export default class Login extends Component {
                     localStorage.setItem('token', res.data.token)
                     const client = {
                         "mode": res.data.new ? 'search' : 'community',
-                        "index": 1
+                        "index": 1,
+                        'view': false
                     }
                     localStorage.setItem("client", JSON.stringify(client))
+                    localStorage.setItem('server', 'ID')
                     window.location.href='/'
                 }
             }
@@ -136,8 +140,9 @@ export default class Login extends Component {
   render() {
     return (
     <div className='body'>
+        <span>YANTOO</span>
         <div className='form'>
-            <p>{this.state.mode === 'register' ? 'Create an account' : 'Welcome back!'}</p>
+            {/* <p>{this.state.mode === 'register' ? 'Create an account' : 'Welcome back!'}</p> */}
             <form onSubmit={this.onSubmit}>
                 <label style={{color: this.state.invalid === 'email' ? 'red' : this.state.invalid === 'email2' ? 'red' : ''}}>Email<i>{this.state.invalid === 'email' ? ' - Email does not exist.' : this.state.invalid === 'email2' && ' - Email already in use.'}</i></label>
                 <br />
@@ -157,9 +162,15 @@ export default class Login extends Component {
                 <br />
                 {/* <a>Forgot your password?</a> */}
 
-                <button type="submit" className="btn btn-primary" >{this.state.mode === 'register' ? 'Register' : 'Login'}</button>
+                <button type="submit" className="btn btn-light" >{this.state.mode === 'register' ? 'Register' : 'Login'}</button>
                 {this.state.mode === 'register' ? 'Already have' : 'Need'} an account? <a href='#' onClick={this.onClick}>{this.state.mode === 'register' ? 'Login' : 'Register'}</a>
             </form>
+        </div>
+        <div className="bird-container">
+            <div className="bird"></div>
+        </div>
+        <div className="bird-container-2">
+            <div className="bird"></div>
         </div>
     </div>
     )

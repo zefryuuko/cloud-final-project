@@ -1,9 +1,19 @@
 import React from 'react'
+import './styles.css'
 
 export default class Sidebar extends React.Component{
 
     changeMode(mode) {
         this.props.modeCallback(mode);
+        if (mode === 'community' && this.props.mode === mode) {
+            if (this.props.hide) this.props.hideCallback(false)
+            else this.props.hideCallback(true)
+        }
+        if (!this.props.mobile) {
+            document.getElementsByClassName('speech-bubble')[0].style.display = 'none'
+            document.getElementsByClassName('speech-bubble')[0].style.opacity = 0
+            document.getElementsByClassName('speech-bubble')[0].style.left = '110px'
+        }
     }
 
     changeAdminMode() {
@@ -12,81 +22,30 @@ export default class Sidebar extends React.Component{
     }
 
     render() {
-        const sidebarStyle = {
-            height: '100%',
-            width: 80,
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            backgroundColor: 'rgb(40, 40, 40)',
-            overflowX: 'hidden',
-            // paddingTop: 60,
-        }
-    
-        const iconStyle = {
-            marginLeft: 18,
-            marginTop: 50,
-            width:'50%'
-        }
-
-        // code is taken and modified from: https://www.youtube.com/watch?v=uHL6aeWUEQQ
-        const sidebarStyleMobile = {
-            position: 'fixed',
-            bottom: 0,
-            width: '100%',
-            height: 80,
-            backgroundColor: 'rgb(40, 40, 40)',
-            display: 'flex',
-            overflowX: 'auto',
-            paddingLeft: 15
-        }
-
-        const iconStyleMobile = {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexGrow: 1,
-            minWidth: '50px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap'
-        }
-
-        const adminStyle = {
-            backgroundColor: this.props.adminMode ? '#ffbf00' : 'transparent',
-            borderRadius: 2,
-            border: '1px solid #ffbf00',
-            color: this.props.adminMode ? 'black' : '#ffbf00',
-            fontFamily: 'Verdana',
-            fontSize: 8,
-            textDecoration: 'none',
-            marginLeft: 8,
-            marginTop: 10
-        }
-    
         return (
             this.props.mobile ? 
             <div>
-                <nav style={sidebarStyleMobile}>
-                    <div style={iconStyleMobile}>
-                        <a href='#' title='Profile' onClick={() => this.changeMode('profile')} style={{filter: this.props.mode === 'profile' && 'brightness(2.0)'}}><img src={require('./contacts-64.png')} style={{width: '70%'}}/></a>
+                <nav className='sidebarMobile'>
+                    <div className={this.props.mode === 'profile' ? 'iconMobile iconSelectedMobile' : 'iconMobile'}>
+                        <a href='#' title='Profile' onClick={() => this.changeMode('profile')}><img src={require('./contacts-64.png')}/></a>
                     </div>
-                    <div style={iconStyleMobile}>
-                        <a href='#' title='Community' onClick={() => this.changeMode('community')} style={{filter: this.props.mode === 'community' && 'brightness(2.0)'}}><img src={require('./conference-64.png')} style={{width: '80%'}}/></a>
+                    <div className={this.props.mode === 'community' ? 'iconMobile iconSelectedMobile' : 'iconMobile'}>
+                        <a href='#' title='Community' onClick={() => this.changeMode('community')}><img src={require('./conference-64.png')}/></a>
                     </div>
-                    <div style={iconStyleMobile}>
-                        <a href='#' title='Search community' onClick={() => this.changeMode('search')} style={{filter: this.props.mode === 'search' && 'brightness(2.0)'}}><img src={require('./search-13-64.png')} style={{width: '70%'}}/></a>
+                    <div className={this.props.mode === 'search' ? 'iconMobile iconSelectedMobile' : 'iconMobile'}>
+                        <a href='#' title='Search community' onClick={() => this.changeMode('search')}><img src={require('./search-13-64.png')}/></a>
                     </div>
                 </nav>
             </div>
             :
-            <div style={sidebarStyle}>
-                {this.props.admin && <button style={adminStyle} onClick={this.changeAdminMode.bind(this)}>Admin mode</button>}
-                <a href='#' title='Profile' onClick={() => this.changeMode('profile')} style={{filter: this.props.mode === 'profile' && 'brightness(2.0)'}}><img src={require('./contacts-64.png')} style={iconStyle}/></a>
-                <a href='#' title='Community' onClick={() => this.changeMode('community')} style={{filter: this.props.mode === 'community' && 'brightness(2.0)'}}><img src={require('./conference-64.png')} style={iconStyle}/></a>
-                {!this.props.adminMode && <a href='#' title='Search community' onClick={() => this.changeMode('search')} style={{filter: this.props.mode === 'search' && 'brightness(2.0)'}}><img src={require('./search-13-64.png')} style={iconStyle}/></a>}
+            <div className='sidebar'>
+                {this.props.admin && <a href='#' title='Admin' onClick={() => this.changeAdminMode()}><img src={!this.props.adminMode ? require('./crown-3-64.png') : require('./crown-3-64-2.png')} className='icon'/></a>}
+                <a href='#' title='Profile' onClick={() => this.changeMode('profile')}><img src={require('./contacts-64.png')} className={this.props.mode === 'profile' ? 'iconSelected' : 'icon'}/></a>
+                <a href='#' title='Community' onClick={() => this.changeMode('community')}><img src={require('./conference-64.png')} className={this.props.mode === 'community' ? 'iconSelected' : 'icon'}/></a>
+                <div className='speech-bubble'>Check out here!</div>
+                {!this.props.adminMode && <a href='#' title='Search community' onClick={() => this.changeMode('search')}><img src={require('./search-13-64.png')} className={this.props.mode === 'search' ? 'iconSelected' : 'icon'}/></a>}
                 <footer style={{bottom: 50, position:"absolute"}}>
-                    <a href='/'  title='Log out' onClick={() => localStorage.clear()}><img src={require('./logout-64.png')} style={iconStyle}/></a>
+                    <a href='/'  title='Log out' onClick={() => localStorage.clear()}><img src={require('./logout-64.png')} className='icon'/></a>
                 </footer>
             </div>
         )

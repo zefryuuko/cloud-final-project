@@ -1,34 +1,72 @@
 .selected {
-    background-color: rgb(220, 220, 220) !important
+    filter: brightness(1.5);
+}
+
+.profileWrapper {
+    /* background-color: rgba(0, 0, 0, 0.128); */
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.404);
+    backdrop-filter: blur(10px);
+    height: 100%;
+    /* padding-top: 30px; */
 }
 
 .profileStyle {
-    background-color: rgb(255, 255, 255)
+    display: flex;
+    transition: all 0.4s ease;
+    animation: fadein-jump 0.4s;
 }
 
 .profileStyle:hover {
-    filter: brightness(0.95);
+    filter: brightness(1.5);
+    transform: scale(1.02);
     cursor: pointer;
 }
 
+.profileStyle:active {
+    transform: scale(1.00);
+    transition: all 0.2s ease;
+}
+
 .profileStyle p {
+    color: darkgray;
     font-size: 24px;
     padding: 20px 40px;
-    margin: 0 !important;
-    font-weight: 500;
+    filter: drop-shadow(0 0 1rem black);
+}
+
+.searchBox {
+    width: calc(100% - 48px);
+    background-color: transparent;
+    border: none;
+    color: white;
+    margin: 20px 24px 0px;
+    border-bottom: 1px solid white;
+    height: 40px;
+    font-size: 0.9rem;
+}
+
+.communityWrapper {
+    margin: 24px;
+    /* background-color: rgba(0, 0, 0, 0.128); */
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.404);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
 }
 
 .communityStyle {
-    padding: 10px 0px;
-    background-color: rgb(255, 255, 255);
     display: flex;
+    padding: 10px 0px;
+    transition: all 0.4s ease;
 }
 
 .communityStyle img {
     width: 100px;
+    height: 100px;
+    border-radius: 50%;
 }
 
 .communityStyle .name {
+    color: darkgray;
     font-size: 20px;
     font-weight: bold;
     text-overflow: ellipsis;
@@ -36,17 +74,12 @@
     width: 300px;
 }
 
-.communityStyle:hover {
-    filter: brightness(0.95);
-    cursor: pointer;
-}
-
 .communityStyle .date {
     color: darkgray;
     text-align: right;
     position: absolute;
     right: 0;
-    margin-right: 10px;
+    margin-right: 36px;
 }
 
 .communityStyle .preview {
@@ -54,8 +87,18 @@
     font-weight: 500;
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 360px;
+    width: 340px;
     height: 54px;
+}
+
+.communityStyle:hover {
+    filter: brightness(1.5);
+    cursor: pointer;
+}
+
+.communityStyle:active {
+    filter: brightness(1.5);
+    transition: all 0.1s ease;
 }
 
 .row {
@@ -67,12 +110,21 @@
 }
 
 .searchStyle {
-    padding: 15px;
-    background-color: rgb(255, 255, 255);
+    padding: 10px 0px;
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.404);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    margin: 24px 24px 0px;
+    transition: all 0.4s ease;
 }
 
 .searchStyle img {
     width: 100px;
+    height: 100px;
+}
+
+.searchStyle .createIMG {
+    height: 0px !important;
 }
 
 .searchStyle p {
@@ -83,8 +135,19 @@
 }
 
 .searchStyle:hover {
-    filter: brightness(0.95);
+    filter: brightness(1.5);
+    background-color: rgba(255, 255, 255, 0.1);
     cursor: pointer;
+}
+
+.searchStyle:active {
+    filter: brightness(1.0);
+    background-color: rgba(255, 255, 255, 0.05);
+    transition: all 0.1s ease;
+}
+
+.searchStyle.selected {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .searchStyle .arrow {
@@ -96,9 +159,51 @@
 
 .searchStyle .create {
     display: inline-block;
-    padding: 28px 0px;
+    padding: 16px 0px;
 }
 
-.mobile {
-    border-bottom: 1px solid gray;
+.searchStyle .arrow2 {
+    float: right;
+    padding-top: 8px;
+    padding-right: 15px;
+    font-size: 30px;
+}
+
+.mobile img {
+    width: 60px;
+    height: 60px;
+    margin-top: 5px;
+}
+
+.mobile.profileStyle {
+    border-top: 1px solid gray;
+}
+
+.mobile.communityStyle {
+    padding: 0px;
+    height: 80px;
+}
+
+.mobile.communityStyle .name {
+    font-size: 16px;
+    color: white;
+    font-weight: 500;
+}
+
+.mobile.communityStyle .preview {
+    width: 40%;
+    height: 40px;
+    font-size: 14px;
+}
+
+.mobile.communityStyle .date {
+    font-size: 12px;
+}
+
+.mobile.searchStyle p {
+    margin-left: 0px;
+}
+
+.mobile.searchStyle .arrow2 {
+    padding-top: 16px;
 }

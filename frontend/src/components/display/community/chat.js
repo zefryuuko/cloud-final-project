@@ -1,7 +1,14 @@
 import React from 'react'
 import './styles.css'
 
+window.modalMode = (e) => {
+    var modal = document.getElementById("modal");
+    var modalImg = document.getElementById("modalImage");
+    modal.style.display = "block";
+    modalImg.src = e.src;
+}
 export default function Chat(args){
+
     let isImage = false
     const formatify = (text) => {
         // source: https://stackoverflow.com/questions/1500260/detect-urls-in-text-with-javascript
@@ -22,7 +29,7 @@ export default function Chat(args){
             if (!url.includes('http://') && !url.includes('https://')) realurl = 'http://' + url
             if (url.match(/\.(jpeg|jpg|gif|png)/) != null) {
                 isImage = true
-                return '<img src=' + realurl + ' onerror="this.onerror=null; this.src=\'https://res.cloudinary.com/erizky/image/upload/c_scale,w_113/v1589474238/unknown_ivqfpo.png\'" alt="" loading="lazy">';
+                return '<img src=' + realurl + ' onerror="this.onerror=null; this.src=\'https://res.cloudinary.com/erizky/image/upload/c_scale,w_113/v1589474238/unknown_ivqfpo.png\'" alt="" loading="lazy" onclick="modalMode(this)">';
             }
             else return '<a href="' + realurl + '" target="_blank">' + url + '</a>';
         })
@@ -31,8 +38,8 @@ export default function Chat(args){
     }
     const message = formatify(args.message)
     return args.sender === 'me' ? 
-    <div className={args.recent ? isImage ? 'me' : 'me recent' : 'me'} id={args.id}>
-        <table style={{marginTop: 15, marginLeft: 15}}>
+    <div className={args.mobile ? args.recent ? isImage ? 'me mobile' : 'me recent mobile' : 'me mobile' : args.recent ? isImage ? 'me' : 'me recent' : 'me'} id={args.id}>
+        <table>
             <tbody>
                 <tr>
                     <td>
@@ -54,8 +61,8 @@ export default function Chat(args){
         </table>
     </div>
     : args.sender === 'other' ? 
-    <div className={args.recent ? isImage ? 'other' : 'other recent' : 'other'} id={args.id}>
-        <table style={{marginTop: 15, marginRight: 15}}>
+    <div className={args.mobile ? args.recent ? isImage ? 'other mobile' : 'other recent mobile' : 'other mobile' : args.recent ? isImage ? 'other' : 'other recent' : 'other'} id={args.id}>
+        <table>
             <tbody>
                 <tr>
                     <td rowSpan='2'>
@@ -66,7 +73,7 @@ export default function Chat(args){
                     </td>
                     <td>
                         <p className='name'>{args.user.name === '' 
-                        ? 'This user has deleted this account' 
+                        ? 'User has deleted this account' 
                         : args.user.name}
                         </p>
                     </td>

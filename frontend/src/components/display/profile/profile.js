@@ -15,7 +15,9 @@ export default class Profile extends React.Component{
             socket: window.SOCKET,
             communities: [],
             selectedFile: null,
-            picture: undefined
+            picture: undefined,
+            areYouSure: false,
+            country: undefined
         }
     }
 
@@ -24,21 +26,24 @@ export default class Profile extends React.Component{
     }
 
     componentWillReceiveProps(nextProps) {
+        if (nextProps.selected !== this.props.selected)
         this.getUserData()
     }
     
     getUserData() {
         this.setState({
-            communities: []
+            communities: [],
+            areYouSure: false,
+            country: localStorage.getItem("server")
         })
         const token = localStorage.getItem("token")
         const obj = {
             token: token
         }
         axios.post(window.API_URL+'/user/token', obj)
-        .then(res => {
+        .then(async res => {
             // if (res.data !== this.state.user) {
-                this.setState({
+                await this.setState({
                     user: res.data
                 })
                 this.setState({
@@ -51,7 +56,8 @@ export default class Profile extends React.Component{
                             const data = {
                                 _id: community.data._id,
                                 name: community.data.name,
-                                picture: community.data.picture
+                                picture: community.data.picture,
+                                description: community.data.description
                             }
                             const socket = this.state.socket;
                             socket.emit('join', data._id)
@@ -70,7 +76,7 @@ export default class Profile extends React.Component{
     
     profile() {
         const onBlur = (e) => {
-            if (e.target.textContent === '') {
+            if (e.target.value === '') {
                 const target = e.currentTarget;
                 setTimeout(() => {
                     target.focus();
@@ -83,13 +89,13 @@ export default class Profile extends React.Component{
                 let req = {
                     update: 'name',
                     token: localStorage.getItem('token'),
-                    name: e.target.textContent
+                    name: e.target.value
                 }
                 axios.post(window.API_URL+'/user/update', req)
                 req = {
                     update: 'name',
                     _id: this.state.user._id,
-                    name: e.target.textContent,
+                    name: e.target.value,
                     communities: this.state.user.communities
                 }
                 const socket = this.state.socket;
@@ -101,18 +107,19 @@ export default class Profile extends React.Component{
             if (e.charCode === 13) {
                 e.target.blur()
             }
-            if (e.target.textContent.length === 20) e.preventDefault()
+            if (e.target.value.length === 20) e.preventDefault()
             // if (e.charCode == 32) {
-            //     e.preventDefault()
+                //     e.preventDefault()
             // }
         }
-    
+        
         const onClick = (e) => {
+            // e.target.style.width = e.target.value.length + "ch"
             this.setState({
                 showEditButton: false
             })
         }
-
+        
         const changePassword = (e) => {
             e.preventDefault();
             const req = {
@@ -128,18 +135,28 @@ export default class Profile extends React.Component{
             })
         }
     
-        const deleteAccount = () => {
-            const token = localStorage.getItem("token")
-            const obj = {
-                token: token
+        const deleteAccount = e => {
+            if (!this.state.areYouSure) {
+                e.target.innerHTML = 'Are you sure?'
+                this.setState({ areYouSure: true })
+                setTimeout(() => {
+                    document.getElementById('deleteAccount').innerHTML = 'Delete account'
+                    this.setState({ areYouSure: false })
+                }, 2000);
             }
-            axios.delete(window.API_URL+'/user/'+this.state.user._id, {headers: obj})
-            .then(res => {
-                if (res.data) {
-                    localStorage.clear()
-                    window.location.reload()
+            else {
+                const token = localStorage.getItem("token")
+                const obj = {
+                    token: token
                 }
-            })
+                axios.delete(window.API_URL+'/user/', {headers: obj})
+                .then(res => {
+                    if (res.data) {
+                        localStorage.clear()
+                        window.location.reload()
+                    }
+                })
+            }
         }
     
         const onChange = (e) => {
@@ -148,7 +165,7 @@ export default class Profile extends React.Component{
             })
         }
 
-        const fileChangedHandler = (e) => {
+        const fileChangedHandler = async (e) => {
             e.preventDefault()
             const selectedFile = e.target.files[0];
             this.setState({ selectedFile: selectedFile })
@@ -158,74 +175,138 @@ export default class Profile extends React.Component{
                 this.setState({ picture: event.target.result })
             }.bind(this);
     
-            reader.readAsDataURL(selectedFile);
+            await reader.readAsDataURL(selectedFile);
+            uploadHandler()
         }
         
-        const uploadHandler = e => {
-            e.preventDefault()
+        const uploadHandler = () => {
+            if (this.state.user.pictureName !== undefined)
             storage.ref('images/users').child(this.state.user.pictureName).delete()
-            .then(() => {
-                const uploadTask = storage.ref(`/images/users/${this.state.selectedFile.name}`).put(this.state.selectedFile)
-                uploadTask.on('state_changed', 
-                (snapShot) => {
-                    //takes a snap shot of the process as it is happening
-                    console.log(snapShot)
-                }, (err) => {
-                    //catches the errors
-                    console.log(err)
-                }, () => {
-                    // gets the functions from storage refences the image storage in firebase by the children
-                    // gets the download url then sets the image from firebase as the value for the imgUrl key:
-                    storage.ref('images/users').child(this.state.selectedFile.name).getDownloadURL()
-                    .then(fireBaseUrl => {
-                        let req = {
+            const uploadTask = storage.ref(`/images/users/${this.state.selectedFile.name}`).put(this.state.selectedFile)
+            uploadTask.on('state_changed', 
+            (snapShot) => {
+                //takes a snap shot of the process as it is happening
+                console.log(snapShot)
+            }, (err) => {
+                //catches the errors
+                console.log(err)
+            }, () => {
+                // gets the functions from storage refences the image storage in firebase by the children
+                // gets the download url then sets the image from firebase as the value for the imgUrl key:
+                storage.ref('images/users').child(this.state.selectedFile.name).getDownloadURL()
+                .then(fireBaseUrl => {
+                    let req = {
+                        update: 'picture',
+                        token: localStorage.getItem('token'),
+                        picture: fireBaseUrl,
+                        pictureName: this.state.selectedFile.name
+                    }
+                    axios.post(window.API_URL+'/user/update', req)
+                    .then(res => {
+                        req = {
                             update: 'picture',
-                            token: localStorage.getItem('token'),
+                            _id: this.state.user._id,
                             picture: fireBaseUrl,
-                            pictureName: this.state.selectedFile.name
+                            communities: this.state.user.communities
                         }
-                        axios.post(window.API_URL+'/user/update', req)
-                        .then(res => {
-                            req = {
-                                update: 'picture',
-                                _id: this.state.user._id,
-                                picture: fireBaseUrl,
-                                communities: this.state.user.communities
-                            }
-                            const socket = this.state.socket;
-                            socket.emit('update', req);
-                            window.location.reload()
-                        })
+                        const socket = this.state.socket;
+                        socket.emit('update', req);
                     })
                 })
             })
         }
 
-        return (
-            <div className='profile'>
-                <img src={this.state.picture} />
-                <input type="file" onChange={fileChangedHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
-                <button onClick={uploadHandler.bind(this)}>Save</button>
-                <hr/>
-                <div>
-                    <p>Display name</p>
-                    <p>Email</p>
-                </div>
-                <div className='edit'>
-                    {/* Need further testing */}
-                    <p className='name' contentEditable onClick={onClick.bind(this)} onKeyPress={onKeyPress.bind(this)} onBlur={onBlur.bind(this)}>{this.state.user.name}{this.state.showEditButton && <span>&#x270E;</span>}</p>
-                    <p>{this.state.user.email}</p>
-                </div>
-                <hr/>
-                <form onSubmit={changePassword.bind(this)}>
-                    New Password <input type="password" onChange={onChange.bind(this)} required/>
-                    {/* <input type="checkbox" onclick="myFunction()" />Show Password */}
-                    <input type="submit" value="Change Password"/>
-                </form>
-                {this.state.success && <p>Password successfully changed!</p>}
-                <button type="button" class="btn btn-danger" onClick={deleteAccount.bind(this)}>Delete account</button>
+        return this.props.mobile ? 
+            <div className='profile mobile'>
+                <label className="fileContainer">
+                    <img src={this.state.picture} />
+                    <div className='middle'>Change picture</div>
+                    <input type="file" onChange={fileChangedHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
+                </label>
+                <table>
+                    <tbody>
+                        <tr className='profileRow'>
+                            <td><b>Display name</b></td>
+                        </tr>
+                        <tr>
+                            <td><input type='text' className='name' onClick={onClick.bind(this)} onKeyPress={onKeyPress.bind(this)} onBlur={onBlur.bind(this)} defaultValue={this.state.user.name}/>{this.state.showEditButton && <span>&#x270E;</span>}</td>
+                        </tr>
+                        <tr className='profileRow'>
+                            <td><b>Email</b></td>
+                        </tr>
+                        <tr>
+                            <td>{this.state.user.email}</td>
+
+                        </tr>
+                        <tr className='profileRow'>
+                            <td><b>Verified</b></td>
+                        </tr>
+                        <tr>
+                            <td>{this.state.user.verified ? 'Verifed' : 'Email not verified'}</td>
+                        </tr>
+                        <tr className='profileRow'>
+                            <td><b>New Password</b></td>
+                        </tr>
+                            <td>
+                                <form onSubmit={changePassword.bind(this)}>
+                                    <input type="password" onChange={onChange.bind(this)} required/>
+                                    {/* <input type="checkbox" onclick="myFunction()" />Show Password */}
+                                    <button type="submit" class="btn btn-dark">Change Password</button>
+                                </form>
+                            </td>
+                            {this.state.success && <td><p>Password successfully changed!</p></td>}
+                        <tr>
+                        </tr>
+                        <tr className='profileRow'>
+                            <td colSpan='2'>
+                                <button type="button" class="btn btn-danger" id='deleteAccount' onClick={deleteAccount.bind(this)}>Delete account</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        )
+        :
+        <div className='profile'>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td rowSpan='5'>
+                                <label className="fileContainer">
+                                    <img src={this.state.picture} />
+                                    <div className='middle'>Change picture</div>
+                                    <input type="file" onChange={fileChangedHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
+                                </label>
+                            </td>
+                            <td><b>Display name</b></td>
+                            <td><input type='text' className='name' onClick={onClick.bind(this)} onKeyPress={onKeyPress.bind(this)} onBlur={onBlur.bind(this)} defaultValue={this.state.user.name}/>{this.state.showEditButton && <span>&#x270E;</span>}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Email</b></td>
+                            <td>{this.state.user.email}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Verified</b></td>
+                            <td>{this.state.user.verified ? 'Verifed' : 'Email not verified'}</td>
+                        </tr>
+                        <tr>
+                            <td><b>New Password</b></td>
+                            <td>
+                                <form onSubmit={changePassword.bind(this)}>
+                                    <input type="password" onChange={onChange.bind(this)} required/>
+                                    {/* <input type="checkbox" onclick="myFunction()" />Show Password */}
+                                    <button type="submit" class="btn btn-dark">Change Password</button>
+                                </form>
+                            </td>
+                                {this.state.success && <td><p>Password successfully changed!</p></td>}
+                        </tr>
+                        <tr>
+                            <td colSpan='2'>
+                                <button type="button" class="btn btn-danger" id='deleteAccount' onClick={deleteAccount.bind(this)}>Delete account</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
     }
 
     
@@ -235,6 +316,7 @@ export default class Profile extends React.Component{
                 update: 'community leave',
                 _id: this.state.user._id,
                 community: id,
+                token: localStorage.getItem('token')
             }
             const socket = this.state.socket;
             socket.emit('leave', req.community)
@@ -245,29 +327,43 @@ export default class Profile extends React.Component{
         }
         const communities = this.state.communities.map(c => {
             return <div className={this.props.mobile 
-                ? 'searchStyle mobile' 
-                : this.props.selected === 'yes' 
-                ? 'searchStyle selected' 
-                : 'searchStyle'}
-            >
-                <img src={c.picture} />
-                <p className='name'>{c.name}</p>
-                <button onClick={leave.bind(this, c._id)}>Leave</button>
-            </div>
+                    ? 'community mobile'
+                    : 'community'} key={c._id}>
+                    <img src={c.picture} />
+                    <p className='name'>{c.name}</p>
+                    <p className='description'>{c.description}</p>
+                    <button className="btn btn-danger" onClick={leave.bind(this, c._id)}>Leave</button>
+                </div>
         })
-        return (
-            <div className='community'>
-                {communities}
-            </div>
-        )
+        return communities
+    }
+
+    setting() {
+        const logout = () => {
+            localStorage.clear()
+            window.location.href='/'
+        }
+        const changeServer = e => {
+            localStorage.setItem('server', e.target.value)
+            window.location.reload()
+        }
+        return <div>
+            <button className="btn btn-danger" onClick={logout}>Logout</button>
+            <p><b>Server location:</b></p>
+            <select name="countries" onChange={changeServer.bind(this)}>
+                <option selected={this.state.country === 'ID' ? true : false} value="ID">🇮🇩 Indonesia</option>
+                <option selected={this.state.country === 'US' ? true : false} value="US">🇺🇸 United States</option>
+            </select>
+        </div>
     }
 
     render() {
         if (this.state.user === undefined) return null
         return (
-            <div>
+            <div className={this.props.mobile ? 'wrapperMobile' : 'wrapper'}>
                 {parseInt(this.props.selected) === 1 && this.profile()}
                 {parseInt(this.props.selected) === 2 && this.community()}
+                {parseInt(this.props.selected) === 3 && this.setting()}
             </div>
         )
     }

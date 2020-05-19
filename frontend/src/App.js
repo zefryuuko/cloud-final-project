@@ -1,12 +1,12 @@
 import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import socketIOClient from "socket.io-client";
 
 import AuthGuard from './components/authguard'
 
-window.API_URL = 'http://mbp:3000';
-// window.SOCKET_URL = 'http://mbp:4001';
-window.SOCKET = socketIOClient('http://mbp:4001')
+let vh = window.innerHeight * 0.01;
+document.documentElement.style.setProperty('--vh', `${vh}px`);
+let vw = window.innerWidth * 0.01;
+document.documentElement.style.setProperty('--vw', `${vw}px`);
 
 function App() {
   return <AuthGuard />

@@ -42,14 +42,15 @@ export default class list extends Component {
             }
             axios.delete(window.API_URL+'/admin/user/'+id,  {headers: obj})
             .then(() => {
-                window.location.reload()
+                this.getData()
             })
         }
         const users = this.state.users.map(c => {
-            return <div className='user'>
+            return <div className='user' key={c._id}>
                 <img src={c.picture} />
                 <p className='name'>{c.name}</p>
-                <button onClick={drop.bind(this, c._id)}>Delete</button>
+                <p className='email'>{c.email}</p>
+                <button className="btn btn-danger" onClick={drop.bind(this, c._id)}>Delete</button>
             </div>
         })
         return users
@@ -61,17 +62,17 @@ export default class list extends Component {
             const obj = {
                 token: token
             }
-            axios.delete(window.API_URL+'/admin/community/'+id,  {headers: obj})
+            axios.delete(window.API_URL+'/admin/communities/'+id,  {headers: obj})
             .then(() => {
-                window.location.reload()
+                this.getData()
             })
         }
         const communities = this.state.communities.map(c => {
-            return <div className='community'>
+            return <div className='community' key={c._id}>
                 <img src={c.picture} />
                 <p className='name'>{c.name}</p>
-                {/* <p className='description'>{c.description}</p> */}
-                <button onClick={drop.bind(this, c._id)}>Delete</button>
+                <p className='description'>{c.description}</p>
+                <button className="btn btn-danger" onClick={drop.bind(this, c._id)}>Delete</button>
             </div>
         })
         return communities

@@ -21,7 +21,7 @@ export default function SubList(args){
                         <div>
                             <img src={args.community.picture} />
                         </div>
-                        <div style={{marginTop: 15, marginLeft: 15}}>
+                        <div style={{margin: args.mobile ? '10px 0px 10px 15px' : '15px 0px 0px 15px'}}>
                             <div className='row'>
                                 <div className='column'>
                                     <p className='name'>{args.community.name}</p>
@@ -44,9 +44,9 @@ export default function SubList(args){
                     <div 
                     className={args.mobile ? 'searchStyle mobile' : args.selected === 'yes' ? 'searchStyle selected' : 'searchStyle'}
                     onClick={() => args.callback(args.id, args.name)}>
-                        <img src={args.picture} />
+                        <img className={args.id === 0 ? 'createIMG' : undefined} src={args.picture} />
                         <p className={args.id === 0 ? 'create' : undefined}>{args.name}</p>
-                        {args.id === 0 ? (<p className='arrow'>&#8853;</p>) : (<p className='arrow'>&#10095;</p>)}
+                        {args.id === 0 ? (<p className='arrow2'>&#8853;</p>) : (<p className='arrow'>&#10095;</p>)}
                     </div>
                 )
             }

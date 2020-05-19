@@ -1,25 +1,69 @@
+.chatDesktop {
+    height: calc(800px - 50px);
+    overflow-y: scroll;
+}
+
+.chatMobile {
+    height: calc((var(--vh, 1vh) * 100) - 150px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    animation: fadein 0.4s;
+    backdrop-filter: blur(4px);
+}
+
+.chatMobile p {
+    font-size: 16px;
+}
+
+.chatMobile .message img {
+    width: 200px;
+}
+
+.chat {
+    position: relative;
+    width: 600px;
+    height: 800px;
+    background-color: rgba(0, 0, 0, 0.128);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    filter: drop-shadow(0 0 1rem black);
+    transition: all 0.4s ease;
+    animation: fadein 0.4s
+}
+
+.expand {
+    width: 1200px !important;
+}
+
 .chatbox {
-    border-top: 1px solid lightgray;
+    border-top: 1px solid white;
+    color: white;
 }
 
 .chatbox #chatbox {
-    width: calc(100% - 50px);
-    /* bottom: 0; */
-    /* position: fixed; */
+    width: calc(100% - 43px);
     height: 50px;
     border: 0px;
-    /* padding-left: 10px; */
+    background-color: transparent;
+    color: white;
 }
 
-.chatboxMobile input {
-    width: 100%;
-    bottom: 0;
-    margin-bottom: 80px;
+.chatboxMobile {
+    border-top: 1px solid white;
+    color: white;
     position: fixed;
-    height: 60px;
-    /* border-top: 1px solid lightgray; */
-    border-left: 0px;
-    padding-left: 10px;
+    bottom: 0;
+    margin-bottom: 60px;
+    width: 100%;
+}
+
+.chatboxMobile #chatbox {
+    height: 40px;
+    width: calc(100% - 43px);
+    border: 0px;
+    background-color: transparent;
+    color: white;
 }
 
 input:focus {
@@ -32,24 +76,78 @@ input:focus {
 }
 
 .typing p {
-    background: linear-gradient(0deg, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(0deg, rgb(0, 0, 0) 40%, rgba(0, 0, 0, 0) 100%);
     padding: 10px;
-    display: table-cell;
+    display: flex;
+}
+
+.typing b {
+    float: left;
+    margin-right: 5px;
 }
 
 .scroll {
     position: absolute;
-    margin-top: -36px;
-    right: 12px;
+    margin-top: -46px;
+    right: 24px;
+}
+
+.scroll button {
+    border-radius: 50%;
+    width: 31px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    filter: drop-shadow(0 0 1rem black);
+    transition: all 0.4s ease;
+    animation: fadein 0.4s;
+}
+
+.scroll button:hover {
+    transform: scale(1.2);
+}
+
+.scroll button:active {
+    transform: scale(1.0);
+    transition: all 0.1s ease;
+}
+
+.scrollMobile {
+    position: absolute;
+    margin-top: -46px;
+    right: 24px;
+}
+
+.scrollMobile button {
+    border-radius: 50%;
+    padding: 4px 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    filter: drop-shadow(0 0 1rem black);
+    transition: all 0.4s ease;
+    animation: fadein 0.4s;
 }
 
 p {
     margin: 0;
+    color: white;
+}
+
+table {
+    margin-top: 15px;
+    margin-left: 15px;
+    display: flex;
 }
 
 .profilePic {
     width: 50px;
+    height: 50px;
     border-radius: 50%;
+    overflow: hidden;
+}
+
+.chatMobile .profilePic {
+    width: 30px;
+    height: 30px;
 }
 
 .name {
@@ -58,10 +156,19 @@ p {
     white-space: nowrap;
 }
 
+.chatMobile .name {
+    font-size: 12px;
+}
+
 .time {
     font-size: 14px;
     color: gray;
     margin-top: 4px;
+    white-space: nowrap;
+}
+
+.chatMobile .time {
+    font-size: 10px;
 }
 
 .message {
@@ -71,16 +178,33 @@ p {
     display: inline-block; */
 }
 
+.chatMobile .message {
+    font-size: 15px !important;
+}
+
 .message img {
     max-width: 400px;
+    animation: fadein 2s;
+    cursor: pointer;
+    margin: 5px 0px 10px;
+    /* transition: all 0.4s ease; */
 }
+
+/* .message img:hover {
+    transform:scale(2);
+    z-index: 1;
+} */
 
 .me {
     margin-right: 5px;
     margin-bottom: 10px;
-    background-color: rgb(255, 255, 255);
     text-align: right;
     float: right;
+    animation: fadein 1.2s;
+}
+
+.me.mobile {
+    margin-bottom: 0px;
 }
 
 .me table {
@@ -91,6 +215,11 @@ p {
 .me td {
     padding-right: 12px;
     vertical-align: top;
+    word-break: break-word;
+}
+
+.me.mobile td {
+    padding-right: 6px;
 }
 
 .me tr td:first-child {
@@ -102,18 +231,23 @@ p {
 }
 
 .me .time {
-    visibility: hidden;
+    opacity: 0;
+    transition: all 0.2s ease;
 }
 
 .me:hover .time:not(:hover) {
-    visibility: visible;
+    opacity: 1;
 }
 
 .other {
-    margin-left: 5px;
+    margin-left: -10px;
     margin-bottom: 10px;
-    background-color: rgb(255, 255, 255);
     float: left;
+    animation: fadein 1.2s;
+}
+
+.other.mobile {
+    margin-bottom: 0px;
 }
 
 .other table {
@@ -124,6 +258,11 @@ p {
 .other td {
     padding-left: 12px;
     vertical-align: top;
+    word-break: break-word;
+}
+
+.other.mobile td {
+    padding-left: 6px;
 }
 
 .other tr td:first-child {
@@ -135,17 +274,21 @@ p {
 }
 
 .other .time {
-    visibility: hidden;
+    opacity: 0;
+    transition: all 0.2s ease;
 }
 
 .other:hover .time:not(:hover) {
-    visibility: visible;
+    opacity: 1;
 }
 
 .recent {
     margin-top: -30px;
     margin-bottom: -10px;
-    background-color: transparent;
+}
+
+.recent.mobile {
+    margin-top: -20px;
 }
 
 .recent img {
@@ -173,10 +316,6 @@ p {
 .fileContainer [type=file] {
     cursor: pointer;
     display: block;
-    font-size: 999px;
-    filter: alpha(opacity=0);
-    min-height: 100%;
-    min-width: 100%;
     opacity: 0;
     position: absolute;
     right: 0;
@@ -186,13 +325,18 @@ p {
 
 #dragZone {
     position: fixed;
-    width: 100%;
-    height: 100%;
+    width: 600px;
+    height: 800px;
     display: none;
-    background-color: rgba(0, 0, 0, 0.5);
-    font-size: 30px;
-    font-weight: 600;
-    color: #fff;
+    background-color: rgba(0, 0, 0, 0.75);
+    font-size: 40px;
+    font-weight: 800;
     letter-spacing: 1px;
-    margin: auto;
+    text-align: center;
+    color: #fff;
+    border: 6px dashed gray;
+    animation: fadein 0.4s;
+    vertical-align: middle;
+    line-height: 800px;
+    z-index: 2;
 }

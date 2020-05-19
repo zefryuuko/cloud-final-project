@@ -58,6 +58,8 @@ export default class Search extends React.Component{
                 })
             })
             .catch(err => console.log(err))
+
+            this.setState({ community: undefined })
     
             if (parseInt(nextProps.selected) > 3)
             axios.get(window.API_URL+'/community/'+nextProps.selected)
@@ -80,6 +82,7 @@ export default class Search extends React.Component{
                 update: 'community',
                 _id: this.state.user._id,
                 community: this.state.community._id,
+                token: localStorage.getItem("token")
             }
             axios.post(window.API_URL+'/user/update', req)
             .then(res => {
@@ -88,6 +91,11 @@ export default class Search extends React.Component{
                         isLoading: false,
                         hasJoin: true
                     })
+                    if (!this.props.mobile) {
+                        document.getElementsByClassName('speech-bubble')[0].style.display = 'block'
+                        document.getElementsByClassName('speech-bubble')[0].style.opacity = 1
+                        document.getElementsByClassName('speech-bubble')[0].style.left = '92px'
+                    }
                     // setTimeout(() => {
                     //     localStorage.setItem('mode','community')
                     //     localStorage.setItem('index','1')
@@ -100,7 +108,7 @@ export default class Search extends React.Component{
 
     viewCommunity() {
         return (
-            <div className='view'>
+            <div className={this.props.mobile ? 'view mobile' : 'view'}>
                 <img src={this.state.community.picture} />
                 <p className='name'>{this.state.community.name}</p>
                 <p className='description'>{this.state.community.description}</p>
@@ -127,14 +135,11 @@ export default class Search extends React.Component{
         axios.post(window.API_URL+'/community/create', req)
         .then(res => {
             if (res.data) {
-                this.setState({
-                    isLoading: false,
-                    hasJoin: true
-                })
                 const req = {
                     update: 'community',
                     _id: this.state.user._id,
                     community: res.data._id,
+                    token: localStorage.getItem("token")
                 }
                 this.setState({
                     newCommunityID: res.data._id
@@ -142,6 +147,10 @@ export default class Search extends React.Component{
                 axios.post(window.API_URL+'/user/update', req)
                 .then(res => {
                     if (res.data) {
+                        this.setState({
+                            isLoading: false,
+                            hasJoin: true
+                        })
                         const obj = {
                             _id: this.state.newCommunityID,
                             user: '',
@@ -152,9 +161,15 @@ export default class Search extends React.Component{
                         axios.post(window.API_URL+'/chat', obj)
                         const client = {
                             "mode": 'community',
-                            "index": 1
+                            "index": 1,
+                            'hide': false
                         }
                         localStorage.setItem("client", JSON.stringify(client))
+                        if (!this.props.mobile) {
+                            document.getElementsByClassName('speech-bubble')[0].style.display = 'block'
+                            document.getElementsByClassName('speech-bubble')[0].style.opacity = 1
+                            document.getElementsByClassName('speech-bubble')[0].style.left = '92px'
+                        }
                         // setTimeout(() => {
                         //     localStorage.setItem('mode','community')
                         //     localStorage.setItem('index','1')
@@ -186,43 +201,49 @@ export default class Search extends React.Component{
     }
 
     uploadImage() {
-        const selectedFile = this.state.pictureFile
-        const uploadTask = storage.ref(`/images/groups/${selectedFile.name}`).put(selectedFile)
-        uploadTask.on('state_changed', 
-        (snapShot) => {
-            //takes a snap shot of the process as it is happening
-            // console.log(snapShot)
-        }, (err) => {
-            //catches the errors
-            console.log(err)
-        }, () => {
-            // gets the functions from storage refences the image storage in firebase by the children
-            // gets the download url then sets the image from firebase as the value for the imgUrl key:
-            storage.ref('images/groups').child(selectedFile.name).getDownloadURL()
-            .then(fireBaseUrl => {
-                this.setState({ picture: fireBaseUrl })
+        if (this.state.pictureFile !== undefined) {
+            const selectedFile = this.state.pictureFile
+            const uploadTask = storage.ref(`/images/groups/${selectedFile.name}`).put(selectedFile)
+            uploadTask.on('state_changed', 
+            (snapShot) => {
+                //takes a snap shot of the process as it is happening
+                // console.log(snapShot)
+            }, (err) => {
+                //catches the errors
+                console.log(err)
+            }, () => {
+                // gets the functions from storage refences the image storage in firebase by the children
+                // gets the download url then sets the image from firebase as the value for the imgUrl key:
+                storage.ref('images/groups').child(selectedFile.name).getDownloadURL()
+                .then(fireBaseUrl => {
+                    this.setState({ picture: fireBaseUrl })
+                })
             })
-        })
+        }
     }
 
     formCommunity() {
         return (
-            <div className='create'>
-                <img src={this.state.picture}/>
+            <div className={this.props.mobile ? 'createStyle mobile' : 'createStyle'}>
+                <div className={this.props.mobile ? 'perfection' : ''} style={{position: !this.props.mobile ? 'relative' : ''}}>
+                    <img src={this.state.picture}/>
+                    <label className={this.props.mobile ? 'fileContainer mobile' : 'fileContainer search'}>
+                        &#x2295;
+                        <input type="file" onChange={this.changeImage.bind(this)} accept="image/png,image/gif,image/jpeg"/>
+                    </label>
+                </div>
                 <br/>
-                <input name="file" type="file" accept="image/png,image/gif,image/jpeg" onChange={this.changeImage.bind(this)}/>
-                <br/>
-                <p>Community name</p>
-                <input type='text' name='name' onChange={this.onChange.bind(this)} maxLength='50'/>
-                <br/>
-                <p>Description</p>
-                <textarea type='text' name='description' onChange={this.onChange.bind(this)} maxLength='500'/>
-                <br/>
-                { this.state.isLoading ? '' : (
-                    <button type="button" className="btn btn-success" onClick={this.createCommunity.bind(this)} disabled={this.state.hasJoin ? true : false}>
-                        <b>{this.state.hasJoin ? 'Created!' : 'Create Community'}</b>
-                    </button>
-                )}
+                <form onSubmit={this.createCommunity.bind(this)}>
+                    <input className='inputName' type='text' name='name' onChange={this.onChange.bind(this)} maxLength='50' placeholder='Name' required/>
+                    <br/>
+                    <textarea type='text' name='description' onChange={this.onChange.bind(this)} maxLength='500' placeholder='Description' required/>
+                    <br/>
+                    { this.state.isLoading ? <div class="loader"></div> : (
+                        <button type="submit" className="btn btn-success" disabled={this.state.hasJoin ? true : false}>
+                            <b>{this.state.hasJoin ? 'Created!' : 'Create Community'}</b>
+                        </button>
+                    )}
+                </form>
             </div>
         )
     }

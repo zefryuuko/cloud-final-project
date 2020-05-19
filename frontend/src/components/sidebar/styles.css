@@ -1,0 +1,102 @@
+.sidebar {
+    height: 100%;
+    width: 80px;
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* background-color: rgb(40, 40, 40); */
+    /* padding-top: 60; */
+    box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.404);
+    backdrop-filter: blur(10px);
+    user-select: none;
+}
+
+.icon {
+    margin-left: 18px;
+    margin-top: 50px;
+    width: 50%;
+    transition: all 0.4s ease;
+}
+
+.icon:hover {
+    filter: brightness(150%) drop-shadow(0px 0px 1px rgb(255, 255, 255));
+}
+
+/* .icon:active {
+    filter: brightness(100%) drop-shadow(0px 0px 1px rgb(255, 255, 255));
+    transition: all 0.1s ease;
+} */
+
+.iconSelected {
+    margin-left: 18px;
+    margin-top: 50px;
+    width: 50%;
+    filter: brightness(200%) drop-shadow(0px 0px 3px rgb(255, 255, 255));
+}
+
+/* css is taken and modified from: https://www.youtube.com/watch?v=uHL6aeWUEQQ */
+.sidebarMobile {
+    width: 100%;
+    height: 60px;
+    z-index: 1;
+    position: fixed;
+    bottom: 0;
+    /* background-color: rgb(40, 40, 40); */
+    display: flex;
+    padding-left: 32px;
+    backdrop-filter: blur(10px);
+    user-select: none;
+}
+
+.iconMobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    min-width: 50px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.4s ease;
+}
+
+.iconMobile img {
+    width: 50%;
+}
+
+.iconSelectedMobile {
+    filter: brightness(200%) drop-shadow(0px 0px 3px rgb(255, 255, 255));
+}
+
+.speech-bubble {
+    opacity: 0;
+    display: none;
+	position: absolute;
+    background: rgba(246, 195, 66, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: .4em;
+    left: 110px;
+    margin-top: -48px;
+    padding: 6px 14px;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    width: 100px;
+    transition: all 0.4s ease;
+    animation: fadein 1.2s;
+}
+
+.speech-bubble:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 10px solid transparent;
+	border-right-color: rgba(246, 195, 66, 0.6);
+	border-left: 0;
+	margin-top: -10px;
+	margin-left: -10px;
+}

@@ -150,10 +150,10 @@ router.route('/update').post((req, res) => {
                     user.communities.splice(user.communities.indexOf(req.body.community), 1)
                     user.save()
                 }
+                res.send(true)
             }
         })
         .catch(err => res.status(400).json('Error: ' + err))
-    res.send(true)
 });
 
 router.route('/').delete((req, res) => {

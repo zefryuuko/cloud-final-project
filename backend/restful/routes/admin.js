@@ -16,7 +16,7 @@ router.route('/users').get((req, res) => {
     if (decoded !== undefined)
     User.findById(decoded._id, function(err, user) {
         if (user !== null)
-            if (user.password === decoded.password && user.key && decoded.key && user.admin)
+            if (user.password === decoded.password && user.key === decoded.key && user.admin)
             User.find()
             .then(users => {
                 res.send(users)
@@ -39,7 +39,7 @@ router.route('/communities').get((req, res) => {
     if (decoded !== undefined)
     User.findById(decoded._id, function(err, user) {
         if (user !== null)
-            if (user.password === decoded.password && user.key && decoded.key && user.admin)
+            if (user.password === decoded.password && user.key === decoded.key && user.admin)
             Community.find()
             .then(communities => {
                 res.send(communities)
@@ -63,7 +63,7 @@ router.route('/users/:_id').delete((req, res) => {
     if (decoded !== undefined)
     User.findById(decoded._id, function(err, user) {
         if (user !== null)
-            if (user.password === decoded.password && user.key && decoded.key && user.admin)
+            if (user.password === decoded.password && user.key === decoded.key && user.admin)
             User.findByIdAndDelete({ _id })
                 .then(() => res.send(true))
                 .catch(err => res.status(400).json('Error: ' + err))
@@ -86,7 +86,7 @@ router.route('/communities/:_id').delete((req, res) => {
     if (decoded !== undefined)
     User.findById(decoded._id, function(err, user) {
         if (user !== null)
-            if (user.password === decoded.password && user.key && decoded.key && user.admin)
+            if (user.password === decoded.password && user.key === decoded.key && user.admin)
             Community.findByIdAndDelete({ _id })
                 .then(() => res.send(true))
                 .catch(err => res.status(400).json('Error: ' + err))

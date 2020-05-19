@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch, Redirect} from "react-router-dom";
 import axios from 'axios';
+import socketIOClient from "socket.io-client";
 
 import Login from "./login"
 import Home from "./home"
@@ -49,8 +50,24 @@ export default class AuthGuard extends React.Component {
             loading: false
         })
     }
+
+    serverLocation() {
+        const country = localStorage.getItem('server')
+        if (country === 'ID') {
+            window.API_URL = 'http://xxx.xxx.xxx';
+            window.SOCKET = socketIOClient('http://xxx.xxx.xxx')
+        }
+        else if (country === 'US') {
+            window.API_URL = 'http://xxx.xxx.xxx';
+            window.SOCKET = socketIOClient('https://xxx.xxx.xxx')
+        }
+        if (country === null) {
+            window.API_URL = 'http://xxx.xxx.xxx';
+        }
+    }
     
-    componentDidMount() {
+    async componentDidMount() {
+        await this.serverLocation()
         this.OAuth2_0()
         window.addEventListener('unhandledrejection', this.OAuth2_0.bind(this));
 
@@ -58,7 +75,7 @@ export default class AuthGuard extends React.Component {
             dragZone = document.getElementById('dragZone')
             dragging++;
             if (dragZone) dragZone.style.display = 'block'
-            if (e.target.id != 'dragZone') {
+            if (e.target.id !== 'dragZone') {
               e.preventDefault();
               e.dataTransfer.effectAllowed = "none";
               e.dataTransfer.dropEffect = "none";
@@ -67,7 +84,7 @@ export default class AuthGuard extends React.Component {
         
         window.addEventListener("dragover", function(e) {
             e.preventDefault();
-            if (e.target.id != 'dragZone') {
+            if (e.target.id !== 'dragZone') {
                 e.dataTransfer.effectAllowed = "none";
                 e.dataTransfer.dropEffect = "none";
             }
@@ -76,7 +93,7 @@ export default class AuthGuard extends React.Component {
         window.addEventListener("dragleave", function(e) {
             dragging--;
             if (dragging === 0) if (dragZone) dragZone.style.display = 'none'
-            if (e.target.id != 'dragZone') {
+            if (e.target.id !== 'dragZone') {
                 e.preventDefault();
                 e.dataTransfer.effectAllowed = "none";
                 e.dataTransfer.dropEffect = "none";
@@ -86,7 +103,7 @@ export default class AuthGuard extends React.Component {
         window.addEventListener("drop", (e) => {
             dragging--;
             if (dragging === 0) if (dragZone) dragZone.style.display = 'none'
-            if (e.target.id != 'dragZone') {
+            if (e.target.id !== 'dragZone') {
                 e.preventDefault();
                 e.dataTransfer.effectAllowed = "none";
                 e.dataTransfer.dropEffect = "none";

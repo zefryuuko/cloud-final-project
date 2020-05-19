@@ -5,9 +5,311 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.5), 
+    rgba(0, 0, 0, 0.5)
+  ), 
+  url(https://images.pexels.com/photos/1261728/pexels-photo-1261728.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260) 
+  /* url(https://res.cloudinary.com/erizky/image/upload/v1589656712/foggy-mountains-nature-fog_kj0pps.jpg) */
+  no-repeat;
+  /* Keep the inherited background full size. */
+  background-attachment: fixed; 
+  background-size: cover;
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  animation: fadein 1.2s;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@keyframes fadein {
+  from {
+      opacity:0;
+  }
+  to {
+      opacity:1;
+  }
+}
+
+@keyframes fadein-jump {
+	from {
+		opacity:0;
+		transform: scale(1.05);
+	}
+	to {
+		opacity:1;
+		transform: scale(1);
+	}
+  }
+
+  @keyframes dramatic{
+	from {
+		opacity:0;
+		transform: scale(1.6);
+		letter-spacing: 1em;
+	}
+	to {
+		opacity:1;
+		transform: scale(1);
+		letter-spacing: 0.75em;
+	}
+  }
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.800); /* Black w/ opacity */
+  animation: fadein 0.4s;
+}
+
+.modal div {
+  width: 600px;
+  height: auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: auto;
+}
+
+@media (max-width: 600px) {
+    .modal div {
+		width: 100%;
+	  }
+}
+
+/* Modal Content (image) */
+.modal-content {
+  width: 100%;
+  height: auto;
+}
+
+.modal-content:hover {
+  cursor: pointer;
+}
+
+.loading {
+	display: flex;
+  }
+  .loading__circle {
+	width: 8px;
+	height: 8px;
+	background-color: #fff;
+	border-radius: 50%;
+	animation: loading 1s infinite;
+	-webkit-animation: loading 1s infinite;
+	margin-left: 10px;
+	margin-top: 10px;
+  }
+  .loading__circle:nth-child(2) {
+	animation-delay: 0.1s;
+	-webkit-animation-delay: 0.1s;
+  }
+  .loading__circle:nth-child(3) {
+	animation-delay: 0.2s;
+	-webkit-animation-delay: 0.2s;
+  }
+  
+  @keyframes loading {
+	0% {
+	  transform: scale(0.1);
+	}
+	100% {
+	  transform: scale(1);
+	}
+  }
+  @-webkit-keyframes loading {
+	0% {
+	  transform: scale(0.1);
+	}
+	100% {
+	  transform: scale(1);
+	}
+  }
+  .loader {
+	width: 80px;
+	height: 80px;
+	border: 7px solid;
+	background-color: transparent;
+	border-radius: 50%;
+	color: #f3f6f6;
+	border-top-color: transparent;
+	animation: loader 1.2s linear infinite;
+	-webkit-animation: loader 1.2s linear infinite;
+  }
+  
+  @keyframes loader {
+	to {
+	  transform: rotate(360deg);
+	}
+	33% {
+	  color: #90eee1;
+	}
+	66% {
+	  color: #6356e5;
+	}
+  }
+  @-webkit-keyframes loader {
+	to {
+	  transform: rotate(360deg);
+	}
+	33% {
+	  color: #90eee1;
+	}
+	66% {
+	  color: #6356e5;
+	}
+  }  
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+.container {
+	z-index: 1;
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	min-height: 35rem;
+	background-image: linear-gradient(to bottom,  rgba(255,168,76,0.6) 0%,rgba(255,123,13,0.6) 100%), url('https://images.unsplash.com/photo-1446824505046-e43605ffb17f');
+	background-blend-mode: soft-light;
+	background-size: cover;
+	background-position: center center;
+	padding: 2rem;
+}
+
+.bird {
+	background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/174479/bird-cells-new.svg);
+	background-size: auto 100%;
+	width: 22px;
+	height: 31px;
+	will-change: background-position;
+	
+	animation-name: fly-cycle;
+	animation-timing-function: steps(10);
+	animation-iteration-count: infinite;
+  animation-duration: 4s;
+  animation-delay: -0.5s;
+
+}
+
+.bird-container {
+	position: absolute;
+	bottom: 20%;
+	left: -10%;
+	transform: scale(0) translateX(-10vw);
+	will-change: transform;
+	
+	animation-name: fly-right-one;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+  animation-duration: 15s;
+  animation-delay: 0;
+	
+}
+
+.bird-container-2 {
+	position: absolute;
+	bottom: 30%;
+	left: -10%;
+	transform: scale(0) translateX(-10vw);
+	will-change: transform;
+	
+	animation-name: fly-right-two;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+  animation-duration: 16s;
+  animation-delay: 1;
+	
+}
+
+@keyframes fly-cycle {
+	
+	100% {
+		background-position: -900px 0;
+	}
+	
+}
+
+@keyframes fly-right-one {
+	
+	0% {
+		transform: scale(0.3) translateX(-10vw);
+	}
+	
+	10% {
+		transform: translateY(2vh) translateX(10vw) scale(0.4);
+	}
+	
+	20% {
+		transform: translateY(0vh) translateX(30vw) scale(0.5);
+	}
+	
+	30% {
+		transform: translateY(4vh) translateX(50vw) scale(0.6);
+	}
+	
+	40% {
+		transform: translateY(2vh) translateX(70vw) scale(0.6);
+	}
+	
+	50% {
+		transform: translateY(0vh) translateX(90vw) scale(0.6);
+	}
+	
+	60% {
+		transform: translateY(0vh) translateX(110vw) scale(0.6);
+	}
+	
+	100% {
+		transform: translateY(0vh) translateX(110vw) scale(0.6);
+	}
+	
+}
+
+@keyframes fly-right-two {
+	
+	0% {
+		transform: translateY(-2vh) translateX(-10vw) scale(0.5);
+	}
+	
+	10% {
+		transform: translateY(0vh) translateX(10vw) scale(0.4);
+	}
+	
+	20% {
+		transform: translateY(-4vh) translateX(30vw) scale(0.6);
+	}
+	
+	30% {
+		transform: translateY(1vh) translateX(50vw) scale(0.45);
+	}
+	
+	40% {
+		transform: translateY(-2.5vh) translateX(70vw) scale(0.5);
+	}
+	
+	50% {
+		transform: translateY(0vh) translateX(90vw) scale(0.45);
+	}
+	
+	51% {
+		transform: translateY(0vh) translateX(110vw) scale(0.45);
+	}
+	
+	100% {
+		transform: translateY(0vh) translateX(110vw) scale(0.45);
+	}
+	
 }

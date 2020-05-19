@@ -15,18 +15,21 @@ export default class Display extends React.Component{
     render() {
         const style = {
             height: '100%',
-            width: 'calc(100% - 580px)',
+            width: this.props.hide ? 'calc(100% - 80px)' : 'calc(100% - 580px)',
             position: 'fixed',
-            zIndex: 1,
             top: 0,
             left: 0,
-            marginLeft: 580,
-            padding: this.props.mode !== 'community' ? '40px 50px' : ''
+            marginLeft: this.props.hide ? 80 : 580,
+            transition: 'all 0.4s ease',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
         }
 
         const styleMobile = {
-            // padding: this.props.mode !== 'community' ? '40px 50px' : '',
-            position: 'fixed'
+            height: 'calc(100% - 60px)',
+            animation: 'fadein 0.4s'
         }
         
         return (
@@ -39,7 +42,7 @@ export default class Display extends React.Component{
             :
             <div style={style}>
                 {this.props.mode === 'profile' && <Profile selected={this.props.selected} mobile={false}/>}
-                {this.props.mode === 'community' && <Community selected={this.props.selected} mobile={false} community={this.props.community}/>}
+                {this.props.mode === 'community' && <Community selected={this.props.selected} mobile={false} community={this.props.community} hide={this.props.hide}/>}
                 {this.props.mode === 'search' && <Search selected={this.props.selected} mobile={false}/>}
             </div>
         )

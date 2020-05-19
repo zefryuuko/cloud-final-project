@@ -32,6 +32,7 @@ const adminValidator = (req, res, next) => {
 
 app.use(cors())
 app.use(express.json())
+// app.use(express.bodyParser({limit: '50mb'}))
 
 // Mongoose
 const uri = process.env.ATLAS_URI

@@ -6,8 +6,14 @@ export default function Back(args){
     }
 
     const navStyle = {
-        backgroundColor: 'rgb(40, 40, 40)',
-        height: 60
+        height: 50,
+        backdropFilter: 'blur(10px)',
+        filter: 'drop-shadow(0 0 1rem black)',
+        animation: 'fadein 0.4s',
+        boxShadow: '0 1rem 1rem 0 rgba(0, 0, 0, 0.404)',
+        position: 'fixed',
+        width: '100%',
+        zIndex: 2
     }
     
     const buttonStyle = {
@@ -29,8 +35,8 @@ export default function Back(args){
         textAlign: 'center'
     }
 
-    return <nav class="navbar text-center" style={navStyle}>
-      <span class="navbar-brand mb-0 h1" style={titleStyle}>{args.name}</span>
+    return <nav className="navbar text-center" style={navStyle}>
+      <span className="navbar-brand mb-0 h1" style={titleStyle}>{args.name}</span>
       <button style={buttonStyle} onClick={back}>&#x276E;</button>
   </nav>
 }

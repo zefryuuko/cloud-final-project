@@ -1,39 +1,174 @@
+.view {
+    position: relative;
+    width: 600px;
+    height: 800px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    filter: drop-shadow(0 0 1rem black);
+    transition: all 0.4s ease;
+    animation: fadein 0.4s;
+    text-align: center;
+    justify-content: center;
+    margin: auto;
+    padding-top: 100px;
+}
+
+.view.mobile {
+    height: calc((var(--vh, 1vh) * 100) - 110px);
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    background-color: transparent;
+    padding-top: 50px;
+    overflow: hidden;
+}
+
 .view img {
     width: 300px;
 }
 
+.view.mobile img {
+    width: 200px;
+}
+
 .view .name {
-    font-size: 34px;
+    font-size: 4vw;
     font-weight: bold;
     overflow:hidden; 
     white-space:nowrap; 
     text-overflow: ellipsis;
 }
 
+.view.mobile .name {
+    font-size: 40px !important;
+}
+
 .view .description {
-    
+    margin-bottom: 100px;
 }
 
-.view {
-    width: 25%;
+.view.mobile .description {
+    margin-bottom: 0px;
+}
+
+.view button {
+    position: absolute;
+    bottom: 100;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 200px;
+    font-size: 20px;
+}
+
+.view.mobile button {
+    position: fixed;
+    bottom: 100px;
+}
+
+.createStyle {
+    position: relative;
+    width: 600px;
+    height: 800px;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    filter: drop-shadow(0 0 1rem black);
+    transition: all 0.4s ease;
+    animation: fadein 0.4s;
     text-align: center;
+    justify-content: center;
+    margin: auto;
+    padding-top: 100px;
 }
 
-.create img {
+.createStyle.mobile {
+    height: calc((var(--vh, 1vh) * 100) - 110px);
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    background-color: transparent;
+    padding-top: 50px;
+    overflow: hidden;
+}
+
+.createStyle img {
     width: 300px;
+    height: 300px;
 }
 
-.create p {
-    font-size: 34px;
+.createStyle.mobile img {
+    width: 200px;
+    height: 200px;
+}
+
+.createStyle .inputName {
+    font-size: 4vw;
     font-weight: bold;
-    margin-top: 30px;
-}
-
-.create {
-    width: 50%;
     text-align: center;
+    background-color: transparent;
+    border: none;
+    width: 400px;
+    color: white;
 }
 
-.create button {
-    margin-top: 40px;
+.createStyle.mobile .inputName {
+    font-size: 40px;
+}
+
+.createStyle textarea {
+    background-color: transparent;
+    border: none;
+    color: white;
+    width: 400px;
+    height: 116px;
+}
+
+.createStyle.mobile textarea {
+    margin: 0px 50px;
+}
+
+.createStyle textarea:focus {
+    outline: none;
+}
+
+.createStyle button {
+    position: absolute;
+    bottom: 100;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    width: 240px;
+    font-size: 20px;
+}
+
+.createStyle.mobile button {
+    position: fixed;
+    bottom: 100px;
+}
+
+.fileContainer.search {
+    position: absolute;
+    color: white !important;
+    font-size: 64px;
+    bottom: 0;
+    margin: 0;
+    right: 150px;
+}
+
+.perfection {
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+}
+
+.createStyle.mobile .fileContainer {
+    position: absolute;
+    margin: 0px;
+    bottom: 0;
+    color: white;
+    font-size: 64px;
+    right: 0;
 }

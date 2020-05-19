@@ -2,9 +2,13 @@ import React from 'react'
 import axios from 'axios'
 import {storage} from "../../../firebase/firebase"
 import './styles.css'
-
+import smoothscroll from 'smoothscroll-polyfill';
+ 
 import Chat from './chat'
 import AudioAnalyser from './AudioVisualiser/AudioAnalyser';
+
+// kick off the polyfill!
+smoothscroll.polyfill();
 
 export default class Community extends React.Component{
     constructor(props) {
@@ -19,7 +23,7 @@ export default class Community extends React.Component{
             communityName: undefined,
             isTyping: false,
             whosTyping: [],
-            bottom: true,
+            bottom: false,
             top: false,
             chat: 'text',
             audio: null,
@@ -28,7 +32,8 @@ export default class Community extends React.Component{
     
     async componentDidMount() {
         await this.loadChat()
-        this.dragImage()
+        window.addEventListener("drop", this.dropImage);
+        window.addEventListener('paste', this.pasteImage);
         this.fetchChat()
         this.fetchUser()
         this.fetchUserTyping()
@@ -84,6 +89,11 @@ export default class Community extends React.Component{
                 if (top) top.scrollIntoView()
             }
         }
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('drop', this.dropImage)
+        window.removeEventListener('paste', this.pasteImage)
     }
     
     async loadChat() {
@@ -151,20 +161,24 @@ export default class Community extends React.Component{
         Promise.all(promises)
         .then(() => {
             if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
-            if (firstTime) this.scrollChat(500)
+            if (firstTime) this.scrollToBottom()
         })
     }
         
     fetchChat() {
         const socket = this.state.socket;
         socket.on('chat', data => {
+            if (this.state.user !== undefined)
             if (data.user !== this.state.user._id)
             this.notificationChat(data.name + ' (' + data.community + ')',{
                 icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
                 body: data.message,
             })
             this.setState(prevState => ({ rawChats: [...prevState.rawChats, data]}))
-            if (this.state.bottom) this.scrollChat(500)
+            if (document.getElementById('chat') !== null) {
+                if (this.state.bottom) this.scrollToBottom()
+                else document.getElementById('chat').scrollTop = this.state.scrollPosition
+            }
         });
     }
 
@@ -216,40 +230,40 @@ export default class Community extends React.Component{
         });
     }
 
-    scrollChat(interval = 0) {
-        const scrollToBottom = () => {
-            const bottom = document.getElementById('chat')
-            if (bottom) bottom.scrollTop = bottom.scrollHeight
-        }
-        const stayAtBottom = setInterval(scrollToBottom, 10)
-        const stop = () => { clearInterval(stayAtBottom) }
-        setTimeout(stop, interval);
+    scrollToBottom() {
+        document.getElementById('chat').scroll({ top: document.getElementById('chat').scrollHeight, left: 0, behavior: 'smooth' });
     }
 
-    uploadImage(selectedFile) {
-        const uploadTask = storage.ref(`/images/groups/`+this.props.selected+`/${selectedFile.name}`).put(selectedFile)
-        uploadTask.on('state_changed', 
-        (snapShot) => {
-            //takes a snap shot of the process as it is happening
-            // console.log(snapShot)
-        }, (err) => {
-            //catches the errors
-            console.log(err)
-        }, () => {
-            // gets the functions from storage refences the image storage in firebase by the children
-            // gets the download url then sets the image from firebase as the value for the imgUrl key:
-            storage.ref('images/groups/'+this.props.selected).child(selectedFile.name).getDownloadURL()
-            .then(fireBaseUrl => {
-                this.sendChat(fireBaseUrl)
+    uploadImage(selectedFiles) {
+        for (let i = 0; i < selectedFiles.length; i++) {
+            const selectedFile = selectedFiles[i]
+            const uploadTask = storage.ref(`/images/groups/`+this.props.selected+`/${selectedFile.name}`).put(selectedFile)
+            uploadTask.on('state_changed', 
+            (snapShot) => {
+                //takes a snap shot of the process as it is happening
+                // console.log(snapShot)
+            }, (err) => {
+                //catches the errors
+                console.log(err)
+            }, () => {
+                // gets the functions from storage refences the image storage in firebase by the children
+                // gets the download url then sets the image from firebase as the value for the imgUrl key:
+                storage.ref('images/groups/'+this.props.selected).child(selectedFile.name).getDownloadURL()
+                .then(fireBaseUrl => {
+                    this.sendChat(fireBaseUrl)
+                })
             })
-        })
+        }
     }
     
-    dragImage() {
-            window.addEventListener("drop", (e) => {
-            e.preventDefault();
-            this.uploadImage(e.dataTransfer.files[0])
-        }, false);
+    dropImage = (e) => {
+        e.preventDefault();
+        this.uploadImage(e.dataTransfer.files)
+    }
+
+    pasteImage = (e) => {
+        e.preventDefault();
+        this.uploadImage(e.clipboardData.files)
     }
  
     sendChat(text) {
@@ -291,10 +305,10 @@ export default class Community extends React.Component{
         return this.state.rawChats.map((chat, index, array) => {
             const user = this.state.users[this.state.users.map( u => {return u._id}).indexOf(chat.user)]
             if (index !== 0 && new Date(array[index - 1].timestamp).getMinutes() === new Date(chat.timestamp).getMinutes() && array[index - 1].user === chat.user) {
-                return <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user._id ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true} id={index}/>
+                return <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user._id ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={true} id={index} mobile={this.props.mobile}/>
             }
             else {
-                return <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user._id ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false} id={index}/>
+                return <Chat key={index} sender={user === undefined ? '' : chat.user === this.state.user._id ? 'me' : 'other'} user={user} message={chat.message} time={chat.timestamp} recent={false} id={index} mobile={this.props.mobile}/>
             }
         })
     }
@@ -315,6 +329,10 @@ export default class Community extends React.Component{
             else this.setState({ isTyping: false })
         }
         const onScroll = (element) => {
+            this.setState({
+                scrollPosition: element.target.scrollTop
+            })
+            element.preventDefault()
             if (element.target.scrollHeight - element.target.scrollTop <= element.target.clientHeight) this.setState({
                 bottom: true
             })
@@ -333,7 +351,7 @@ export default class Community extends React.Component{
         }
         const uploadHandler = e => {
             e.preventDefault()
-            const selectedFile = e.target.files[0]
+            const selectedFile = e.target.files
             this.uploadImage(selectedFile)
         }
 
@@ -347,41 +365,55 @@ export default class Community extends React.Component{
         return (
             this.props.mobile 
             ? <div>
-                <div id='chat' style={{height: 'calc(100vh - 200px)', overflowY: 'scroll'}} onScroll={onScroll.bind(this)}>
+                <div id='chat' className='chatMobile' onScroll={onScroll.bind(this)}>
                     {this.chatList()}
                 </div>
                 <div className='typing'>
                     {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
-                        return <p key={i}><b>{user}</b> is typing...</p>
+                        return <p key={i}><b>{user}</b> is typing
+                        <div class="loading">
+                            <div class="loading__circle"></div>
+                            <div class="loading__circle"></div>
+                            <div class="loading__circle"></div>
+                        </div></p>
                     })}
                 </div>
-                <div className='scroll'>
-                    {!this.state.bottom && <button onClick={this.scrollChat.bind(this, 10)}>&#8595;</button>}
+                <div className='scrollMobile'>
+                    {!this.state.bottom && <button onClick={this.scrollToBottom.bind(this, 10)}>&#8595;</button>}
                 </div>
                 <div className='chatboxMobile'>
+                    <label className="fileContainer">
+                        &#x2295;
+                        <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
+                    </label>
                     <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
                 </div>
             </div>
             :
-            <div>
-                <div id='dragZone'>
-                    Drag and drop image here
+            <div className={this.props.hide ? 'chat expand' : 'chat'}>
+                <div id='dragZone' className={this.props.hide ? 'expand' : ''}>
+                    Drop image here
                 </div>
-                <div id='chat' style={{height: 'calc(100vh - 50px)', overflowY: 'scroll'}} onScroll={onScroll.bind(this)}>
+                <div id='chat' className='chatDesktop' onScroll={onScroll.bind(this)}>
                     {this.chatList()}
                 </div>
                 <div className='typing'>
                     {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
-                        return <p key={i}><b>{user}</b> is typing...</p>
+                        return <p key={i}><b>{user}</b> is typing 
+                        <div className="loading">
+                            <div className="loading__circle"></div>
+                            <div className="loading__circle"></div>
+                            <div className="loading__circle"></div>
+                        </div></p>
                     })}
                 </div>
                 <div className='scroll'>
-                    {!this.state.bottom && <button onClick={this.scrollChat.bind(this, 10)}>&#8595;</button>}
+                    {!this.state.bottom && <button onClick={this.scrollToBottom.bind(this, 10)}>&#8595;</button>}
                 </div>
                 <div className='chatbox'>
                     <label className="fileContainer">
                         &#x2295;
-                        <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
+                        <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
                     </label>
                     <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
                     {/* <button onClick={switchToAudio.bind(this)}>Audio chat</button>

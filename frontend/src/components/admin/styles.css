@@ -7,38 +7,53 @@
     left: 0;
     margin-left: 80px;
     overflow-y: scroll;
+    text-align: center;
+    padding: 50px;
+    animation: fadein-jump 0.4s;
+    filter: drop-shadow(0 0 1rem black);
 }
 .admin img {
     border-radius: 50%;
-    width: 100px;
+    width: 200px;
+    height: 200px;
+    transition: all .2s ease;
+    animation: fadein 2s;
 }
 .admin button {
-    float: right;
     margin-top: 35px;
 }
-.admin p {
-    display: inline;
-    margin-left: 10px;
-    font-size: 20px;
+.admin .name {
+    font-size: 2.2em;
     font-weight: bold;
+    margin-top: 10px;
 }
 
 /* user div */
 .user {
-    padding: 15px;
-    background-color: rgb(255, 255, 255);
+    padding: 30px;
+    /* background-color: rgb(255, 255, 255); */
+    float: left;
+    margin: 20px;
+    width: 400px;
+    overflow: hidden;
+    animation: fadein-jump 0.4s;
 }
 .user:hover {
-    filter: brightness(0.95);
-    cursor: pointer;
+    /* filter: brightness(0.95);
+    cursor: pointer; */
 }
 
 /* community div */
 .community {
-    padding: 15px;
-    background-color: rgb(255, 255, 255);
+    padding: 30px;
+    /* background-color: rgb(255, 255, 255); */
+    float: left;
+    margin: 20px;
+    width: 400px;
+    overflow: hidden;
+    animation: fadein-jump 0.4s;
 }
 .community:hover {
-    filter: brightness(0.95);
-    cursor: pointer;
+    /* filter: brightness(0.95);
+    cursor: pointer; */
 }

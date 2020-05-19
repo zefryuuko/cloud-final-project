@@ -1,48 +1,160 @@
-/* .profile input {
-    margin-left: 30px
+.wrapper {
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: 100%;
+    padding: 50px;
+    overflow-y: scroll;
 }
 
-.profile input:hover {
-    cursor: pointer;
+.wrapperMobile {
+    height: calc((var(--vh, 1vh) * 100) - 110px);
+    -webkit-overflow-scrolling: touch;
+    backdrop-filter: blur(10px);
+    overflow-y: scroll;
+    padding: 20px;
 }
 
-.profile p {
-    font-size: 24px;
-    margin: 0;
-    margin-top: 12px
+.profile {
+    padding: 50px;
+    animation: fadein-jump 0.4s;
+    filter: drop-shadow(0 0 1rem black);
 }
-
-.profile div {
-    display: inline-block;
-    margin-top: 20px;
-}
-
-.profile .edit {
-    margin-left: 80px;
-}
-
-.profile .edit .name:hover {
-    cursor: pointer;
-}
-
-.profile .edit img {
-    padding-bottom: 2px;
-    padding-left: 5px;
-}
-
-.profile .edit .name {
-    width: max-content;
-}
-
-.profile input {
-    margin-left: 10px;
-} */
 
 .profile img {
     border-radius: 50%;
+    width: 300px;
+    height: 300px;
+    transition: all .2s ease;
+    animation: fadein 2s;
 }
 
+.middle {
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 48px;
+    line-height: normal;
+    transition: all .2s ease;
+}
+
+.profile label:hover {
+   cursor: pointer;
+}
+
+.profile label:hover .middle {
+    opacity: 1;
+}
+
+.profile label:hover img {
+    filter: brightness(0.3);
+}
+
+.profile table {
+    display: inline;
+    color: white;
+    font-size: 24px;
+}
+
+.profile table td {
+    padding: 5px 10px;
+}
+
+.profile input {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    font-weight: normal;
+    width: auto;
+}
+
+.profile form input {
+    border-bottom: 1px solid white;
+    margin-right: 20px;
+}
+
+.profile.mobile {
+    padding: 0px;
+}
+
+.profile.mobile .fileContainer {
+    margin-bottom: 10px;
+    display: block;
+    margin: 0 auto;
+}
+
+.profile.mobile img {
+    width: 200px;
+    height: 200px;
+}
+
+.profile.mobile img {
+    display: block;
+    margin: 0 auto;
+}
+
+.profile.mobile table {
+    font-size: 18px;
+}
+
+.profile.mobile table td {
+    padding: 0px;
+}
+
+.profile.mobile .name {
+    font-size: 18px;
+}
+
+.profileRow {
+    border-top: 20px solid transparent;
+}
+
+.wrapper .community {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    filter: drop-shadow(0 0 1rem black);
+}
+
+.wrapperMobile .community {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    filter: drop-shadow(0 0 1rem black);
+    width: 300px;
+}
+
+.community img {
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    transition: all .2s ease;
+    animation: fadein 2s;
+}
 .community button {
-    float: right;
     margin-top: 35px;
+}
+.community .name {
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* select {
+    background-color: transparent;
+    border: none;
+} */
+
+#id {
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg);
+}
+
+#us {
+    background-image: url(https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg);
 }

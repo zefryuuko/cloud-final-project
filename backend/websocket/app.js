@@ -13,7 +13,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const axios = require('axios');
-const API_URL = 'http://mbp:3000'
+const API_URL = 'http://localhost:3000'
 
 // let interval;
 let typingUsers = {}

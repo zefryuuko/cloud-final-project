@@ -47,11 +47,12 @@ export default class List extends React.Component{
                 this.setState({searchResult: communities})
             }
         }
-        else {
-            this.loadCommunity()
+        else if (nextProps.mode !== this.props.mode) {
             this.setState({
-                searchResult: []
+                searchResult: [],
+                communities: []
             });
+            this.loadCommunity()
         }
     }
     
@@ -93,6 +94,10 @@ export default class List extends React.Component{
             {
                 id: 2,
                 name: 'My Community'
+            },
+            {
+                id: 3,
+                name: 'System Preferences'
             }
         ]
         const profileList = profileData.map(x => {
@@ -100,7 +105,11 @@ export default class List extends React.Component{
                 <SubList mode='profile' name={x.name} id={x.id} selected={parseInt(this.state.selected) === x.id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
             )
         })
-        return profileList
+        return (
+            <div className='profileWrapper' style={{paddingTop: this.props.mobile ? '' : '30px'}}>
+                {profileList}
+            </div>
+        )
     }
 
     loadCommunity() {
@@ -185,9 +194,11 @@ export default class List extends React.Component{
             return <SubList mode='community' community={community} selected={this.state.selected === community._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
         })
         return (
-            <div>
-                <input className="form-control" type="text" placeholder=" &#128269; Find my community" onChange={onChange.bind(this)}/>
-                {communities}
+            <div style={{animation: 'fadein 0.4s'}}>
+                <input className="searchBox" type="text" placeholder="&#128269; Find my community" onChange={onChange.bind(this)}/>
+                <div className='communityWrapper'>
+                    {communities}
+                </div>
             </div>
         ) 
     }
@@ -200,8 +211,8 @@ export default class List extends React.Component{
             return <SubList mode='search' name={x.name} id={x._id} picture={x.picture} selected={this.state.selected === x._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
         })
         return (
-            <div>
-                <input className="form-control" type="text" placeholder=" &#128269; Search community" onChange={onChange.bind(this)}/>
+            <div style={{animation: 'fadein 0.4s'}}>
+                <input className="searchBox" type="text" placeholder="&#128269; Search community" onChange={onChange.bind(this)}/>
                 {searchResult}
                 <SubList mode='search' id={0} name={'Create a new community'} selected={parseInt(this.state.selected) === 0 ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
             </div>
@@ -216,15 +227,17 @@ export default class List extends React.Component{
             top: 0,
             left: 0,
             // backgroundColor: 'rgb(240, 240, 240)',
-            marginLeft: 80,
-            borderRight: '1px solid',
-            borderColor: 'rgb(200, 200, 200)',
-            overflowY: 'scroll'
+            marginLeft: this.props.hide ? -580 : 80,
+            overflowY: 'scroll',
+            // opacity: this.props.hide ? 0 : 1,
+            transition: 'all 0.4s ease'
         }
 
         const styleMobile = {
-            height: 'calc(100vh - 80px)',
-            overflowY: 'scroll'
+            height: 'calc((var(--vh, 1vh) * 100) - 60px)',
+            overflowY: 'scroll',
+            transition: 'all 0.4s ease',
+            overflowX: 'hidden'
         }
         
         return (
@@ -250,7 +263,7 @@ export default class List extends React.Component{
                     {this.props.mode === 'community' && this.community()}
                     {this.props.mode === 'search' && this.search()}
                 </div>
-                <Display mode={this.props.mode} selected={this.state.selected} mobile={false}/>
+                <Display mode={this.props.mode} selected={this.state.selected} mobile={false} hide={this.props.hide}/>
             </div>
         )
     }
