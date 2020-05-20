@@ -2,8 +2,11 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 
-const port = process.env.PORT || 4001;
-const index = require("./routes/index");
+require('dotenv').config()
+
+// const port = process.env.PORT || 8080;
+const port = 8080;
+const index = require("./src/routes/index");
 
 const app = express();
 app.use(index);
@@ -13,7 +16,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const axios = require('axios');
-const API_URL = 'http://localhost:3000'
+const API_URL = process.env.RESTful_SERVER
 
 // let interval;
 let typingUsers = {}
@@ -96,4 +99,4 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+server.listen(port, "0.0.0.0", () => console.log(`Listening on port ${port}`));

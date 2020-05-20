@@ -6,7 +6,8 @@ require('dotenv').config()
 
 // Express
 const app = express()
-const port = process.env.PORT || 5000
+// const port = process.env.PORT || 3000
+const port = 3000
 
 const adminValidator = (req, res, next) => {
   const token = req.headers.token;
@@ -49,16 +50,19 @@ connection.once('open', () => {
 })
 
 // Route
-const userRouter = require('./routes/user')
+const userRouter = require('./src/routes/user')
 app.use('/user', userRouter)
-const communityRouter = require('./routes/community')
+const communityRouter = require('./src/routes/community')
 app.use('/community', communityRouter)
-const adminRouter = require('./routes/admin')
+const adminRouter = require('./src/routes/admin')
 app.use('/admin', adminRouter)
-const chatRouter = require('./routes/chat')
+const chatRouter = require('./src/routes/chat')
 app.use('/chat', chatRouter)
+app.get('/', (req, res) => {
+  res.send("OK").status(200);
+});
 
 // Start backend
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port: ${port}`);
 });

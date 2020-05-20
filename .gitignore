@@ -2,3 +2,4 @@
 .DS_Store
 node_modules
 frontend/src/firebase/firebase.js
+build
