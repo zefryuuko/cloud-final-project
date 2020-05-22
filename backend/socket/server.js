@@ -14,6 +14,7 @@ app.use(index);
 const server = http.createServer(app);
 
 const io = socketIo(server);
+io.origins('*:*')
 
 const axios = require('axios');
 const API_URL = process.env.RESTful_SERVER

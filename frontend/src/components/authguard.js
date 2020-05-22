@@ -54,16 +54,15 @@ export default class AuthGuard extends React.Component {
     serverLocation() {
         const country = localStorage.getItem('server')
         if (country === 'ID') {
-            window.API_URL = process.env.REACT_APP_ID_RESTFUL_URL;
-            window.SOCKET = socketIOClient(process.env.REACT_APP_ID_SOCKET_URL)
+            window.API_URL = window._env_.ID_RESTFUL_URL;
+            window.SOCKET = socketIOClient(window._env_.ID_SOCKET_URL)
         }
         else if (country === 'US') {
-            window.API_URL = process.env.REACT_APP_US_RESTFUL_URL;
-            window.SOCKET = socketIOClient(process.env.REACT_APP_US_SOCKET_URL)
+            window.API_URL = window._env_.US_RESTFUL_URL;
+            window.SOCKET = socketIOClient(window._env_.US_SOCKET_URL)
         }
         if (country === null) {
-            window.API_URL = process.env.REACT_APP_ID_RESTFUL_URL;
-            console.log(process.env)
+            window.API_URL = window._env_.ID_RESTFUL_URL;
         }
     }
     

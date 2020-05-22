@@ -139,40 +139,42 @@ export default class Login extends Component {
 
   render() {
     return (
-    <div className='body'>
-        <span>YANTOO</span>
-        <div className='form'>
-            {/* <p>{this.state.mode === 'register' ? 'Create an account' : 'Welcome back!'}</p> */}
-            <form onSubmit={this.onSubmit}>
-                <label style={{color: this.state.invalid === 'email' ? 'red' : this.state.invalid === 'email2' ? 'red' : ''}}>Email<i>{this.state.invalid === 'email' ? ' - Email does not exist.' : this.state.invalid === 'email2' && ' - Email already in use.'}</i></label>
-                <br />
-                <input type='email' required name='email' onChange={this.onChange} style={{borderColor: this.state.invalid === 'email' ? 'red' : this.state.invalid === 'email2' ? 'red' : ''}}/>
-                <br />
+        <div>
+            <div className="bird-container">
+                <div className="bird"></div>
+            </div>
+            <div className="bird-container-2">
+                <div className="bird"></div>
+            </div>
+            <div className='body'>
+                <span>YANTOO</span>
+                <div className='form'>
+                    {/* <p>{this.state.mode === 'register' ? 'Create an account' : 'Welcome back!'}</p> */}
+                    <form onSubmit={this.onSubmit}>
+                        <label style={{color: this.state.invalid === 'email' ? 'red' : this.state.invalid === 'email2' ? 'red' : ''}}>Email<i>{this.state.invalid === 'email' ? ' - Email does not exist.' : this.state.invalid === 'email2' && ' - Email already in use.'}</i></label>
+                        <br />
+                        <input type='email' required name='email' onChange={this.onChange} style={{borderColor: this.state.invalid === 'email' ? 'red' : this.state.invalid === 'email2' ? 'red' : ''}}/>
+                        <br />
 
-                <div style={{display: this.state.mode === 'register' ? "block" : "none"}}>
-                    <label>Display name</label>
-                    <br />
-                    <input type='text' required={this.state.mode === 'register' ? true : false} name='name' onChange={this.onChange} maxLength="20"/>
-                    <br />
+                        <div style={{display: this.state.mode === 'register' ? "block" : "none"}}>
+                            <label>Display name</label>
+                            <br />
+                            <input type='text' required={this.state.mode === 'register' ? true : false} name='name' onChange={this.onChange} maxLength="20"/>
+                            <br />
+                        </div>
+
+                        <label style={{color: this.state.invalid === 'password' || this.state.invalid === 'max' ? 'red' : ''}}>Password<i>{this.state.invalid === 'password' ? ' - Password does not match.' : this.state.invalid === 'max' ? ' - Max login attempts exceeded. Please try again later.' : ''}</i></label>
+                        <br />
+                        <input type='password' required name='password' onChange={this.onChange} style={{borderColor: this.state.invalid === 'password' || this.state.invalid === 'max' ? 'red' : ''}}/>
+                        <br />
+                        {/* <a>Forgot your password?</a> */}
+
+                        <button type="submit" className="btn btn-light" >{this.state.mode === 'register' ? 'Register' : 'Login'}</button>
+                        {this.state.mode === 'register' ? 'Already have' : 'Need'} an account? <a href='#' onClick={this.onClick}>{this.state.mode === 'register' ? 'Login' : 'Register'}</a>
+                    </form>
                 </div>
-
-                <label style={{color: this.state.invalid === 'password' || this.state.invalid === 'max' ? 'red' : ''}}>Password<i>{this.state.invalid === 'password' ? ' - Password does not match.' : this.state.invalid === 'max' ? ' - Max login attempts exceeded. Please try again later.' : ''}</i></label>
-                <br />
-                <input type='password' required name='password' onChange={this.onChange} style={{borderColor: this.state.invalid === 'password' || this.state.invalid === 'max' ? 'red' : ''}}/>
-                <br />
-                {/* <a>Forgot your password?</a> */}
-
-                <button type="submit" className="btn btn-light" >{this.state.mode === 'register' ? 'Register' : 'Login'}</button>
-                {this.state.mode === 'register' ? 'Already have' : 'Need'} an account? <a href='#' onClick={this.onClick}>{this.state.mode === 'register' ? 'Login' : 'Register'}</a>
-            </form>
+            </div>
         </div>
-        <div className="bird-container">
-            <div className="bird"></div>
-        </div>
-        <div className="bird-container-2">
-            <div className="bird"></div>
-        </div>
-    </div>
     )
   }
 }

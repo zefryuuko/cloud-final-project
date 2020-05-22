@@ -135,7 +135,7 @@ p {
 table {
     margin-top: 15px;
     margin-left: 15px;
-    display: flex;
+    /* display: flex; */
 }
 
 .profilePic {
@@ -201,6 +201,7 @@ table {
     text-align: right;
     float: right;
     animation: fadein 1.2s;
+    width: 100%;
 }
 
 .me.mobile {
@@ -244,6 +245,7 @@ table {
     margin-bottom: 10px;
     float: left;
     animation: fadein 1.2s;
+    width: 100%;
 }
 
 .other.mobile {

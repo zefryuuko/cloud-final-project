@@ -40,7 +40,7 @@ export default class list extends Component {
             const obj = {
                 token: token
             }
-            axios.delete(window.API_URL+'/admin/user/'+id,  {headers: obj})
+            axios.delete(window.API_URL+'/admin/users/'+id,  {headers: obj})
             .then(() => {
                 this.getData()
             })

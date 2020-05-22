@@ -15,7 +15,7 @@
 }
 
 .profile {
-    padding: 50px;
+    /* padding: 50px; */
     animation: fadein-jump 0.4s;
     filter: drop-shadow(0 0 1rem black);
 }

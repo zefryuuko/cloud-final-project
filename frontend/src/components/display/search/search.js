@@ -112,7 +112,7 @@ export default class Search extends React.Component{
                 <img src={this.state.community.picture} />
                 <p className='name'>{this.state.community.name}</p>
                 <p className='description'>{this.state.community.description}</p>
-                { this.state.isLoading ? 'Loading...' : (
+                { this.state.isLoading ? <div class="loader"></div> : (
                     <button type="button" className="btn btn-success" onClick={this.joinCommunity.bind(this)}  disabled={this.state.hasJoin || this.state.user.communities.includes(this.state.community._id) ? true : false}>
                         <b>{this.state.hasJoin || this.state.user.communities.includes(this.state.community._id) ? 'Joined!' : 'Join Community'}</b>
                     </button>

@@ -70,12 +70,11 @@ body {
 }
 
 .modal div {
-  width: 600px;
-  height: auto;
   position: relative;
   top: 50%;
   transform: translateY(-50%);
-  margin: auto;
+  width: 50%;
+  margin: 0 auto;
 }
 
 @media (max-width: 600px) {
@@ -86,8 +85,10 @@ body {
 
 /* Modal Content (image) */
 .modal-content {
-  width: 100%;
-  height: auto;
+	max-width: 100%;
+    max-height: 100vh;
+    height: auto;
+  margin: auto;
 }
 
 .modal-content:hover {
@@ -136,34 +137,22 @@ body {
 	width: 80px;
 	height: 80px;
 	border: 7px solid;
-	background-color: transparent;
+	color: white;
 	border-radius: 50%;
-	color: #f3f6f6;
 	border-top-color: transparent;
 	animation: loader 1.2s linear infinite;
 	-webkit-animation: loader 1.2s linear infinite;
+	margin: auto
   }
   
   @keyframes loader {
 	to {
 	  transform: rotate(360deg);
 	}
-	33% {
-	  color: #90eee1;
-	}
-	66% {
-	  color: #6356e5;
-	}
   }
   @-webkit-keyframes loader {
 	to {
 	  transform: rotate(360deg);
-	}
-	33% {
-	  color: #90eee1;
-	}
-	66% {
-	  color: #6356e5;
 	}
   }  
 

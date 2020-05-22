@@ -23,7 +23,7 @@ export default class Community extends React.Component{
             communityName: undefined,
             isTyping: false,
             whosTyping: [],
-            bottom: false,
+            bottom: true,
             top: false,
             chat: 'text',
             audio: null,
