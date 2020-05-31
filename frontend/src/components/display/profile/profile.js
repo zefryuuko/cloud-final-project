@@ -271,7 +271,7 @@ export default class Profile extends React.Component{
                     <tbody>
                         <tr>
                             <td rowSpan='5'>
-                                <label className="fileContainer">
+                                <label className="fileContainer" style={{overflow: 'hidden', position: 'relative'}}>
                                     <img src={this.state.picture} />
                                     <div className='middle'>Change picture</div>
                                     <input type="file" onChange={fileChangedHandler.bind(this)} accept="image/png,image/gif,image/jpeg"/>
@@ -349,7 +349,7 @@ export default class Profile extends React.Component{
         }
         return <div>
             <button className="btn btn-danger" onClick={logout}>Logout</button>
-            <p><b>Server location:</b></p>
+            <p><b>Change server location (Experimental)</b></p>
             <select name="countries" onChange={changeServer.bind(this)}>
                 <option selected={this.state.country === 'ID' ? true : false} value="ID">🇮🇩 Indonesia</option>
                 <option selected={this.state.country === 'US' ? true : false} value="US">🇺🇸 United States</option>

@@ -42,11 +42,20 @@
 }
 
 .chatbox #chatbox {
-    width: calc(100% - 43px);
+    width: calc(100% - 116px);
     height: 50px;
     border: 0px;
     background-color: transparent;
     color: white;
+}
+
+.chatbox img {
+    filter: invert(100%);
+    margin-right: 10px;
+}
+
+.chatbox img:hover {
+    cursor: pointer;
 }
 
 .chatboxMobile {
@@ -309,10 +318,14 @@ table {
 }
 
 .fileContainer {
-    overflow: hidden;
-    position: relative;
+    /* overflow: hidden;
+    position: relative; */
     margin: 0px 10px;
     font-size: 24px;
+}
+
+.fileContainer:hover {
+    cursor: pointer;
 }
 
 .fileContainer [type=file] {
@@ -341,4 +354,80 @@ table {
     vertical-align: middle;
     line-height: 800px;
     z-index: 2;
+}
+
+video {
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg); /* Firefox */
+    border-radius: 10px;
+    transition: all 0.4s ease;
+    animation: fadein 0.4s
+}
+
+.stream {
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.255);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    filter: drop-shadow(0 0 1rem black);
+    transition: all 0.4s ease;
+    animation: fadein 0.4s;
+    float: left;
+    margin-right: 24px;
+}
+
+.videoStream {
+    float: left;
+    margin-right: 24px;
+}
+
+#userStream {
+    position: relative;
+    float: left;
+}
+
+#userStream div {
+    position: absolute; 
+    bottom: 0; 
+    z-index: 1; 
+    width: 100%; 
+    text-align: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+#userStream img {
+    margin: 10px;
+    filter: invert(100%) drop-shadow(0 0 1rem black);
+    transition: all 0.1s ease;
+}
+
+#userStream img:hover {
+    cursor: pointer;
+}
+
+#userStream img:active {
+    transform: scale(0.8);
+}
+
+#userStream:hover div {
+    opacity: 1;
+}
+
+#userStream:hover video {
+    filter: brightness(0.5);
+}
+
+.backButton {
+    color: white;
+    font-size: 18px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.255);
+    backdrop-filter: blur(10px);
+    border: none;
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    padding: 10px 20px;
 }

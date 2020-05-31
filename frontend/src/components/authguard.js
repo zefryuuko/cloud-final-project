@@ -5,6 +5,7 @@ import socketIOClient from "socket.io-client";
 
 import Login from "./login"
 import Home from "./home"
+import Admin from "./admin"
 
 var dragging = 0
 var dragZone;
@@ -56,13 +57,17 @@ export default class AuthGuard extends React.Component {
         if (country === 'ID') {
             window.API_URL = window._env_.ID_RESTFUL_URL;
             window.SOCKET = socketIOClient(window._env_.ID_SOCKET_URL)
+            window.PEER_URL = window._env_.ID_PEER_URL;
         }
         else if (country === 'US') {
             window.API_URL = window._env_.US_RESTFUL_URL;
             window.SOCKET = socketIOClient(window._env_.US_SOCKET_URL)
+            window.PEER_URL = window._env_.US_PEER_URL;
         }
         if (country === null) {
             window.API_URL = window._env_.ID_RESTFUL_URL;
+            window.SOCKET = socketIOClient(window._env_.ID_SOCKET_URL)
+            window.PEER_URL = window._env_.ID_PEER_URL;
         }
     }
     
@@ -123,7 +128,8 @@ export default class AuthGuard extends React.Component {
                     <Route path="/login" component={Login} />
                     {this.state.loading
                     ? null : this.state.authorized
-                    ? <Route path="/" render={(props) => <Home admin={this.state.admin} {...props} /> }/>
+                    ? this.state.admin ? <Switch><Route path="/admin" render={(props) => <Admin {...props} /> }/><Route path="/" render={(props) => <Home admin={true} {...props} /> }/></Switch>
+                    : <Route path="/" render={(props) => <Home admin={false} {...props} /> }/>
                     : <Redirect push to='/login' />}
                 </Switch>
             </Router>

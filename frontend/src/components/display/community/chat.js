@@ -89,5 +89,30 @@ export default function Chat(args){
             </tbody>
         </table>
     </div>
+    : args.sender === 'bot' ? 
+    <div className={args.mobile ? args.recent ? isImage ? 'other mobile' : 'other recent mobile' : 'other mobile' : args.recent ? isImage ? 'other' : 'other recent' : 'other'}>
+        <table>
+            <tbody>
+                <tr>
+                    <td rowSpan='2'>
+                        <img src='https://static.quriobot.com/website/img/quriobot_favicon.e6a47306.png'
+                        className="profilePic"
+                        loading="lazy"/>
+                    </td>
+                    <td>
+                        <p className='name'>Bot</p>
+                    </td>
+                    <td>
+                        <p className='time'>{args.time}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colSpan='2'>
+                        <p className='message' dangerouslySetInnerHTML={message}></p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     : null
 }

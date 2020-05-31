@@ -22,7 +22,7 @@ router.route('/login').post((req, res) => {
                 user.save()
                 const obj = {
                     token: token,
-                    new: user.communities.length === 0 ? true : false
+                    // new: user.communities.length === 0 ? true : false
                 }
                 res.send(obj);
                 // res.json('true') sends 'true'

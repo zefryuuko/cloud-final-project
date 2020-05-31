@@ -40,6 +40,25 @@ export default function SubList(args){
                 ) : null
             }
             {
+                args.mode === 'welcome' && (
+                    <div
+                    className={args.mobile ? 'communityStyle mobile' : args.selected === 'yes' ? 'communityStyle selected' : 'communityStyle'}
+                    onClick={() => args.callback(0, 'Welcome')}>
+                        <div>
+                            <img src='https://res.cloudinary.com/erizky/image/upload/v1588573978/community_mgshrs.png' />
+                        </div>
+                        <div style={{margin: args.mobile ? '10px 0px 10px 15px' : '15px 0px 0px 15px'}}>
+                            <div className='row'>
+                                <div className='column'>
+                                    <p className='name'>Welcome</p>
+                                    <p className='preview'>Click me!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+            {
                 args.mode === 'search' && (
                     <div 
                     className={args.mobile ? 'searchStyle mobile' : args.selected === 'yes' ? 'searchStyle selected' : 'searchStyle'}

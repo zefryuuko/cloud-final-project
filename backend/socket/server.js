@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const http = require("http");
 const socketIo = require("socket.io");
 
@@ -10,11 +11,11 @@ const index = require("./src/routes/index");
 
 const app = express();
 app.use(index);
+app.use(cors());
 
 const server = http.createServer(app);
 
 const io = socketIo(server);
-io.origins('*:*')
 
 const axios = require('axios');
 const API_URL = process.env.RESTful_SERVER
@@ -91,6 +92,14 @@ io.on("connection", (socket) => {
     for (let i = 0; i < data.communities.length; i++) {
       io.to(data.communities[i]).emit('update', data)
     }
+  });
+
+  socket.on('audio', data => {
+    io.emit('audio_'+data._id, data)
+  });
+
+  socket.on('video', data => {
+    io.emit('video_'+data._id, data)
   });
 
   socket.on("disconnect", () => {

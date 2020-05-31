@@ -186,10 +186,12 @@ export default class List extends React.Component{
         //     }
         // }, 5000)
         let communities = undefined
-        if (this.props.search === '')
-        communities = this.state.communities.map(community => {
-            return <SubList mode='community' community={community} selected={this.state.selected === community._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
-        })
+        if (this.props.search === '') {
+            communities = this.state.communities.map(community => {
+                return <SubList mode='community' community={community} selected={this.state.selected === community._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
+            })
+            communities.push(<SubList mode='welcome' selected={this.state.selected === 0 ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>)
+        }
         else communities = this.state.searchResult.map(community => {
             return <SubList mode='community' community={community} selected={this.state.selected === community._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
         })

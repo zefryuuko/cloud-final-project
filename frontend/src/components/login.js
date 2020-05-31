@@ -61,8 +61,8 @@ export default class Login extends Component {
                 else {
                     localStorage.setItem('token', res.data.token)
                     const client = {
-                        "mode": 'search',
-                        "index": 1,
+                        "mode": 'community',
+                        "index": 0,
                         'view': false
                     }
                     localStorage.setItem("client", JSON.stringify(client))
@@ -105,7 +105,7 @@ export default class Login extends Component {
                 else {
                     localStorage.setItem('token', res.data.token)
                     const client = {
-                        "mode": res.data.new ? 'search' : 'community',
+                        "mode": 'community',
                         "index": 1,
                         'view': false
                     }

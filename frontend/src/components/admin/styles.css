@@ -27,6 +27,13 @@
     font-weight: bold;
     margin-top: 10px;
 }
+.admin input {
+    background-color: transparent;
+    border: none;
+    color: white;
+    width: 100%;
+    text-align: center;
+}
 
 /* user div */
 .user {

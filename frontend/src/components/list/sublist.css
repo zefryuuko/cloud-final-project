@@ -47,9 +47,10 @@
 
 .communityWrapper {
     margin: 24px;
-    /* background-color: rgba(0, 0, 0, 0.128); */
+    background-color: rgba(0, 0, 0, 0.128);
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.404);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 10px;
 }
 
@@ -63,11 +64,12 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
+    margin: 0px 10px;
 }
 
 .communityStyle .name {
     color: darkgray;
-    font-size: 20px;
+    /* font-size: 20px; */
     font-weight: bold;
     text-overflow: ellipsis;
     overflow: hidden;

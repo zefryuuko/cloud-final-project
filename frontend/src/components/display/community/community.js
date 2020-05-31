@@ -3,12 +3,10 @@ import axios from 'axios'
 import {storage} from "../../../firebase/firebase"
 import './styles.css'
 import smoothscroll from 'smoothscroll-polyfill';
+import Peer from 'peerjs'
  
 import Chat from './chat'
 import AudioAnalyser from './AudioVisualiser/AudioAnalyser';
-
-// kick off the polyfill!
-smoothscroll.polyfill();
 
 export default class Community extends React.Component{
     constructor(props) {
@@ -27,6 +25,9 @@ export default class Community extends React.Component{
             top: false,
             chat: 'text',
             audio: null,
+            peer: null,
+            streams: [],
+            video: null
         }
     }
     
@@ -34,6 +35,7 @@ export default class Community extends React.Component{
         await this.loadChat()
         window.addEventListener("drop", this.dropImage);
         window.addEventListener('paste', this.pasteImage);
+        window.addEventListener('beforeunload', this.disconnect);
         this.fetchChat()
         this.fetchUser()
         this.fetchUserTyping()
@@ -55,6 +57,21 @@ export default class Community extends React.Component{
     async componentDidUpdate(prevProps, prevState) {
         // Detect if column has changed
         if (this.props.selected !== prevProps.selected) {
+            if (this.state.chat !== 'text') {
+                this.state.peer.destroy()
+                // if (this.state.streams.length === 0) {
+                //     if (this.state.chat === 'video') this.localVideo.srcObject.getTracks().forEach(track => track.stop());
+                //     await this.setState({
+                //         chat: 'text',
+                //         peer: null,
+                //         streams: [],
+                //         video: null,
+                //         audio: null
+                //     })
+                // }
+                // else 
+                window.location.reload()
+            }
             // Load chat
             await this.loadChat()
             if (parseInt(prevProps.selected) > 3) {
@@ -89,9 +106,16 @@ export default class Community extends React.Component{
                 if (top) top.scrollIntoView()
             }
         }
+        if (this.state.chat !== prevState.chat) {
+            if (this.state.chat !== 'text') this.requestPermission(this.state.chat)
+        }
     }
 
     componentWillUnmount() {
+        if (this.state.chat !== 'text') {
+            this.state.peer.destroy()
+            window.location.reload()
+        }
         window.removeEventListener('drop', this.dropImage)
         window.removeEventListener('paste', this.pasteImage)
     }
@@ -115,6 +139,8 @@ export default class Community extends React.Component{
                     user: res.data
                 })
             })
+            // kick off the polyfill!
+            smoothscroll.polyfill();
             this.getRawChat(true)
         }
     }
@@ -262,8 +288,10 @@ export default class Community extends React.Component{
     }
 
     pasteImage = (e) => {
-        e.preventDefault();
-        this.uploadImage(e.clipboardData.files)
+        if (e.clipboardData.files.length !== 0) {
+            e.preventDefault();
+            this.uploadImage(e.clipboardData.files)
+        }
     }
  
     sendChat(text) {
@@ -362,6 +390,7 @@ export default class Community extends React.Component{
             this.setState({chat: 'video'})
         }
 
+        if (this.props.selected !== 0)
         return (
             this.props.mobile 
             ? <div>
@@ -416,58 +445,333 @@ export default class Community extends React.Component{
                         <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
                     </label>
                     <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
-                    {/* <button onClick={switchToAudio.bind(this)}>Audio chat</button>
-                    <button onClick={switchToVideo.bind(this)}>Video chat</button> */}
+                    <img onClick={switchToAudio} src='https://img.icons8.com/material/24/000000/phone--v1.png' alt='audiocall'/>
+                    <img onClick={switchToVideo} src='https://img.icons8.com/material/24/000000/video-call--v1.png' alt='videocall'/>
+                </div>
+            </div>
+        )
+        else 
+        return (
+            this.props.mobile 
+            ? <div>
+                <div id='chat' className='chatMobile' onScroll={onScroll.bind(this)}>
+                    {this.chatList()}
+                </div>
+                <div className='typing'>
+                    {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
+                        return <p key={i}><b>{user}</b> is typing
+                        <div class="loading">
+                            <div class="loading__circle"></div>
+                            <div class="loading__circle"></div>
+                            <div class="loading__circle"></div>
+                        </div></p>
+                    })}
+                </div>
+                <div className='scrollMobile'>
+                    {!this.state.bottom && <button onClick={this.scrollToBottom.bind(this, 10)}>&#8595;</button>}
+                </div>
+                <div className='chatboxMobile'>
+                    <label className="fileContainer">
+                        &#x2295;
+                        <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
+                    </label>
+                    <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
+                </div>
+            </div>
+            :
+            <div className={this.props.hide ? 'chat expand' : 'chat'}>
+                <div id='chat' className='chatDesktop' onScroll={onScroll.bind(this)}>
+                    <Chat sender='bot' message={'https://firebasestorage.googleapis.com/v0/b/wads-final-project.appspot.com/o/images%2Fgroups%2F5eb28952a2c4911527f3739b%2Fimage.png?alt=media&token=ba011bb8-c516-4ad3-8bf3-ffb169ae79a0'} recent={false} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'Greetings new user!'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'**What is YANTOO?**'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'YANTOO, which stands for "You Are Not The Only One", is a web chat application for helping people find a community.'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'**Get Started**'} recent={false} mobile={this.props.mobile} time={'Please help, I was forced to work here.'}/>
+                    <Chat sender='bot' message={'Click the search icon on the left and start typing the community you are looking for!'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'**Tips & Tricks**'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'Click the community icon on the left to expand the chat.'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'<i>Italic</i> = &#42;text&#42;'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'<b>Bold</b> = &#42;&#42;text&#42;&#42;'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'<b><i>BoldItalic</i></b> = &#42;&#42;&#42;text&#42;&#42;&#42;'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'<del>Strikethrough</del> = &#126;&#126;text&#126;&#126;'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'<code>Monospace</code> = &#96;&#96;&#96;text&#96;&#96;&#96;'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'Click an image to enlarge.'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'You can drag & drop images/files into the chat.'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'**Project Source**'} recent={false} mobile={this.props.mobile} time={'Oh crap, he is here! *BLEEP BLOOP* Eris senpai is the best.'}/>
+                    <Chat sender='bot' message={'https://github.com/GetLiberated/WADS-Final-Project'} recent={true} mobile={this.props.mobile}/>
+                </div>
+                <div className='scroll'>
+                    {!this.state.bottom && <button onClick={this.scrollToBottom.bind(this, 10)}>&#8595;</button>}
+                </div>
+                <div className='chatbox'>
+                    <input id='chatbox' type='text' placeholder='Read only.' style={{paddingLeft: 10}} disabled/>
                 </div>
             </div>
         )
     }
 
     audioChat() {
-        const getMicrophone = async () => {
-            const audio = await navigator.mediaDevices.getUserMedia({
-              audio: true,
-              video: false
-            });
-            this.setState({ audio });
-        }
+        // const getMicrophone = async () => {
+        //     const audio = await navigator.mediaDevices.getUserMedia({
+        //       audio: true,
+        //       video: false
+        //     })
+        //     .then(stream => {
+        //         this.setState({ audio: stream });
+        //     })
+        // }
     
-        const stopMicrophone = () => {
-            this.state.audio.getTracks().forEach(track => track.stop());
-            this.setState({ audio: null });
-        }
+        // const stopMicrophone = () => {
+        //     this.state.audio.getTracks().forEach(track => track.stop());
+        //     this.setState({ audio: null });
+        // }
     
         const toggleMicrophone = () => {
-            if (this.state.audio) stopMicrophone();
-            else getMicrophone();
+            let mic = this.state.audio.getTracks()[0]
+            if (mic.enabled) {
+                document.getElementById('mic').src = 'https://img.icons8.com/material/48/000000/no-microphone.png'
+                document.getElementById('userStream').getElementsByTagName('div')[0].style.opacity = 0.2
+                mic.enabled = false;
+            }
+            else {
+                document.getElementById('mic').src = 'https://img.icons8.com/material-sharp/48/000000/microphone.png'
+                document.getElementById('userStream').getElementsByTagName('div')[0].style.opacity = 1
+                mic.enabled = true;
+            }
+        }
+
+        const back = () => {
+            this.state.peer.destroy()
+            // if (this.state.streams.length === 0) {
+            //     this.state.audio.getTracks().forEach(track => track.stop());
+            //     this.setState({chat: 'text', peer: null, audio: null})
+            // }
+            // else 
+            window.location.reload()
         }
         
         return (
-            <div>
-                <div className="controls">
-                    <button onClick={toggleMicrophone}>
-                        {this.state.audio ? 'Stop microphone' : 'Get microphone input'}
-                    </button>
+            <div style={{overflow: 'scroll'}}>
+                <button onClick={back} className='backButton'>&#10094; Back</button>
+                <div style={{marginLeft: 120}}>
+                    {this.state.streams}
+                    <div className='stream' id='userStream'>
+                        <br/>
+                        {this.state.audio && <AudioAnalyser audio={this.state.audio} />}
+                        <div style={{opacity: 1}}>
+                            <img onClick={toggleMicrophone} id='mic' src='https://img.icons8.com/material-sharp/48/000000/microphone.png' alt='mic'/>
+                        </div>
+                    </div>
                 </div>
-                {this.state.audio ? <AudioAnalyser audio={this.state.audio} /> : ''}
             </div>
         );
     }
 
-    videoChat() {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    disconnect = (e) => {
+        e.preventDefault();
+        if (this.state.chat !== 'text') this.state.peer.destroy()
+    }
+
+    requestPermission(type) {
+        this.setState({ peer: new Peer(this.state.user._id, {
+            host: window.PEER_URL,
+            secure: true,
+            path: '/peer',
+            // debug: 3
+          })
+        })
+        let permission = {}
+        if (type === 'video') permission = { video: true, audio: true }
+        else permission = { video: false, audio: true }
+        navigator.mediaDevices.getUserMedia(permission)
         .then(stream => {
-            this.localVideo.srcObject = stream;
-            this.localVideo.play()
+            if (type === 'video') {
+                this.setState({ video: stream })
+                this.localVideo.srcObject = stream;
+            }
+            else this.setState({ audio: stream })
+
+            const socket = this.state.socket;
+            const peer = this.state.peer
+            const data = {
+                _id: this.props.selected,
+                user: this.state.user._id,
+                name: this.state.user.name
+            }
+            if (type === 'video') {
+                socket.emit('video', data)
+                socket.on('video_'+this.props.selected, data => {
+                    if (data.user !== this.state.user._id) {
+                        const call = peer.call(data.user, this.state.video, { metadata: { name: this.state.user.name } })
+                        call.on('stream', (remoteStream) => {
+                            // Show stream in some <video> element.
+                            // this.remoteVideo.srcObject = remoteStream;
+                            if (!this.state.streams.find(stream => stream.key === data.user)) {
+                                this.setState(prevState => ({
+                                    streams: [...prevState.streams, <div key={data.user} className='videoStream' id={data.user}>
+                                    <p >{data.name}</p>
+                                    <video playsInline ref={video => { video.srcObject = remoteStream }} autoPlay id={data.user+'_video'}/>
+                                    </div>]
+                                }))
+                            }
+                            else {
+                                document.getElementById(data.user).style.display = 'inline-block'
+                                document.getElementById(data.user+'_video').srcObject = remoteStream
+                            }
+                        })
+                        call.on('close', (remoteStream) => {
+                            // let streams = [...this.state.streams];
+                            // let index = 0
+                            // streams.forEach((el, i) => {
+                            //     if (!el.active) index = i
+                            // })
+                            // streams.splice(index, 1)
+                            // this.setState({streams});
+
+                            // // 1. Make a shallow copy of the items
+                            // let streams = [...this.state.streams];
+                            // // 2. Make a shallow copy of the item you want to mutate
+                            // let index = streams.map( s => {return s.key}).indexOf(data)
+                            // let stream = {...streams[index]};
+                            // // 3. Replace the property you're intested in
+                            // stream.props.height = 0
+                            // stream.props.width = 0
+                            // // 4. Put it back into our array. N.B. we *are* mutating the array here, but that's why we made a copy first
+                            // streams[index] = stream;
+                            // // 5. Set the state to our new copy
+                            // this.setState({ streams });
+
+                            // ternyata bisa pake ini doang :)
+                            document.getElementById(data.user).style.display = 'none'
+                        })
+                    }
+                });
+            }
+            else {
+                socket.emit('audio', data)
+                socket.on('audio_'+this.props.selected, data => {
+                    if (data.user !== this.state.user._id) {
+                        const call = peer.call(data.user, this.state.audio, { metadata: { name: this.state.user.name } })
+                        call.on('stream', (remoteStream) => {
+                            this.setState(prevState => ({
+                                streams: [...prevState.streams, <div key={data.user} className='stream' id={data.user}>
+                                    <p >{data.name}</p>
+                                    <audio ref={audio => { audio.srcObject = remoteStream }} style={{display: 'none'}} controls volume="true" autoPlay/>
+                                    <AudioAnalyser audio={remoteStream} />
+                                    </div>
+                                ]
+                            }))
+                        })
+                        call.on('close', (remoteStream) => {
+                            document.getElementById(data.user).style.display = 'none'
+                        })
+                    }
+                })
+            }
+
+            peer.on('call', (call) => {
+                if (type === 'video') call.answer(this.state.video);
+                else call.answer(this.state.audio);
+                call.on('stream', (remoteStream) => {
+                    if (type === 'video') {
+                        if (!this.state.streams.find(stream => stream.key === remoteStream.id)) {
+                            this.setState(prevState => ({
+                                streams: [...prevState.streams, <div className='videoStream' key={remoteStream.id} id={remoteStream.id}>
+                                <p >{call.metadata.name}</p>
+                                <video playsInline key={remoteStream.id} ref={video => { video.srcObject = remoteStream }} autoPlay id={remoteStream.id+'_video'}/>
+                                </div>]
+                            }))
+                        }
+                    }
+                    else this.setState(prevState => ({
+                        streams: [...prevState.streams, <div className='stream' key={remoteStream.id} id={remoteStream.id}>
+                            <p >{call.metadata.name}</p>
+                            <audio ref={audio => { audio.srcObject = remoteStream }} style={{display: 'none'}} controls volume="true" autoPlay id={remoteStream.id+'_audio'}/>
+                            <AudioAnalyser audio={remoteStream} />
+                            </div>]
+                    }))
+                });
+                call.on('close', (remoteStream) => {
+                    this.state.streams.forEach(stream => {
+                        if (type === 'video') {
+                            let video = document.getElementById(stream.key+'_video')
+                            setTimeout(() => {
+                                if (!video.srcObject.active) document.getElementById(stream.key).style.display = 'none'
+                            }, 500)
+                        }
+                        else {
+                            let audio = document.getElementById(stream.key+'_audio')
+                            setTimeout(() => {
+                                if (!audio.srcObject.active) document.getElementById(stream.key).style.display = 'none'
+                            }, 500)
+                        }
+                    })
+                })
+            });
         })
         .catch(error => {
             console.warn(error.message);
         })
+    }
+
+    videoChat() {
+        const toggleMicrophone = () => {
+            let mic = this.state.video.getTracks()[this.state.video.getTracks().map(track => {return track.kind}).indexOf('audio')]
+            if (mic.enabled) {
+                document.getElementById('mic').src = 'https://img.icons8.com/material/48/000000/no-microphone.png'
+                mic.enabled = false;
+            }
+            else {
+                document.getElementById('mic').src = 'https://img.icons8.com/material-sharp/48/000000/microphone.png'
+                mic.enabled = true;
+            }
+        }
+        const toggleCamera = () => {
+            let mic = this.state.video.getTracks()[this.state.video.getTracks().map(track => {return track.kind}).indexOf('video')]
+            if (mic.enabled) {
+                document.getElementById('cam').src = 'https://img.icons8.com/material/48/000000/no-video--v1.png'
+                mic.enabled = false;
+                // mic.stop()
+            }
+            else {
+                document.getElementById('cam').src = 'https://img.icons8.com/material/48/000000/video-call--v1.png'
+                mic.enabled = true;
+                // navigator.mediaDevices.getUserMedia({video: true})
+                // .then(stream => {
+                //     this.setState({ video: stream })
+                //     this.localVideo.srcObject = stream;
+                // })
+            }
+        }
+        const back = () => {
+            this.state.peer.destroy()
+            // if (this.state.streams.length === 0) {
+            //     this.state.audio.getTracks().forEach(track => track.stop());
+            //     this.setState({chat: 'text', peer: null, audio: null})
+            // }
+            // else 
+            window.location.reload()
+        }
         
         return (
-            <div>
-                <video ref={(ref) => {this.remoteVideo = ref}}></video>
-                <video ref={(ref) => {this.localVideo = ref}}></video>
+            <div style={{overflow: 'scroll'}}>
+                <button onClick={back} className='backButton'>&#10094; Back</button>
+                <div style={{marginLeft: 120}}>
+                    {this.state.streams}
+                    <div id='userStream'>
+                        <br/>
+                        <video playsInline muted ref={(ref) => {this.localVideo = ref}} autoPlay/>
+                        <div>
+                            <img onClick={toggleMicrophone} id='mic' src='https://img.icons8.com/material-sharp/48/000000/microphone.png' alt='mic'/>
+                            <img onClick={toggleCamera} id='cam' src='https://img.icons8.com/material/48/000000/video-call--v1.png' alt='cam'/>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }
@@ -481,6 +785,7 @@ export default class Community extends React.Component{
             : this.state.chat === 'video'
             && this.videoChat()
         }
+        else if (this.props.selected === 0) return this.chat()
         return null
     }
 }

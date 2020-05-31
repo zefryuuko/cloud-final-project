@@ -20,7 +20,7 @@ router.route('/').post((req, res) => {
     if (decoded !== undefined)
     User.findById(decoded._id, function(err, user) {
         if (user !== null)
-            if (user.password === decoded.password && user.key && decoded.key)
+            if (user.password === decoded.password && user.key === decoded.key)
             Community.findById(_id)
                 .then(c => {
                     c.chat.push({

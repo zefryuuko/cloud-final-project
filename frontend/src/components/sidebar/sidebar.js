@@ -17,8 +17,10 @@ export default class Sidebar extends React.Component{
     }
 
     changeAdminMode() {
-        if (this.props.adminMode) this.props.adminCallback(false);
-        else this.props.adminCallback(true);
+        if (this.props.truestAdminMode === undefined) {
+            if (this.props.adminMode) this.props.adminCallback(false);
+            else this.props.adminCallback(true);
+        }
     }
 
     render() {

@@ -21,7 +21,7 @@ const adminValidator = (req, res, next) => {
   if (decoded !== undefined)
   User.findById(decoded._id, function(err, user) {
       if (user !== null)
-          if (user.password === decoded.password && user.key && decoded.key && user.admin)
+          if (user.password === decoded.password && user.key === decoded.key && user.admin)
           next()
           else res.status(401).send(false)
       else res.status(401).send(false)
