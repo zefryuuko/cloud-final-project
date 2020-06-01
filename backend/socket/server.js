@@ -18,7 +18,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const axios = require('axios');
-const API_URL = process.env.RESTful_SERVER
+const CHAT_URL = process.env.CHAT_URL
 
 // let interval;
 let typingUsers = {}
@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
 
   socket.on('chat', data => {
     // console.log(socket.rooms)
-    axios.post(API_URL+'/chat', data)
+    axios.post(CHAT_URL+'/chat', data)
     // .then(res => {
     //   if (res) {
         io.to(data._id).emit('chat', data)

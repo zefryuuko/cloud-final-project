@@ -28,7 +28,7 @@ export default class List extends React.Component{
         const searchQuery = nextProps.search
         if (searchQuery !== '') {
             if (nextProps.mode === 'search') {
-                axios.get(window.API_URL+'/community/search/'+searchQuery)
+                axios.get(window.COMMUNITY_URL+'/community/search/'+searchQuery)
                 .then(res => {
                     this.setState({
                         searchResult: res.data
@@ -118,10 +118,10 @@ export default class List extends React.Component{
             const obj = {
                 token: token
             }
-            axios.post(window.API_URL+'/user/token', obj)
+            axios.post(window.USER_URL+'/user/token', obj)
             .then(user => {
                 const promises = user.data.communities.map(id => {
-                    return axios.get(window.API_URL+'/community/'+id)
+                    return axios.get(window.COMMUNITY_URL+'/community/'+id)
                     .then(community => {
                         if (!this.state.communities.map( c => {return c._id}).includes(id)) {// Optimize this
                             const data = {

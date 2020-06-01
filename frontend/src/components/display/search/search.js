@@ -25,7 +25,7 @@ export default class Search extends React.Component{
         const obj = {
             token: token
         }
-        axios.post(window.API_URL+'/user/token', obj)
+        axios.post(window.USER_URL+'/user/token', obj)
         .then(res => {
             this.setState({
                 user: res.data,
@@ -35,7 +35,7 @@ export default class Search extends React.Component{
         .catch(err => console.log(err))
 
         if (parseInt(this.props.selected) > 3)
-        axios.get(window.API_URL+'/community/'+this.props.selected)
+        axios.get(window.COMMUNITY_URL+'/community/'+this.props.selected)
         .then(res => {
             this.setState({
                 community: res.data
@@ -50,7 +50,7 @@ export default class Search extends React.Component{
             const obj = {
                 token: token
             }
-            axios.post(window.API_URL+'/user/token', obj)
+            axios.post(window.USER_URL+'/user/token', obj)
             .then(res => {
                 this.setState({
                     user: res.data,
@@ -62,7 +62,7 @@ export default class Search extends React.Component{
             this.setState({ community: undefined })
     
             if (parseInt(nextProps.selected) > 3)
-            axios.get(window.API_URL+'/community/'+nextProps.selected)
+            axios.get(window.COMMUNITY_URL+'/community/'+nextProps.selected)
             .then(res => {
                 this.setState({
                     community: res.data
@@ -84,7 +84,7 @@ export default class Search extends React.Component{
                 community: this.state.community._id,
                 token: localStorage.getItem("token")
             }
-            axios.post(window.API_URL+'/user/update', req)
+            axios.post(window.USER_URL+'/user/update', req)
             .then(res => {
                 if (res.data) {
                     this.setState({
@@ -132,7 +132,7 @@ export default class Search extends React.Component{
             description: this.state.description,
             picture: this.state.picture,
         }
-        axios.post(window.API_URL+'/community/create', req)
+        axios.post(window.COMMUNITY_URL+'/community/create', req)
         .then(res => {
             if (res.data) {
                 const req = {
@@ -144,7 +144,7 @@ export default class Search extends React.Component{
                 this.setState({
                     newCommunityID: res.data._id
                 })
-                axios.post(window.API_URL+'/user/update', req)
+                axios.post(window.USER_URL+'/user/update', req)
                 .then(res => {
                     if (res.data) {
                         this.setState({
@@ -158,7 +158,7 @@ export default class Search extends React.Component{
                             timestamp: new Date().toLocaleString(),
                             token: localStorage.getItem('token')
                         }
-                        axios.post(window.API_URL+'/chat', obj)
+                        axios.post(window.CHAT_URL+'/chat', obj)
                         const client = {
                             "mode": 'community',
                             "index": 1,

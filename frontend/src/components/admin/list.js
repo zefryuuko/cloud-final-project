@@ -21,13 +21,13 @@ export default class list extends Component {
         const obj = {
             token: token
         }
-        if (this.props.mode === 'profile') axios.get(window.API_URL+'/admin/users/', {headers: obj})
+        if (this.props.mode === 'profile') axios.get(window.ADMIN_URL+'/admin/users/', {headers: obj})
         .then(res => {
             this.setState({
                 users: res.data
             })
         })
-        else axios.get(window.API_URL+'/admin/communities/', {headers: obj})
+        else axios.get(window.ADMIN_URL+'/admin/communities/', {headers: obj})
         .then(res => {
             this.setState({
                 communities: res.data
@@ -69,7 +69,7 @@ export default class list extends Component {
                     const obj = {
                         token: token
                     }
-                    axios.post(window.API_URL+'/admin/users', req, {headers: obj})
+                    axios.post(window.ADMIN_URL+'/admin/users', req, {headers: obj})
                 })
             })
         }
@@ -90,7 +90,7 @@ export default class list extends Component {
                 const obj = {
                     token: token
                 }
-                axios.post(window.API_URL+'/admin/users', req, {headers: obj})
+                axios.post(window.ADMIN_URL+'/admin/users', req, {headers: obj})
             }
         }
         const onKeyPress = (e) => {
@@ -104,7 +104,7 @@ export default class list extends Component {
             const obj = {
                 token: token
             }
-            axios.delete(window.API_URL+'/admin/users/'+id,  {headers: obj})
+            axios.delete(window.ADMIN_URL+'/admin/users/'+id,  {headers: obj})
             .then(() => {
                 this.getData()
             })
@@ -156,7 +156,7 @@ export default class list extends Component {
                     const obj = {
                         token: token
                     }
-                    axios.post(window.API_URL+'/admin/communities', req, {headers: obj})
+                    axios.post(window.ADMIN_URL+'/admin/communities', req, {headers: obj})
                 })
             })
         }
@@ -177,7 +177,7 @@ export default class list extends Component {
                 const obj = {
                     token: token
                 }
-                axios.post(window.API_URL+'/admin/communities', req, {headers: obj})
+                axios.post(window.ADMIN_URL+'/admin/communities', req, {headers: obj})
             }
         }
         const onKeyPress = (e) => {
@@ -191,7 +191,7 @@ export default class list extends Component {
             const obj = {
                 token: token
             }
-            axios.delete(window.API_URL+'/admin/communities/'+id,  {headers: obj})
+            axios.delete(window.ADMIN_URL+'/admin/communities/'+id,  {headers: obj})
             .then(() => {
                 this.getData()
             })

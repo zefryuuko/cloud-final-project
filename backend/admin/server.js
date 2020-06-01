@@ -50,14 +50,8 @@ connection.once('open', () => {
 })
 
 // Route
-const userRouter = require('./src/routes/user')
-app.use('/user', userRouter)
-const communityRouter = require('./src/routes/community')
-app.use('/community', communityRouter)
 const adminRouter = require('./src/routes/admin')
 app.use('/admin', adminRouter)
-const chatRouter = require('./src/routes/chat')
-app.use('/chat', chatRouter)
 app.get('/', (req, res) => {
   res.send("OK").status(200);
 });

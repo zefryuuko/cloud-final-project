@@ -1,5 +1,8 @@
-backend/*/.env
+.env
 .DS_Store
 node_modules
-*firebase*
 build
+firebase.json
+.firebaserc
+.firebase
+env-config.js

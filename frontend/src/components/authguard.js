@@ -27,7 +27,7 @@ export default class AuthGuard extends React.Component {
             token: token
         }
         if (token)
-        axios.post(window.API_URL+'/user/token', obj)
+        axios.post(window.USER_URL+'/user/token', obj)
         .then(res => {
             if (res.data === false) {
                 localStorage.clear()
@@ -55,17 +55,26 @@ export default class AuthGuard extends React.Component {
     serverLocation() {
         const country = localStorage.getItem('server')
         if (country === 'ID') {
-            window.API_URL = window._env_.ID_RESTFUL_URL;
+            window.ADMIN_URL = window._env_.ID_ADMIN_URL;
+            window.CHAT_URL = window._env_.ID_CHAT_URL;
+            window.COMMUNITY_URL = window._env_.ID_COMMUNITY_URL;
+            window.USER_URL = window._env_.ID_USER_URL;
             window.SOCKET = socketIOClient(window._env_.ID_SOCKET_URL)
             window.PEER_URL = window._env_.ID_PEER_URL;
         }
         else if (country === 'US') {
-            window.API_URL = window._env_.US_RESTFUL_URL;
+            window.ADMIN_URL = window._env_.US_ADMIN_URL;
+            window.CHAT_URL = window._env_.US_CHAT_URL;
+            window.COMMUNITY_URL = window._env_.US_COMMUNITY_URL;
+            window.USER_URL = window._env_.US_USER_URL;
             window.SOCKET = socketIOClient(window._env_.US_SOCKET_URL)
             window.PEER_URL = window._env_.US_PEER_URL;
         }
         if (country === null) {
-            window.API_URL = window._env_.ID_RESTFUL_URL;
+            window.ADMIN_URL = window._env_.ID_ADMIN_URL;
+            window.CHAT_URL = window._env_.ID_CHAT_URL;
+            window.COMMUNITY_URL = window._env_.ID_COMMUNITY_URL;
+            window.USER_URL = window._env_.ID_USER_URL;
             window.SOCKET = socketIOClient(window._env_.ID_SOCKET_URL)
             window.PEER_URL = window._env_.ID_PEER_URL;
         }

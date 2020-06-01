@@ -43,7 +43,7 @@ export default class Login extends Component {
           password: this.state.password,
           name: this.state.name
         }
-        axios.post(window.API_URL+'/user/register', user)
+        axios.post(window.USER_URL+'/user/register', user)
           .then(res => {
             //   this.setState({
             //       isLoading: false
@@ -80,7 +80,7 @@ export default class Login extends Component {
             email: this.state.email,
             password: this.state.password
         }
-        axios.post(window.API_URL+'/user/login', user)
+        axios.post(window.USER_URL+'/user/login', user)
         .then(res => {
             if (res.data) {
                 if (res.data === 'invalidEmail') {

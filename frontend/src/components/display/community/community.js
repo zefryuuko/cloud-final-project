@@ -133,7 +133,7 @@ export default class Community extends React.Component{
             const obj = {
                 token: token
             }
-            await axios.post(window.API_URL+'/user/token', obj)
+            await axios.post(window.USER_URL+'/user/token', obj)
             .then(res => {
                 this.setState({
                     user: res.data
@@ -147,7 +147,7 @@ export default class Community extends React.Component{
 
     async getRawChat(firstTime = false) {
         // Get raw chat
-        await axios.get(window.API_URL+'/community/'+this.props.selected)
+        await axios.get(window.COMMUNITY_URL+'/community/'+this.props.selected)
         .then(res => {
             if (firstTime) this.setState({ communityName: res.data.name })
             const increment = 30
@@ -172,7 +172,7 @@ export default class Community extends React.Component{
         let promises = []
         if (this.state.users.length !== senders.length) 
         promises = senders.map(userID => {
-            return axios.get(window.API_URL+'/user/'+userID)
+            return axios.get(window.USER_URL+'/user/'+userID)
             .then(userData => {
                 const data = {
                     _id: userID,

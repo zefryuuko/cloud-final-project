@@ -40,7 +40,7 @@ export default class Profile extends React.Component{
         const obj = {
             token: token
         }
-        axios.post(window.API_URL+'/user/token', obj)
+        axios.post(window.USER_URL+'/user/token', obj)
         .then(async res => {
             // if (res.data !== this.state.user) {
                 await this.setState({
@@ -50,7 +50,7 @@ export default class Profile extends React.Component{
                     picture: this.state.user.picture
                 })
                 const promises = this.state.user.communities.map(id => {
-                    return axios.get(window.API_URL+'/community/'+id)
+                    return axios.get(window.COMMUNITY_URL+'/community/'+id)
                     .then(community => {
                         if (!this.state.communities.map( c => {return c._id}).includes(id)) {// Optimize this
                             const data = {
@@ -91,7 +91,7 @@ export default class Profile extends React.Component{
                     token: localStorage.getItem('token'),
                     name: e.target.value
                 }
-                axios.post(window.API_URL+'/user/update', req)
+                axios.post(window.USER_URL+'/user/update', req)
                 req = {
                     update: 'name',
                     _id: this.state.user._id,
@@ -127,7 +127,7 @@ export default class Profile extends React.Component{
                 token: localStorage.getItem('token'),
                 password: this.state.password
             }
-            axios.post(window.API_URL+'/user/update', req)
+            axios.post(window.USER_URL+'/user/update', req)
             .then(res => {
                 this.setState({
                     success: res.data
@@ -149,7 +149,7 @@ export default class Profile extends React.Component{
                 const obj = {
                     token: token
                 }
-                axios.delete(window.API_URL+'/user/', {headers: obj})
+                axios.delete(window.USER_URL+'/user/', {headers: obj})
                 .then(res => {
                     if (res.data) {
                         localStorage.clear()
@@ -201,7 +201,7 @@ export default class Profile extends React.Component{
                         picture: fireBaseUrl,
                         pictureName: this.state.selectedFile.name
                     }
-                    axios.post(window.API_URL+'/user/update', req)
+                    axios.post(window.USER_URL+'/user/update', req)
                     .then(res => {
                         req = {
                             update: 'picture',
@@ -320,7 +320,7 @@ export default class Profile extends React.Component{
             }
             const socket = this.state.socket;
             socket.emit('leave', req.community)
-            axios.post(window.API_URL+'/user/update', req)
+            axios.post(window.USER_URL+'/user/update', req)
             .then(() => {
                 setTimeout(this.getUserData.bind(this),50)
             })
