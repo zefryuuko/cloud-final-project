@@ -1,5 +1,9 @@
 # YANTOO (You Are Not The Only One)
-![topLanguage](https://img.shields.io/github/languages/top/getliberated/wads-final-project) [![commit](https://img.shields.io/github/last-commit/getliberated/wads-final-project)](https://github.com/GetLiberated/WADS-Final-Project/commits/master) ![size](https://img.shields.io/github/repo-size/getliberated/wads-final-project) ![license](https://img.shields.io/github/license/getliberated/wads-final-project) [![build](https://img.shields.io/docker/image-size/getliberated/yantoo-frontend)](https://hub.docker.com/repository/docker/getliberated/yantoo-frontend)
+![topLanguage](https://img.shields.io/github/languages/top/getliberated/wads-final-project)
+[![commit](https://img.shields.io/github/last-commit/getliberated/wads-final-project)](https://github.com/GetLiberated/WADS-Final-Project/commits/master)
+![size](https://img.shields.io/github/repo-size/getliberated/wads-final-project)
+![license](https://img.shields.io/github/license/getliberated/wads-final-project)
+[![website](https://img.shields.io/website?url=https%3A%2F%2Fwads.erizky.com)](https://wads.erizky.com)
 <hr>
 Live demo - https://wads.erizky.com
 <hr>
@@ -11,11 +15,11 @@ YANTOO is a web chat application based on `MERN` stack with `socket.io` & `peer.
 
 Our images support multiple architectures such as `x86-64`, `arm64` and `armhf`. We utilise the docker manifest for multi-platform awareness. More information is available from docker [here](https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#manifest-list)
 
-## Installation - Frontend
+## Installation - Frontend [![](https://img.shields.io/docker/cloud/automated/getliberated/yantoo-frontend)](https://hub.docker.com/repository/docker/getliberated/yantoo-frontend) [![](https://img.shields.io/docker/cloud/build/getliberated/yantoo-frontend)](https://hub.docker.com/repository/docker/getliberated/yantoo-frontend) [![](https://img.shields.io/docker/v/getliberated/yantoo-frontend)](https://hub.docker.com/repository/docker/getliberated/yantoo-frontend) [![](https://img.shields.io/docker/image-size/getliberated/yantoo-frontend)](https://hub.docker.com/repository/docker/getliberated/yantoo-frontend)
 ### Step 1
 Create a [Firebase](https://firebase.google.com/) account and get token key from there.
 ### Step 2
-Create .env file
+Create `.env` file
 ```
 # Firebase token
 apiKey=
@@ -33,6 +37,7 @@ ID_COMMUNITY_URL=http://localhost:10003
 ID_USER_URL=http://localhost:10004
 ID_SOCKET_URL=http://localhost:10005
 ID_PEER_URL=localhost
+
 # Server 2 (Optional)
 US_ADMIN_URL=
 US_CHAT_URL=
@@ -49,7 +54,7 @@ sudo docker run -d -p 10000:80 --name yantoo --env-file .env getliberated/yantoo
 ### Step 1
 Create a [MongoDB Atlas](https://account.mongodb.com/account/login) account and get token key from there.
 ### Step 2
-Create .env.restful file
+Create `.env.restful` file
 ```
 ATLAS_URI=mongodb+srv://user:password@server/database?retryWrites=true&w=majority
 ```
@@ -61,7 +66,7 @@ sudo docker run -d -p 10003:3000 --name community --env-file .env.restful getlib
 sudo docker run -d -p 10004:3000 --name user --env-file .env.restful getliberated/yantoo-user
 ```
 ### Step 4
-Create .env.socket file
+Create `.env.socket` file
 ```
 CHAT_URL=http://localhost:10002
 ```
