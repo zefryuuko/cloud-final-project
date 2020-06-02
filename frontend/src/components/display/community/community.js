@@ -580,7 +580,8 @@ export default class Community extends React.Component{
     requestPermission(type) {
         this.setState({ peer: new Peer(this.state.user._id, {
             host: window.PEER_URL,
-            secure: true,
+            port: window.PEER_PORT,
+            secure: window.PEER_PORT === 443 ? true : false,
             path: '/peer',
             // debug: 3
           })

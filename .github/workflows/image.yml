@@ -1,0 +1,90 @@
+name: buildx
+
+on:
+#   pull_request:
+#     branches: master
+  push:
+    branches: New-UI
+    # tags:
+
+jobs:
+  buildx:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v2
+        with:
+          buildx-version: latest
+          skip-cache: false
+          qemu-version: latest
+      - 
+        name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      -
+        # Frontend
+        name: Run Buildx
+        run: |
+            docker buildx build \
+              --platform linux/amd64,linux/arm64,linux/arm/v7 \
+              -t getliberated/yantoo-frontend \
+              --push .
+        working-directory: ./frontend/
+      -
+        # Admin
+        name: Run Buildx
+        run: |
+            docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/arm/v7 \
+            -t getliberated/yantoo-admin \
+            --push .
+        working-directory: ./backend/admin/
+      -
+        # Chat
+        name: Run Buildx
+        run: |
+            docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/arm/v7 \
+            -t getliberated/yantoo-chat \
+            --push .
+        working-directory: ./backend/chat/
+      -
+        # Community
+        name: Run Buildx
+        run: |
+            docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/arm/v7 \
+            -t getliberated/yantoo-community \
+            --push .
+        working-directory: ./backend/community/
+      -
+        # User
+        name: Run Buildx
+        run: |
+            docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/arm/v7 \
+            -t getliberated/yantoo-user \
+            --push .
+        working-directory: ./backend/user/
+      -
+        # Socket
+        name: Run Buildx
+        run: |
+            docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/arm/v7 \
+            -t getliberated/yantoo-socket \
+            --push .
+        working-directory: ./backend/socket/
+      -
+        # Peer
+        name: Run Buildx
+        run: |
+            docker buildx build \
+            --platform linux/amd64,linux/arm64,linux/arm/v7 \
+            -t getliberated/yantoo-peer \
+            --push .
+        working-directory: ./backend/peer/
