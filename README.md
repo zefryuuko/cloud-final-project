@@ -37,6 +37,7 @@ ID_COMMUNITY_URL=http://localhost:10003
 ID_USER_URL=http://localhost:10004
 ID_SOCKET_URL=http://localhost:10005
 ID_PEER_URL=localhost
+ID_PEER_PORT=10006
 
 # Server 2 (Optional)
 US_ADMIN_URL=
@@ -45,6 +46,7 @@ US_COMMUNITY_URL=
 US_USER_URL=
 US_SOCKET_URL=
 US_PEER_URL=
+US_PEER_PORT=
 ```
 ### Step 3
 ```
