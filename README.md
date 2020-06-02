@@ -17,19 +17,7 @@ Create a [Firebase](https://firebase.google.com/) account and get token key from
 ### Step 2
 Create .env file
 ```
-ID_ADMIN_URL=https://localhost
-ID_CHAT_URL=https://localhost
-ID_COMMUNITY_URL=https://localhost
-ID_USER_URL=https://localhost
-ID_SOCKET_URL=https://localhost
-ID_PEER_URL=localhost
-US_ADMIN_URL=https://localhost
-US_CHAT_URL=https://localhost
-US_COMMUNITY_URL=https://localhost
-US_USER_URL=https://localhost
-US_SOCKET_URL=https://localhost
-US_PEER_URL=localhost
-
+# Firebase token
 apiKey=
 authDomain=
 databaseURL=
@@ -37,6 +25,21 @@ projectId=
 storageBucket=
 messagingSenderId=
 appId=
+
+# Server 1
+ID_ADMIN_URL=http://localhost:10001
+ID_CHAT_URL=http://localhost:10002
+ID_COMMUNITY_URL=http://localhost:10003
+ID_USER_URL=http://localhost:10004
+ID_SOCKET_URL=http://localhost:10005
+ID_PEER_URL=localhost
+# Server 2 (Optional)
+US_ADMIN_URL=
+US_CHAT_URL=
+US_COMMUNITY_URL=
+US_USER_URL=
+US_SOCKET_URL=
+US_PEER_URL=
 ```
 ### Step 3
 ```
