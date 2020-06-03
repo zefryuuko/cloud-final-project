@@ -193,14 +193,15 @@ export default class Community extends React.Component{
         
     fetchChat() {
         const socket = this.state.socket;
-        socket.on('chat', data => {
+        socket.on('chat', async data => {
             if (this.state.user !== undefined)
             if (data.user !== this.state.user._id)
             this.notificationChat(data.name + ' (' + data.community + ')',{
                 icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
                 body: data.message,
             })
-            this.setState(prevState => ({ rawChats: [...prevState.rawChats, data]}))
+            await this.setState(prevState => ({ rawChats: [...prevState.rawChats, data]}))
+            if (this.state.rawChats.length === 2) this.getRawChat()
             if (document.getElementById('chat') !== null) {
                 if (this.state.bottom) this.scrollToBottom()
                 else document.getElementById('chat').scrollTop = this.state.scrollPosition
@@ -416,6 +417,8 @@ export default class Community extends React.Component{
                         <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
                     </label>
                     <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
+                    <img onClick={switchToAudio} src='https://img.icons8.com/material/24/000000/phone--v1.png' alt='audiocall'/>
+                    <img onClick={switchToVideo} src='https://img.icons8.com/material/24/000000/video-call--v1.png' alt='videocall'/>
                 </div>
             </div>
             :
@@ -556,6 +559,18 @@ export default class Community extends React.Component{
         }
         
         return (
+            this.props.mobile ?
+            <div style={{overflow: 'scroll', webkitOverflowScrolling: 'touch', marginTop: 50}}>
+                {this.state.streams}
+                <div className='stream' id='userStream'>
+                    <br/>
+                    {this.state.audio && <AudioAnalyser audio={this.state.audio} />}
+                    <div style={{opacity: 1}}>
+                        <img onClick={toggleMicrophone} id='mic' src='https://img.icons8.com/material-sharp/48/000000/microphone.png' alt='mic'/>
+                    </div>
+                </div>
+            </div>
+            :
             <div style={{overflow: 'scroll'}}>
                 <button onClick={back} className='backButton'>&#10094; Back</button>
                 <div style={{marginLeft: 120}}>
@@ -594,6 +609,22 @@ export default class Community extends React.Component{
             if (type === 'video') {
                 this.setState({ video: stream })
                 this.localVideo.srcObject = stream;
+                if (!JSON.parse(localStorage.getItem('client')).hide) {
+                    document.getElementById('clickMe').click()
+                    document.getElementsByClassName('speech-bubble')[0].style.width = '150px'
+                    document.getElementsByClassName('speech-bubble')[0].style.display = 'block'
+                    document.getElementsByClassName('speech-bubble')[0].style.opacity = 1
+                    document.getElementsByClassName('speech-bubble')[0].style.left = '92px'
+                    document.getElementsByClassName('speech-bubble')[0].innerHTML = 'Click here to view list'
+                    setTimeout(() => {
+                        document.getElementsByClassName('speech-bubble')[0].style.opacity = 0
+                        document.getElementsByClassName('speech-bubble')[0].style.left = '110px'
+                        setTimeout(() => {
+                            document.getElementsByClassName('speech-bubble')[0].style.display = 'none'      
+                        }, 1000)
+                    }, 5000)
+                    
+                }
             }
             else this.setState({ audio: stream })
 
@@ -760,6 +791,19 @@ export default class Community extends React.Component{
         }
         
         return (
+            this.props.mobile ?
+            <div style={{overflow: 'scroll', webkitOverflowScrolling: 'touch', marginTop: 50}}>
+                {this.state.streams}
+                <div id='userStream'>
+                    <br/>
+                    <video playsInline muted ref={(ref) => {this.localVideo = ref}} autoPlay/>
+                    <div>
+                        <img onClick={toggleMicrophone} id='mic' src='https://img.icons8.com/material-sharp/48/000000/microphone.png' alt='mic'/>
+                        <img onClick={toggleCamera} id='cam' src='https://img.icons8.com/material/48/000000/video-call--v1.png' alt='cam'/>
+                    </div>
+                </div>
+            </div>
+            :
             <div style={{overflow: 'scroll'}}>
                 <button onClick={back} className='backButton'>&#10094; Back</button>
                 <div style={{marginLeft: 120}}>

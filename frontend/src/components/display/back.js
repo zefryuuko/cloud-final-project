@@ -7,7 +7,7 @@ export default function Back(args){
 
     const navStyle = {
         height: 50,
-        backdropFilter: 'blur(10px)',
+        backgroundColor: 'rgba(0,0,0,0.5)',
         filter: 'drop-shadow(0 0 1rem black)',
         animation: 'fadein 0.4s',
         boxShadow: '0 1rem 1rem 0 rgba(0, 0, 0, 0.404)',

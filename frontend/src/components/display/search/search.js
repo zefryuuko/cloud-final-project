@@ -179,6 +179,10 @@ export default class Search extends React.Component{
                 })
             }
         })
+        .catch(err => {
+            alert('Image is too large!')
+            this.setState({isLoading: false})
+        })
     }
 
     onChange(e) {

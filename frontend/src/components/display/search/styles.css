@@ -25,10 +25,14 @@
 
 .view img {
     width: 300px;
+    height: 300px;
+    border-radius: 50%;
 }
 
 .view.mobile img {
     width: 200px;
+    height: 200px;
+    border-radius: 50%;
 }
 
 .view .name {
@@ -95,11 +99,13 @@
 .createStyle img {
     width: 300px;
     height: 300px;
+    border-radius: 50%;
 }
 
 .createStyle.mobile img {
     width: 200px;
     height: 200px;
+    border-radius: 50%;
 }
 
 .createStyle .inputName {
@@ -171,4 +177,8 @@
     color: white;
     font-size: 64px;
     right: 0;
+}
+
+.fileContainer.search input {
+    width: 60px;
 }

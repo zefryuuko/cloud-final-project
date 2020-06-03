@@ -43,7 +43,7 @@ export default class Sidebar extends React.Component{
             <div className='sidebar'>
                 {this.props.admin && <a href='#' title='Admin' onClick={() => this.changeAdminMode()}><img src={!this.props.adminMode ? require('./crown-3-64.png') : require('./crown-3-64-2.png')} className='icon'/></a>}
                 <a href='#' title='Profile' onClick={() => this.changeMode('profile')}><img src={require('./contacts-64.png')} className={this.props.mode === 'profile' ? 'iconSelected' : 'icon'}/></a>
-                <a href='#' title='Community' onClick={() => this.changeMode('community')}><img src={require('./conference-64.png')} className={this.props.mode === 'community' ? 'iconSelected' : 'icon'}/></a>
+                <a href='#' title='Community' onClick={() => this.changeMode('community')}><img src={require('./conference-64.png')} className={this.props.mode === 'community' ? 'iconSelected' : 'icon'} id='clickMe'/></a>
                 <div className='speech-bubble'>Check out here!</div>
                 {!this.props.adminMode && <a href='#' title='Search community' onClick={() => this.changeMode('search')}><img src={require('./search-13-64.png')} className={this.props.mode === 'search' ? 'iconSelected' : 'icon'}/></a>}
                 <footer style={{bottom: 50, position:"absolute"}}>
