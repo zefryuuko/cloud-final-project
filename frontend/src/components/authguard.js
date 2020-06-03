@@ -61,7 +61,7 @@ export default class AuthGuard extends React.Component {
             window.USER_URL = window._env_.ID_USER_URL;
             window.SOCKET = socketIOClient(window._env_.ID_SOCKET_URL)
             window.PEER_URL = window._env_.ID_PEER_URL;
-            window.PEER_PORT = window._env_.ID_PEER_PORT;
+            window.PEER_PORT = parseInt(window._env_.ID_PEER_PORT);
         }
         else if (country === 'US') {
             window.ADMIN_URL = window._env_.US_ADMIN_URL;
@@ -70,7 +70,7 @@ export default class AuthGuard extends React.Component {
             window.USER_URL = window._env_.US_USER_URL;
             window.SOCKET = socketIOClient(window._env_.US_SOCKET_URL)
             window.PEER_URL = window._env_.US_PEER_URL;
-            window.PEER_PORT = window._env_.US_PEER_PORT;
+            window.PEER_PORT = parseInt(window._env_.US_PEER_PORT);
         }
         if (country === null) {
             window.ADMIN_URL = window._env_.ID_ADMIN_URL;
@@ -79,7 +79,7 @@ export default class AuthGuard extends React.Component {
             window.USER_URL = window._env_.ID_USER_URL;
             window.SOCKET = socketIOClient(window._env_.ID_SOCKET_URL)
             window.PEER_URL = window._env_.ID_PEER_URL;
-            window.PEER_PORT = window._env_.ID_PEER_PORT;
+            window.PEER_PORT = parseInt(window._env_.ID_PEER_PORT);
         }
     }
     

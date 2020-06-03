@@ -1,6 +1,6 @@
 # YANTOO (You Are Not The Only One)
 ![topLanguage](https://img.shields.io/github/languages/top/getliberated/wads-final-project)
-[![commit](https://img.shields.io/github/last-commit/getliberated/wads-final-project)](https://github.com/GetLiberated/WADS-Final-Project/commits/master)
+[![commit](https://img.shields.io/github/last-commit/getliberated/wads-final-project)](https://github.com/GetLiberated/WADS-Final-Project/commits/New-UI)
 ![size](https://img.shields.io/github/repo-size/getliberated/wads-final-project)
 ![license](https://img.shields.io/github/license/getliberated/wads-final-project)
 [![website](https://img.shields.io/website?url=https%3A%2F%2Fwads.erizky.com)](https://wads.erizky.com)
