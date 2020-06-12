@@ -230,16 +230,15 @@ export default class List extends React.Component{
             left: 0,
             // backgroundColor: 'rgb(240, 240, 240)',
             marginLeft: this.props.hide ? -580 : 80,
-            overflowY: 'scroll',
+            overflow: 'auto',
             // opacity: this.props.hide ? 0 : 1,
             transition: 'all 0.4s ease'
         }
 
         const styleMobile = {
             height: 'calc((var(--vh, 1vh) * 100) - 60px)',
-            overflowY: 'scroll',
-            transition: 'all 0.4s ease',
-            overflowX: 'hidden'
+            overflow: 'auto',
+            transition: 'all 0.4s ease'
         }
         
         return (

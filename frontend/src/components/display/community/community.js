@@ -560,7 +560,7 @@ export default class Community extends React.Component{
         
         return (
             this.props.mobile ?
-            <div style={{overflow: 'scroll', webkitOverflowScrolling: 'touch', marginTop: 50}}>
+            <div style={{overflow: 'auto', webkitOverflowScrolling: 'touch', marginTop: 50}}>
                 {this.state.streams}
                 <div className='stream' id='userStream'>
                     <br/>
@@ -571,7 +571,7 @@ export default class Community extends React.Component{
                 </div>
             </div>
             :
-            <div style={{overflow: 'scroll'}}>
+            <div style={{overflow: 'auto'}}>
                 <button onClick={back} className='backButton'>&#10094; Back</button>
                 <div style={{marginLeft: 120}}>
                     {this.state.streams}
@@ -792,7 +792,7 @@ export default class Community extends React.Component{
         
         return (
             this.props.mobile ?
-            <div style={{overflow: 'scroll', webkitOverflowScrolling: 'touch', marginTop: 50}}>
+            <div style={{overflow: 'auto', webkitOverflowScrolling: 'touch', marginTop: 50}}>
                 {this.state.streams}
                 <div id='userStream'>
                     <br/>
@@ -804,7 +804,7 @@ export default class Community extends React.Component{
                 </div>
             </div>
             :
-            <div style={{overflow: 'scroll'}}>
+            <div style={{overflow: 'auto'}}>
                 <button onClick={back} className='backButton'>&#10094; Back</button>
                 <div style={{marginLeft: 120}}>
                     {this.state.streams}

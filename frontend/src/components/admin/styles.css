@@ -6,7 +6,7 @@
     top: 0;
     left: 0;
     margin-left: 80px;
-    overflow-y: scroll;
+    overflow: auto;
     text-align: center;
     padding: 50px;
     animation: fadein-jump 0.4s;

@@ -232,7 +232,7 @@ export default class Search extends React.Component{
                 <div className={this.props.mobile ? 'perfection' : ''} style={{position: !this.props.mobile ? 'relative' : ''}}>
                     <img src={this.state.picture}/>
                     <label className={this.props.mobile ? 'fileContainer mobile' : 'fileContainer search'}>
-                        &#x2295;
+                        <img src="https://img.icons8.com/material-outlined/48/000000/image.png"/>
                         <input type="file" onChange={this.changeImage.bind(this)} accept="image/png,image/gif,image/jpeg"/>
                     </label>
                 </div>

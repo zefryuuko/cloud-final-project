@@ -27,7 +27,7 @@ export default function Chat(args){
         newText = newText.replace(url, url => {
             let realurl = url
             if (!url.includes('http://') && !url.includes('https://')) realurl = 'http://' + url
-            if (url.match(/\.(jpeg|jpg|gif|png)/) != null) {
+            if (url.match(/\.(jpeg|jpg|gif|png)/i) != null) {
                 isImage = true
                 return '<img src=' + realurl + ' onerror="this.onerror=null; this.src=\'https://res.cloudinary.com/erizky/image/upload/c_scale,w_113/v1589474238/unknown_ivqfpo.png\'" alt="" loading="lazy" onclick="modalMode(this)">';
             }

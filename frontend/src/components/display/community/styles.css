@@ -1,12 +1,11 @@
 .chatDesktop {
     height: calc(80vh - 50px);
-    overflow-y: scroll;
+    overflow: auto;
 }
 
 .chatMobile {
     height: calc((var(--vh, 1vh) * 100) - 160px);
-    overflow-y: scroll;
-    overflow-x: hidden;
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
     animation: fadein 0.4s;
     backdrop-filter: blur(4px);
@@ -428,6 +427,7 @@ video {
 #userStream {
     position: relative;
     float: left;
+    margin: 24px 24px 0px 0px;
 }
 
 #userStream div {
