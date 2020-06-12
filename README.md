@@ -5,6 +5,7 @@
 ![license](https://img.shields.io/github/license/getliberated/wads-final-project)
 [![website](https://img.shields.io/website?url=https%3A%2F%2Fwads.erizky.com)](https://wads.erizky.com)
 [![header](https://img.shields.io/security-headers?url=https%3A%2F%2Fwads.erizky.com)](https://securityheaders.com/?q=wads.erizky.com&followRedirects=on)
+[![build](https://img.shields.io/github/workflow/status/getliberated/wads-final-project/buildx)](https://github.com/GetLiberated/WADS-Final-Project/actions?query=workflow%3Abuildx)
 <hr>
 Live demo - https://wads.erizky.com
 <hr>
