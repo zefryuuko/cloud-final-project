@@ -45,6 +45,17 @@ router.route('/:_id')
     .then(c => res.send(c))
     .catch(err => res.status(400).json('Error: ' + err))
 })
+
+router.route('/')
+.get((req, res) => {
+    Community.find()
+    .then(communities => {
+        res.send(communities)
+    })
+    .catch(err => res.status(400).json('Error: ' + err))
+})
+
+
 // .delete((req, res) => {
 //     const _id = req.params._id;
 
