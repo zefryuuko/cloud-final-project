@@ -48,11 +48,30 @@ export default class List extends React.Component{
             }
         }
         else if (nextProps.mode !== this.props.mode) {
-            this.setState({
-                searchResult: [],
-                communities: []
-            });
-            this.loadCommunity()
+            if (nextProps.mode === 'search') {
+                axios.get(window.COMMUNITY_URL+'/community/')
+                .then(res => {
+                    this.setState({
+                        searchResult: res.data,
+                        communities: []
+                    })
+                })
+            }
+            else {
+                this.setState({
+                    searchResult: [],
+                    communities: []
+                });
+                this.loadCommunity()
+            }
+        }
+        else if (searchQuery === '') {
+            axios.get(window.COMMUNITY_URL+'/community/')
+            .then(res => {
+                this.setState({
+                    searchResult: res.data
+                })
+            })
         }
     }
     
@@ -113,7 +132,7 @@ export default class List extends React.Component{
     }
 
     loadCommunity() {
-        if (this.props.mode === 'community') {
+        // if (this.props.mode === 'community') {
             const token = localStorage.getItem("token")
             const obj = {
                 token: token
@@ -151,7 +170,7 @@ export default class List extends React.Component{
                     this.fetchCommunity()
                 })
             })
-        }
+        // }
     }
 
     fetchCommunity() {
@@ -208,6 +227,11 @@ export default class List extends React.Component{
     search() {
         const onChange = (e) => {
             this.props.searchCallback(e.target.value)
+            const client = {
+                "mode": this.props.mode,
+                "index": 1
+            }
+            localStorage.setItem("client", JSON.stringify(client))
         }
         const searchResult = this.state.searchResult.map(x => {
             return <SubList mode='search' name={x.name} id={x._id} picture={x.picture} selected={this.state.selected === x._id ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
@@ -215,16 +239,20 @@ export default class List extends React.Component{
         return (
             <div style={{animation: 'fadein 0.4s'}}>
                 <input className="searchBox" type="text" placeholder="&#128269; Search community" onChange={onChange.bind(this)}/>
-                {searchResult}
+                {this.props.mobile && searchResult}
                 <SubList mode='search' id={0} name={'Create a new community'} selected={parseInt(this.state.selected) === 0 ? 'yes' : 'no'} callback={this.callback} mobile={this.props.mobile}/>
             </div>
         ) 
     }
 
+    chatbot() {
+        return <iframe src='http://127.0.0.1:5500/GUI/index.html' />
+    }
+
     render() {
         const style = {
             height: '100%',
-            width: 500,
+            width: this.props.mode !== 'chatbot' ? 500 : '100%',
             position: 'fixed',
             top: 0,
             left: 0,
@@ -263,8 +291,9 @@ export default class List extends React.Component{
                     {this.props.mode === 'profile' && this.profile()}
                     {this.props.mode === 'community' && this.community()}
                     {this.props.mode === 'search' && this.search()}
+                    {this.props.mode === 'chatbot' && this.chatbot()}
                 </div>
-                <Display mode={this.props.mode} selected={this.state.selected} mobile={false} hide={this.props.hide}/>
+                {this.props.mode !== 'chatbot' && <Display mode={this.props.mode} selected={this.state.selected} mobile={false} hide={this.props.hide} searchResult={this.state.searchResult}/>}
             </div>
         )
     }

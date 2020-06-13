@@ -322,7 +322,15 @@ export default class Profile extends React.Component{
             socket.emit('leave', req.community)
             axios.post(window.USER_URL+'/user/update', req)
             .then(() => {
-                setTimeout(this.getUserData.bind(this),50)
+                const req = {
+                    update: 'leave',
+                    _id: id,
+                    user: this.state.user._id
+                }
+                axios.post(window.COMMUNITY_URL+'/community/update', req)
+                .then(() => {
+                    setTimeout(this.getUserData.bind(this),50)
+                })
             })
         }
         const communities = this.state.communities.map(c => {
@@ -354,6 +362,7 @@ export default class Profile extends React.Component{
                 <option selected={this.state.country === 'ID' ? true : false} value="ID">🇮🇩 Indonesia</option>
                 <option selected={this.state.country === 'US' ? true : false} value="US">🇺🇸 United States</option>
             </select>
+            <p>Version 1.1</p>
         </div>
     }
 

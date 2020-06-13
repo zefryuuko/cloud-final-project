@@ -43,7 +43,7 @@ export default class Display extends React.Component{
             <div style={style}>
                 {this.props.mode === 'profile' && <Profile selected={this.props.selected} mobile={false}/>}
                 {this.props.mode === 'community' && <Community selected={this.props.selected} mobile={false} community={this.props.community} hide={this.props.hide}/>}
-                {this.props.mode === 'search' && <Search selected={this.props.selected} mobile={false}/>}
+                {this.props.mode === 'search' && <Search selected={this.props.selected} mobile={false} searchResult={this.props.searchResult}/>}
             </div>
         )
     }

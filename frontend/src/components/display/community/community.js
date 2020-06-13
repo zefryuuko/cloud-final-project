@@ -19,6 +19,7 @@ export default class Community extends React.Component{
             user: undefined,
             users: [],
             communityName: undefined,
+            members: [],
             isTyping: false,
             whosTyping: [],
             bottom: true,
@@ -124,6 +125,8 @@ export default class Community extends React.Component{
         if (parseInt(this.props.selected) > 3) {
             // Flush saved raw chat if any from previous column
             this.setState({
+                members: [],
+                users: [],
                 rawChats: [],
                 chatLoaded: 0,
                 isTyping: false,
@@ -149,7 +152,7 @@ export default class Community extends React.Component{
         // Get raw chat
         await axios.get(window.COMMUNITY_URL+'/community/'+this.props.selected)
         .then(res => {
-            if (firstTime) this.setState({ communityName: res.data.name })
+            if (firstTime) this.setState({ communityName: res.data.name, members: res.data.member })
             const increment = 30
             const index = this.state.chatLoaded + increment
 
@@ -186,8 +189,26 @@ export default class Community extends React.Component{
         })
         Promise.all(promises)
         .then(() => {
-            if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
-            if (firstTime) this.scrollToBottom()
+            let promise = this.state.members.map(member => {
+                return axios.get(window.USER_URL+'/user/'+member)
+                .then(userData => {
+                    const data = {
+                        _id: member,
+                        name: userData.data.name,
+                        picture: userData.data.picture
+                    }
+                    if (!this.state.users.some(e => e._id === member)) {
+                        this.setState(prevState => ({
+                            users: [...prevState.users, data]
+                        }))
+                    }
+                })
+            })
+            Promise.all(promise)
+            .then(() => {
+                if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
+                if (firstTime) this.scrollToBottom()
+            })
         })
     }
         
@@ -341,6 +362,35 @@ export default class Community extends React.Component{
             }
         })
     }
+
+    memberList() {
+        return this.state.users.map((member, i) => {
+            if (member.name !== '')
+            return <div key={i} className='other member'>
+            <table>
+                <tbody>
+                    <tr>
+                        <td rowSpan='2'>
+                            <div style={{position:"relative"}}>
+                                <img src={member.picture} className="profilePic"
+                                loading="lazy"/>
+                                <img src={member._id === this.state.user._id ? "https://img.icons8.com/emoji/24/000000/green-circle-emoji.png" : "https://img.icons8.com/emoji/24/000000/black-circle-emoji.png"}/>
+                            </div>
+                        </td>
+                        <td>
+                            <p className='name'>{member.name}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colSpan='2'>
+                            <p className='message'>{member._id === this.state.user._id ? 'online' : 'offline'}</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        })
+    }
     
     chat() {
         const onKeyPress = (e) => {
@@ -422,34 +472,39 @@ export default class Community extends React.Component{
                 </div>
             </div>
             :
-            <div className={this.props.hide ? 'chat expand' : 'chat'}>
-                <div id='dragZone' className={this.props.hide ? 'expand' : ''}>
-                    Drop image here
+            <div>
+                <div className='memberList'>
+                    {this.memberList()}
                 </div>
-                <div id='chat' className='chatDesktop' onScroll={onScroll.bind(this)}>
-                    {this.chatList()}
-                </div>
-                <div className='typing'>
-                    {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
-                        return <p key={i}><b>{user}</b> is typing 
-                        <div className="loading">
-                            <div className="loading__circle"></div>
-                            <div className="loading__circle"></div>
-                            <div className="loading__circle"></div>
-                        </div></p>
-                    })}
-                </div>
-                <div className='scroll'>
-                    {!this.state.bottom && <button onClick={this.scrollToBottom.bind(this, 10)}>&#8595;</button>}
-                </div>
-                <div className='chatbox'>
-                    <label className="fileContainer">
-                        &#x2295;
-                        <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
-                    </label>
-                    <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
-                    <img onClick={switchToAudio} src='https://img.icons8.com/material/24/000000/phone--v1.png' alt='audiocall'/>
-                    <img onClick={switchToVideo} src='https://img.icons8.com/material/24/000000/video-call--v1.png' alt='videocall'/>
+                <div className={this.props.hide ? 'chat expand' : 'chat'}>
+                    <div id='dragZone' className={this.props.hide ? 'expand' : ''}>
+                        Drop image here
+                    </div>
+                    <div id='chat' className='chatDesktop' onScroll={onScroll.bind(this)}>
+                        {this.chatList()}
+                    </div>
+                    <div className='typing'>
+                        {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
+                            return <p key={i}><b>{user}</b> is typing 
+                            <div className="loading">
+                                <div className="loading__circle"></div>
+                                <div className="loading__circle"></div>
+                                <div className="loading__circle"></div>
+                            </div></p>
+                        })}
+                    </div>
+                    <div className='scroll'>
+                        {!this.state.bottom && <button onClick={this.scrollToBottom.bind(this, 10)}>&#8595;</button>}
+                    </div>
+                    <div className='chatbox'>
+                        <label className="fileContainer">
+                            &#x2295;
+                            <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
+                        </label>
+                        <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
+                        <img onClick={switchToAudio} src='https://img.icons8.com/material/24/000000/phone--v1.png' alt='audiocall'/>
+                        <img onClick={switchToVideo} src='https://img.icons8.com/material/24/000000/video-call--v1.png' alt='videocall'/>
+                    </div>
                 </div>
             </div>
         )
@@ -482,7 +537,7 @@ export default class Community extends React.Component{
                 </div>
             </div>
             :
-            <div className={this.props.hide ? 'chat expand' : 'chat'}>
+            <div className={this.props.hide ? 'chat expand welcome' : 'chat welcome'}>
                 <div id='chat' className='chatDesktop' onScroll={onScroll.bind(this)}>
                     <Chat sender='bot' message={'https://firebasestorage.googleapis.com/v0/b/wads-final-project.appspot.com/o/images%2Fgroups%2F5eb28952a2c4911527f3739b%2Fimage.png?alt=media&token=ba011bb8-c516-4ad3-8bf3-ffb169ae79a0'} recent={false} mobile={this.props.mobile}/>
                     <Chat sender='bot' message={'Greetings new user!'} recent={true} mobile={this.props.mobile}/>
@@ -575,13 +630,13 @@ export default class Community extends React.Component{
                 <button onClick={back} className='backButton'>&#10094; Back</button>
                 <div style={{marginLeft: 120}}>
                     {this.state.streams}
-                    <div className='stream' id='userStream'>
+                    {this.state.audio && <div className='stream' id='userStream'>
                         <br/>
-                        {this.state.audio && <AudioAnalyser audio={this.state.audio} />}
+                        <AudioAnalyser audio={this.state.audio} />
                         <div style={{opacity: 1}}>
                             <img onClick={toggleMicrophone} id='mic' src='https://img.icons8.com/material-sharp/48/000000/microphone.png' alt='mic'/>
                         </div>
-                    </div>
+                    </div>}
                 </div>
             </div>
         );
@@ -822,7 +877,7 @@ export default class Community extends React.Component{
     }
 
     render() {
-        if (this.state.user !== undefined && this.state.rawChats !== undefined) {
+        if (this.state.user !== undefined && this.state.rawChats !== undefined && this.state.members !== []) {
             return this.state.chat === 'text'
             ? this.chat()
             : this.state.chat === 'audio'

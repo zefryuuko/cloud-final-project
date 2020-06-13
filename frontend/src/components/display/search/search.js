@@ -72,7 +72,7 @@ export default class Search extends React.Component{
         }
     }
 
-    joinCommunity(e) {
+    joinCommunity(id = null, e) {
         e.preventDefault()
         if (!this.state.hasJoin) {
             this.setState({
@@ -81,26 +81,36 @@ export default class Search extends React.Component{
             const req = {
                 update: 'community',
                 _id: this.state.user._id,
-                community: this.state.community._id,
+                community: this.props.mobile ? this.state.community._id : id,
                 token: localStorage.getItem("token")
             }
             axios.post(window.USER_URL+'/user/update', req)
             .then(res => {
                 if (res.data) {
-                    this.setState({
-                        isLoading: false,
-                        hasJoin: true
-                    })
-                    if (!this.props.mobile) {
-                        document.getElementsByClassName('speech-bubble')[0].style.display = 'block'
-                        document.getElementsByClassName('speech-bubble')[0].style.opacity = 1
-                        document.getElementsByClassName('speech-bubble')[0].style.left = '92px'
+                    const req = {
+                        update: 'join',
+                        _id: this.props.mobile ? this.state.community._id : id,
+                        user: this.state.user._id
                     }
-                    // setTimeout(() => {
-                    //     localStorage.setItem('mode','community')
-                    //     localStorage.setItem('index','1')
-                    //     window.location.reload()
-                    // }, 1500)
+                    axios.post(window.COMMUNITY_URL+'/community/update', req)
+                    .then(res => {
+                        if (res.data) {
+                            this.setState({
+                                isLoading: false,
+                                hasJoin: true
+                            })
+                            if (!this.props.mobile) {
+                                document.getElementsByClassName('speech-bubble')[0].style.display = 'block'
+                                document.getElementsByClassName('speech-bubble')[0].style.opacity = 1
+                                document.getElementsByClassName('speech-bubble')[0].style.left = '92px'
+                            }
+                            // setTimeout(() => {
+                            //     localStorage.setItem('mode','community')
+                            //     localStorage.setItem('index','1')
+                            //     window.location.reload()
+                            // }, 1500)
+                        }
+                    })
                 }
             })
         }
@@ -121,6 +131,25 @@ export default class Search extends React.Component{
         )
     }
 
+    listCommunity() {
+        return (
+            <div className='listSearch'>
+                {this.props.searchResult.map(c => {
+                    return <div className='community' key={c._id}>
+                        <img src={c.picture} />
+                        <p className='name'>{c.name}</p>
+                        <p>{c.description}</p>
+                        { this.state.isLoading ? <div class="loader"></div> : (
+                            <button type="button" className="btn btn-success" onClick={this.joinCommunity.bind(this, c._id)}  disabled={this.state.hasJoin || this.state.user.communities.includes(c._id) ? true : false}>
+                                <b>{this.state.hasJoin || this.state.user.communities.includes(c._id) ? 'Joined!' : 'Join Community'}</b>
+                            </button>
+                        )}
+                    </div>
+                })}
+            </div>
+        )
+    }
+
     async createCommunity(e) {
         e.preventDefault()
         this.setState({
@@ -131,6 +160,7 @@ export default class Search extends React.Component{
             name: this.state.name,
             description: this.state.description,
             picture: this.state.picture,
+            user: this.state.user._id
         }
         axios.post(window.COMMUNITY_URL+'/community/create', req)
         .then(res => {
@@ -257,7 +287,8 @@ export default class Search extends React.Component{
         // if (user === undefined) return <span>Loading...</span>
         if (this.state.user !== undefined) {
             if (parseInt(this.props.selected) < 4) if (parseInt(this.props.selected) === 0) return this.formCommunity()
-            if (this.state.community !== undefined) return this.viewCommunity()
+            if (this.state.community !== undefined && this.state.mobile) return this.viewCommunity()
+            if (this.props.searchResult !== undefined) return this.listCommunity()
         }
         return null
     }

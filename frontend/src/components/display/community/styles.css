@@ -22,14 +22,21 @@
 
 .chat {
     position: relative;
-    width: 30vw;
+    width: calc(30vw - 20%);
     height: 80vh;
     background-color: rgba(0, 0, 0, 0.128);
     backdrop-filter: blur(10px);
     border-radius: 10px;
     filter: drop-shadow(0 0 1rem black);
     transition: all 0.4s ease;
-    animation: fadein 0.4s
+    animation: fadein 0.4s;
+    margin-right: 12vw;
+}
+
+@media (max-width: 1000px) {
+    .chat {
+        margin-right: 0;
+    }
 }
 
 @media (max-width: 800px) {
@@ -44,7 +51,7 @@
     }
 }
 
-@media (min-height: 601px) and (max-height: 800px) and (min-width: 801px) {
+@media (min-width: 801px) {
     .chatDesktop {
         height: calc(90vh - 50px);
     }
@@ -63,6 +70,10 @@
         width: 200px;
         height: 200px;
     }
+}
+
+.welcome {
+    margin-right: 0;
 }
 
 .expand {
@@ -378,12 +389,13 @@ table {
     right: 0;
     text-align: right;
     top: 0;
+    display: none;
 }
 
 #dragZone {
     position: fixed;
-    width: 600px;
-    height: 800px;
+    width: 40vw;
+    height: 90vh;
     display: none;
     background-color: rgba(0, 0, 0, 0.75);
     font-size: 40px;
@@ -394,7 +406,7 @@ table {
     border: 6px dashed gray;
     animation: fadein 0.4s;
     vertical-align: middle;
-    line-height: 800px;
+    line-height: 90vh;
     z-index: 2;
 }
 
@@ -404,7 +416,13 @@ video {
     -moz-transform:rotateY(180deg); /* Firefox */
     border-radius: 10px;
     transition: all 0.4s ease;
-    animation: fadein 0.4s
+    animation: fadein 0.4s;
+    max-width: 20vw;
+}
+
+canvas {
+    width: 20vw;
+    height: 20vw;
 }
 
 .stream {
@@ -473,4 +491,26 @@ video {
     top: 40px;
     left: 10px;
     padding: 10px 20px;
+}
+
+.memberList {
+    width: 12vw;
+    color: white;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.255);
+    overflow: auto;
+}
+
+@media (max-width: 1000px) {
+    .memberList {
+        display: none;
+    }
+}
+
+.memberList p {
+    font-size: 100%;
 }
