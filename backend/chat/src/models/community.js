@@ -17,6 +17,9 @@ const communitySchema = new Schema({
     },
     chat: {
         type: Array
+    },
+    member: {
+        type: Array
     }
 },
 {

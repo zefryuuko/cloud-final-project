@@ -6,8 +6,9 @@ router.route('/create').post((req, res) => {
     const name = req.body.name;
     const description = req.body.description;
     const picture = req.body.picture;
+    const user = [req.body.user];
 
-    const newCommunity = new Community({name, description, picture});
+    const newCommunity = new Community({name, description, picture, user});
     
     newCommunity.save({}, function(err, result) {
         if (err) return res.send(err);
@@ -15,27 +16,36 @@ router.route('/create').post((req, res) => {
     })
 });
 
-// router.route('/update').post((req, res) => {
-//     const _id = req.body._id;
+router.route('/update').post((req, res) => {
+    const _id = req.body._id;
 
-//     Community.findById({ _id })
-//         .then(c => {
-//             if (req.body.update === 'name') {
-//                 c.name = req.body.name;
-//                 c.save()
-//             }
-//             if (req.body.update === 'description') {
-//                 c.description = req.body.description;
-//                 c.save()
-//             }
-//             if (req.body.update === 'picture') {
-//                 c.picture = req.body.picture;
-//                 c.save()
-//             }
-//         })
-//         .catch(err => res.status(400).json('Error: ' + err))
-//     res.send(true)
-// });
+    Community.findById({ _id })
+        .then(c => {
+            // if (req.body.update === 'name') {
+            //     c.name = req.body.name;
+            //     c.save()
+            // }
+            // if (req.body.update === 'description') {
+            //     c.description = req.body.description;
+            //     c.save()
+            // }
+            // if (req.body.update === 'picture') {
+            //     c.picture = req.body.picture;
+            //     c.save()
+            // }
+            if (req.body.update === 'join') {
+                c.member.push(req.body.user);
+                c.save()
+            }
+            if (req.body.update === 'leave') {
+                var index = c.member.indexOf(req.body.user);
+                if (index !== -1) c.member.splice(index, 1);
+                c.save()
+            }
+        })
+        .catch(err => res.status(400).json('Error: ' + err))
+    res.send(true)
+});
 
 router.route('/:_id')
 .get((req, res) => {
@@ -45,6 +55,17 @@ router.route('/:_id')
     .then(c => res.send(c))
     .catch(err => res.status(400).json('Error: ' + err))
 })
+
+router.route('/')
+.get((req, res) => {
+    Community.find()
+    .then(communities => {
+        res.send(communities)
+    })
+    .catch(err => res.status(400).json('Error: ' + err))
+})
+
+
 // .delete((req, res) => {
 //     const _id = req.params._id;
 
