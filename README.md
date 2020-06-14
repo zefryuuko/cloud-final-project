@@ -27,7 +27,7 @@ Click the community that you have recently joined on the list.
 
 Click `type here` and press enter after typing a message.
 ### Step 4 - Admin
-> This is for [admin](#installation---admin----) only.
+> This is for [admin](#installation---admin) only.
 
 Click <img src='frontend/src/components/sidebar/crown-3-64.png' width='24px'/>  on the left sidebar to enter/leave admin mode.
 
