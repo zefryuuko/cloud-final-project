@@ -13,6 +13,24 @@ Live demo - https://wads.erizky.com
 ## About
 YANTOO is a web chat application based on `MERN` stack with `socket.io` & `peer.js` to help everyone find community filled with people that shares the same interest.
 
+## How to use
+### Step 1 - Login/Sign Up
+Login or sign up.
+### Step 2 - Join Community
+Click <img src='frontend/src/components/sidebar/search-13-64.png' width='24px'/>  on the left sidebar.
+
+Find the community you want to join and click `Join Community`
+### Step 3 - Chat
+Click <img src='frontend/src/components/sidebar/conference-64.png' width='24px'/>  on the left sidebar.
+
+Click the community that you have recently joined on the list.
+
+Click `type here` and press enter after typing a message.
+### Step 4 - Admin
+> This is for [admin](#installation---admin----) only.
+
+Click <img src='frontend/src/components/sidebar/crown-3-64.png' width='24px'/>  on the left sidebar to enter/leave admin mode.
+
 ## Supported Architectures
 
 Our images support multiple architectures such as `x86-64`, `arm64` and `armhf`. We utilise the docker manifest for multi-platform awareness. More information is available from docker [here](https://github.com/docker/distribution/blob/master/docs/spec/manifest-v2-2.md#manifest-list)
@@ -79,3 +97,17 @@ CHAT_URL=http://localhost:10002
 sudo docker run -d -p 10005:8080 --name socket --env-file .env.socket getliberated/yantoo-socket
 sudo docker run -d -p 10006:9000 --name peer getliberated/yantoo-peer
 ```
+## Installation - Admin
+> Make sure you have at least 1 registered user.
+### Step 1
+Login to [MongoDB Atlas](https://account.mongodb.com/account/login).
+### Step 2
+Click `Collections`
+
+Click `users`
+### Step 3
+Click edit icon on the user you want to make it as admin.
+
+Change `admin: false ` to `admin: true`
+
+Click `update`
