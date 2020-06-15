@@ -6,9 +6,9 @@ router.route('/create').post((req, res) => {
     const name = req.body.name;
     const description = req.body.description;
     const picture = req.body.picture;
-    const user = [req.body.user];
+    const member = [req.body.user];
 
-    const newCommunity = new Community({name, description, picture, user});
+    const newCommunity = new Community({name, description, picture, member});
     
     newCommunity.save({}, function(err, result) {
         if (err) return res.send(err);
