@@ -76,7 +76,8 @@ export default class Search extends React.Component{
         e.preventDefault()
         if (!this.state.hasJoin) {
             this.setState({
-                isLoading: true
+                isLoading: true,
+                joinID: id
             })
             const req = {
                 update: 'community',
@@ -139,9 +140,9 @@ export default class Search extends React.Component{
                         <img src={c.picture} />
                         <p className='name'>{c.name}</p>
                         <p>{c.description}</p>
-                        { this.state.isLoading ? <div class="loader"></div> : (
-                            <button type="button" className="btn btn-success" onClick={this.joinCommunity.bind(this, c._id)}  disabled={this.state.hasJoin || this.state.user.communities.includes(c._id) ? true : false}>
-                                <b>{this.state.hasJoin || this.state.user.communities.includes(c._id) ? 'Joined!' : 'Join Community'}</b>
+                        { this.state.isLoading && this.state.joinID === c._id ? <div class="loader"></div> : (
+                            <button type="button" className="btn btn-success" onClick={this.joinCommunity.bind(this, c._id)}  disabled={this.state.hasJoin && this.state.joinID === c._id || this.state.user.communities.includes(c._id) ? true : false}>
+                                <b>{this.state.hasJoin && this.state.joinID === c._id || this.state.user.communities.includes(c._id) ? 'Joined!' : 'Join Community'}</b>
                             </button>
                         )}
                     </div>

@@ -46,7 +46,7 @@ export default class Sidebar extends React.Component{
                 <a href='#' title='Community' onClick={() => this.changeMode('community')}><img src={require('./conference-64.png')} className={this.props.mode === 'community' ? 'iconSelected' : 'icon'} id='clickMe'/></a>
                 <div className='speech-bubble'>Check out here!</div>
                 {!this.props.adminMode && <a href='#' title='Search community' onClick={() => this.changeMode('search')}><img src={require('./search-13-64.png')} className={this.props.mode === 'search' ? 'iconSelected' : 'icon'}/></a>}
-                {/* {!this.props.adminMode && <a href='#' title='Chat with chatbot' onClick={() => this.changeMode('chatbot')}><img src={require('./ai-64.png')} className={this.props.mode === 'chatbot' ? 'iconSelected' : 'icon'}/></a>} */}
+                {!this.props.adminMode && <a href='#' title='Chat with chatbot' onClick={() => this.changeMode('chatbot')}><img src={require('./ai-64.png')} className={this.props.mode === 'chatbot' ? 'iconSelected' : 'icon'}/></a>}
                 <footer style={{bottom: 50, position:"absolute"}}>
                     <a href='/'  title='Log out' onClick={() => localStorage.clear()}><img src={require('./logout-64.png')} className='icon'/></a>
                 </footer>

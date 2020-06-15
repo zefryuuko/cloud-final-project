@@ -167,14 +167,18 @@ export default class Community extends React.Component{
         })
 
         // Get sender information
+        let newUsers = []
         let senders = this.state.users.map(u => { return u._id })
         this.state.rawChats.map(chat => {
             if (chat.user !==  '')
-            if (!senders.includes(chat.user)) senders.push(chat.user)
+            if (!senders.includes(chat.user)) {
+                senders.push(chat.user)
+                newUsers.push(chat.user)
+            }
         })
         let promises = []
-        if (this.state.users.length !== senders.length) 
-        promises = senders.map(userID => {
+        // if (this.state.users.length !== senders.length) 
+        promises = newUsers.map(userID => {
             return axios.get(window.USER_URL+'/user/'+userID)
             .then(userData => {
                 const data = {
@@ -207,7 +211,19 @@ export default class Community extends React.Component{
             Promise.all(promise)
             .then(() => {
                 if (this.state.top && this.state.chatLoaded !== undefined) this.setState({ top: false })
-                if (firstTime) this.scrollToBottom()
+                if (firstTime) {
+                    var items = document.querySelectorAll("#chat img");
+                    for (var i = items.length; i--;) {
+                        var img = items[i]
+                        if (img.complete) {
+                            this.scrollToBottomIMG()
+                        }
+                        else {
+                            img.addEventListener('load', this.scrollToBottomIMG)
+                        }
+                    }
+                    this.scrollToBottomIMG()
+                }
             })
         })
     }
@@ -278,8 +294,13 @@ export default class Community extends React.Component{
         });
     }
 
+    scrollToBottomIMG() {
+        document.getElementById('chat').scroll({ top: document.getElementById('chat').scrollHeight, left: 0, behavior: 'auto' });
+    }
+
     scrollToBottom() {
-        document.getElementById('chat').scroll({ top: document.getElementById('chat').scrollHeight, left: 0, behavior: 'smooth' });
+        if (this.state.bottom) document.getElementById('chat').scroll({ top: document.getElementById('chat').scrollHeight, left: 0, behavior: 'auto' });
+        else document.getElementById('chat').scroll({ top: document.getElementById('chat').scrollHeight, left: 0, behavior: 'smooth' });
     }
 
     uploadImage(selectedFiles) {
@@ -374,7 +395,8 @@ export default class Community extends React.Component{
                             <div style={{position:"relative"}}>
                                 <img src={member.picture} className="profilePic"
                                 loading="lazy"/>
-                                <img src={member._id === this.state.user._id ? "https://img.icons8.com/emoji/24/000000/green-circle-emoji.png" : "https://img.icons8.com/emoji/24/000000/black-circle-emoji.png"}/>
+                                {/* <img src={member._id === this.state.user._id ? "https://img.icons8.com/emoji/24/000000/green-circle-emoji.png" : "https://img.icons8.com/emoji/24/000000/black-circle-emoji.png"}/> */}
+                                <img src=''/>
                             </div>
                         </td>
                         <td>
@@ -383,7 +405,8 @@ export default class Community extends React.Component{
                     </tr>
                     <tr>
                         <td colSpan='2'>
-                            <p className='message'>{member._id === this.state.user._id ? 'online' : 'offline'}</p>
+                            {/* <p className='message'>{member._id === this.state.user._id ? 'online' : 'offline'}</p> */}
+                            <p className='message'>{member._id === this.state.user._id ? 'Me' : ''}</p>
                         </td>
                     </tr>
                 </tbody>
@@ -515,25 +538,11 @@ export default class Community extends React.Component{
                 <div id='chat' className='chatMobile' onScroll={onScroll.bind(this)}>
                     {this.chatList()}
                 </div>
-                <div className='typing'>
-                    {this.state.whosTyping !== [] && this.state.whosTyping.map((user, i) => {
-                        return <p key={i}><b>{user}</b> is typing
-                        <div class="loading">
-                            <div class="loading__circle"></div>
-                            <div class="loading__circle"></div>
-                            <div class="loading__circle"></div>
-                        </div></p>
-                    })}
-                </div>
                 <div className='scrollMobile'>
                     {!this.state.bottom && <button onClick={this.scrollToBottom.bind(this, 10)}>&#8595;</button>}
                 </div>
                 <div className='chatboxMobile'>
-                    <label className="fileContainer">
-                        &#x2295;
-                        <input type="file" onChange={uploadHandler.bind(this)} accept="image/png,image/gif,image/jpeg" multiple/>
-                    </label>
-                    <input id='chatbox' type='text' placeholder='type here' onKeyPress={onKeyPress.bind(this)} onChange={onChange.bind(this)}/>
+                    <input id='chatbox' type='text' placeholder='Read only.' style={{paddingLeft: 10}} disabled/>
                 </div>
             </div>
             :
