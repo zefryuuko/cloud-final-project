@@ -554,8 +554,8 @@ export default class Community extends React.Component{
                     <Chat sender='bot' message={'**What is YANTOO?**'} recent={true} mobile={this.props.mobile}/>
                     <Chat sender='bot' message={'YANTOO, which stands for "You Are Not The Only One", is a web chat application for helping people find a community.'} recent={true} mobile={this.props.mobile}/>
                     <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
-                    <Chat sender='bot' message={'**Get Started**'} recent={false} mobile={this.props.mobile} time={'Please help, I was forced to work here.'}/>
-                    <Chat sender='bot' message={'Click the search icon on the left and start typing the community you are looking for!'} recent={true} mobile={this.props.mobile}/>
+                    <Chat sender='bot' message={'**How to use**'} recent={false} mobile={this.props.mobile} time={'Please help, I was forced to work here.'}/>
+                    <Chat sender='bot' message={'https://github.com/GetLiberated/WADS-Final-Project#how-to-use'} recent={true} mobile={this.props.mobile}/>
                     <Chat sender='bot' message={''} recent={true} mobile={this.props.mobile}/>
                     <Chat sender='bot' message={'**Tips & Tricks**'} recent={true} mobile={this.props.mobile}/>
                     <Chat sender='bot' message={'Click the community icon on the left to expand the chat.'} recent={true} mobile={this.props.mobile}/>
