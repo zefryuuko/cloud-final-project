@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat
+spec:
+  selector:
+    matchLabels:
+      app: chat
+  template:
+    metadata:
+      labels:
+        app: chat
+    spec:
+      containers:
+      - name: chat
+        image: getliberated/yantoo-chat
+        env:
+          - name: ATLAS_URI
+            value: mongodb+srv://user:pass@cluster0-qidwa.gcp.mongodb.net/final-project?retryWrites=true&w=majority
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "0.5"
+        ports:
+        - containerPort: 3000

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+spec:
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      containers:
+      - name: admin
+        image: getliberated/yantoo-admin
+        env:
+          - name: ATLAS_URI
+            value: mongodb+srv://admin:KbnpmXFRm29HphEK@cluster0-qidwa.gcp.mongodb.net/final-project?retryWrites=true&w=majority
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "0.5"
+        ports:
+        - containerPort: 3000

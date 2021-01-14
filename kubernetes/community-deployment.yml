@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: community
+spec:
+  selector:
+    matchLabels:
+      app: community
+  template:
+    metadata:
+      labels:
+        app: community
+    spec:
+      containers:
+      - name: community
+        image: getliberated/yantoo-community
+        env:
+          - name: ATLAS_URI
+            value: mongodb+srv://user:pass@cluster0-qidwa.gcp.mongodb.net/final-project?retryWrites=true&w=majority
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "0.5"
+        ports:
+        - containerPort: 3000
